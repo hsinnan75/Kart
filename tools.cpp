@@ -181,7 +181,7 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 
 		if (bPacBioData)
 		{
-			if((MaxShift = (rLen > gLen ? (int)(rLen*0.1) : (int)(gLen*0.1))) > 20) MaxShift = 20;
+			if((MaxShift = (rLen > gLen ? (int)(rLen*0.2) : (int)(gLen*0.2))) > 50) MaxShift = 50;
 		}
 		else MaxShift = MaxGaps;
 
@@ -216,7 +216,7 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 						str2 = frag2.substr(PartitionVec[i].gPos, PartitionVec[i].gLen);
 						if (!PartitionVec[i].bSimple)
 						{
-							if (PartitionVec[i].rLen > 500 || PartitionVec[i].gLen > 500) GenerateNormalPairAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
+							if (PartitionVec[i].rLen > 300 || PartitionVec[i].gLen > 300) GenerateNormalPairAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
 							else PairwiseSequenceAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
 						}
 						aln1 += str1; aln2 += str2;

@@ -79,37 +79,13 @@ vector<SeedPair_t> IdentifySeedPairs_FastMode(int rlen, uint8_t* EncodeSeq)
 	return SeedPairVec;
 }
 
-//void MergeAdjacentSimplePairs(vector<SeedPair_t>& SeedVec)
-//{
-//	int i, j, k, shift, num;
-//
-//	for (num = (int)SeedVec.size(), i = 0; i < num;)
-//	{
-//		if (SeedVec[i].rLen == 0) continue;
-//		//if (bDebugMode) printf("\tr[%d-%d] g[%ld-%ld], len=%d, PosDiff=%ld\n", SeedVec[i].rPos, SeedVec[i].rPos + SeedVec[i].rLen - 1, SeedVec[i].gPos, SeedVec[i].gPos + SeedVec[i].gLen - 1, SeedVec[i].rLen, SeedVec[i].PosDiff);
-//		for (j = i + 1; j < num; j++)
-//		{
-//			if (SeedVec[j].PosDiff != SeedVec[i].PosDiff || SeedVec[j].rPos - SeedVec[j - 1].rPos > 1) break;
-//			//if (bDebugMode) printf("\tr[%d-%d] g[%ld-%ld], len=%d, PosDiff=%ld\n", SeedVec[j].rPos, SeedVec[j].rPos + SeedVec[j].rLen - 1, SeedVec[j].gPos, SeedVec[j].gPos + SeedVec[j].gLen - 1, SeedVec[j].rLen, SeedVec[j].PosDiff);
-//		}
-//		if (j - i > 1)
-//		{
-//			shift = SeedVec[j - 1].rPos - SeedVec[i].rPos;
-//			SeedVec[i].rLen += shift; SeedVec[i].gLen += shift;
-//			//if (bDebugMode) printf("Merged!!r[%d-%d] g[%ld-%ld], len=%d, PosDiff=%ld\n\n", SeedVec[i].rPos, SeedVec[i].rPos + SeedVec[i].rLen - 1, SeedVec[i].gPos, SeedVec[i].gPos + SeedVec[i].gLen - 1, SeedVec[i].rLen, SeedVec[i].PosDiff);
-//			for (k = i + 1; k < j; k++) SeedVec[k].rLen = SeedVec[k].gLen = 0;
-//		}
-//		i = j;
-//	}
-//}
-
 vector<AlignmentCandidate_t> GenerateAlignmentCandidateForIlluminaSeq(int rlen, vector<SeedPair_t>& SeedPairVec)
 {
 	int i, j, k, thr, num;
 	AlignmentCandidate_t AlignmentCandidate;
 	vector<AlignmentCandidate_t> AlignmentVec;
 
-	if ((thr = (int)(rlen*0.2)) > 50) thr = 50;
+	if ((thr = (int)(rlen*0.1)) > 50) thr = 50;
 
 	//if (bDebugMode) printf("\n\nRaw seeds:\n"), ShowSeedInfo(SeedPairVec);
 	AlignmentCandidate.PairedAlnCanIdx = -1; num = (int)SeedPairVec.size();
@@ -176,7 +152,7 @@ vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq)
 				}
 				delete[] bwtSearchResult.LocArr;
 			}
-			pos += 10; stop_pos += 10;
+			pos += 15; stop_pos += 15;
 			if (stop_pos > rlen) stop_pos = rlen;
 		}
 	}
@@ -681,11 +657,23 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 					if (bDebugMode) printf("Check normal pair#%d: R[%d-%d]=%d G[%ld-%ld]=%d\n", j + 1, AlignmentVec[i].SeedVec[j].rPos, AlignmentVec[i].SeedVec[j].rPos + AlignmentVec[i].SeedVec[j].rLen - 1, AlignmentVec[i].SeedVec[j].rLen, AlignmentVec[i].SeedVec[j].gPos, AlignmentVec[i].SeedVec[j].gPos + AlignmentVec[i].SeedVec[j].gLen - 1, AlignmentVec[i].SeedVec[j].gLen);
 					if (j == 0)
 					{
-						read.AlnReportArr[i].AlnScore += ProcessHeadSequencePair(read.seq, AlignmentVec[i].SeedVec[0], cigar_vec);
+						if (bPacBioData && AlignmentVec[i].SeedVec[0].rLen > 3000)
+						{
+							cigar_vec.push_back(make_pair(AlignmentVec[i].SeedVec[0].rLen, 'S'));
+							AlignmentVec[i].SeedVec[0].gPos = AlignmentVec[i].SeedVec[1].gPos;
+							AlignmentVec[i].SeedVec[0].gLen = 0;
+						}
+						else read.AlnReportArr[i].AlnScore += ProcessHeadSequencePair(read.seq, AlignmentVec[i].SeedVec[0], cigar_vec);
 					}
 					else if (j == num - 1)
 					{
-						read.AlnReportArr[i].AlnScore += ProcessTailSequencePair(read.seq, AlignmentVec[i].SeedVec[j], cigar_vec);
+						if (bPacBioData && AlignmentVec[i].SeedVec[j].rLen > 3000)
+						{
+							cigar_vec.push_back(make_pair(AlignmentVec[i].SeedVec[j].rLen, 'S'));
+							AlignmentVec[i].SeedVec[j].gPos = AlignmentVec[i].SeedVec[j-1].gPos + AlignmentVec[i].SeedVec[j - 1].gLen;
+							AlignmentVec[i].SeedVec[j].gLen = 0;
+						}
+						else read.AlnReportArr[i].AlnScore += ProcessTailSequencePair(read.seq, AlignmentVec[i].SeedVec[j], cigar_vec);
 					}
 					else
 					{

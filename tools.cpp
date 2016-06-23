@@ -181,7 +181,7 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 
 		if (bPacBioData)
 		{
-			if((MaxShift = (rLen > gLen ? (int)(rLen*0.1) : (int)(gLen*0.1))) > 20) MaxShift = 35;
+			if((MaxShift = (rLen > gLen ? (int)(rLen*0.1) : (int)(gLen*0.1))) > 20) MaxShift = 20;
 		}
 		else MaxShift = MaxGaps;
 

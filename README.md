@@ -52,11 +52,18 @@ Output is in standard SAM format. For reads aligned with reverse strand of refer
 4. Parameter setting
 
  	-t INT	number of threads [16]
+ 	
  	-i STR	index prefix [BWT based (BWA), required]
+ 	
  	-f STR	read filename [required, fasta or fastq]
+ 	
  	-f2 STR	read filename2 [optional, fasta or fastq], f and f2 are files with paired reads
+ 	
  	-p	the input read file consists of interleaved paired-end sequences
+ 	
  	-o STR	alignment output
+ 	
  	-m	output multiple alignments
+ 	
  	 
  	 

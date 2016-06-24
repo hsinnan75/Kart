@@ -125,7 +125,7 @@ void SetPairedAlignmentFlag(ReadItem_t& read1, ReadItem_t& read2)
 	}
 }
 
-void EvaluateMAPQ(int rlen, ReadItem_t& read)
+void EvaluateMAPQ(ReadItem_t& read)
 {
 	float f;
 
@@ -138,7 +138,7 @@ void EvaluateMAPQ(int rlen, ReadItem_t& read)
 			read.mapq = (int)(MAPQ_COEF * (1 - (float)(read.score - read.sub_score)/10.0)*log(read.score) + 0.4999);
 			if (read.mapq > 60) read.mapq = 60;
 
-			f = 1.0*read.score / rlen;
+			f = 1.0*read.score / read.rlen;
 			read.mapq = (f < 0.95 ? (int)(read.mapq * f * f) : read.mapq);
 		}
 	}
@@ -367,7 +367,7 @@ void RemoveUnMatedAlignmentCandidates(vector<AlignmentCandidate_t>& AlignmentVec
 	}
 }
 
-void CheckPairedFinalAlignments(int64_t EstiDistance, ReadItem_t& read1, ReadItem_t& read2)
+void CheckPairedFinalAlignments(ReadItem_t& read1, ReadItem_t& read2)
 {
 	bool bMated;
 	int64_t dist;
@@ -450,7 +450,7 @@ void *ReadMapping(void *arg)
 				if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
 				GenMappingReport(true, ReadArr[i], AlignmentVec1);
 
-				SetSingleAlignmentFlag(ReadArr[i]); EvaluateMAPQ(ReadArr[i].rlen, ReadArr[i]);
+				SetSingleAlignmentFlag(ReadArr[i]); EvaluateMAPQ(ReadArr[i]);
 				if (bDebugMode) printf("\nEnd of mapping for read#%s (len=%d)\n%s\n", ReadArr[i].header, ReadArr[i].rlen, string().assign(100, '=').c_str());
 			}
 		}
@@ -492,11 +492,10 @@ void *ReadMapping(void *arg)
 				GenMappingReport(true,  ReadArr[i], AlignmentVec1);
 				GenMappingReport(false, ReadArr[j], AlignmentVec2);
 
-				CheckPairedFinalAlignments(max_dist, ReadArr[i], ReadArr[j]);
+				CheckPairedFinalAlignments(ReadArr[i], ReadArr[j]);
 
 				SetPairedAlignmentFlag(ReadArr[i], ReadArr[j]);
-				EvaluateMAPQ(ReadArr[i].rlen, ReadArr[i]);
-				EvaluateMAPQ(ReadArr[j].rlen, ReadArr[j]);
+				EvaluateMAPQ(ReadArr[i]); EvaluateMAPQ(ReadArr[j]);
 
 				if (bDebugMode) printf("\nEnd of mapping for read#%s\n%s\n", ReadArr[i].header, string().assign(100, '=').c_str());
 			}
@@ -512,8 +511,7 @@ void *ReadMapping(void *arg)
 				RemoveRedundantCandidates(AlignmentVec1); if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
 				GenMappingReport(true, ReadArr[i], AlignmentVec1);
 
-				SetSingleAlignmentFlag(ReadArr[i]);
-				EvaluateMAPQ(ReadArr[i].rlen, ReadArr[i]);
+				SetSingleAlignmentFlag(ReadArr[i]); EvaluateMAPQ(ReadArr[i]);
 				
 				if (bDebugMode) printf("\nEnd of mapping for read#%s\n%s\n", ReadArr[i].header, string().assign(100, '=').c_str());
 			}

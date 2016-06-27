@@ -216,15 +216,17 @@ void *IdvLoadReferenceSequences(void *arg)
 
 void RestoreReferenceSequences()
 {
-	int i, JobIDArr[16];
+	int i, *JobIDArr = new int[iThreadNum];
 
-	pthread_t ThreadArr[16];
-	for (i = 0; i < 16; i++)
+	pthread_t *ThreadArr = new pthread_t[iThreadNum];
+	for (i = 0; i < iThreadNum; i++)
 	{
 		JobIDArr[i] = i;
 		pthread_create(&ThreadArr[i], NULL, IdvLoadReferenceSequences, JobIDArr + i);
 	}
-	for (i = 0; i < 16; i++) pthread_join(ThreadArr[i], NULL);
+	for (i = 0; i < iThreadNum; i++) pthread_join(ThreadArr[i], NULL);
+
+	delete[] ThreadArr; delete[] JobIDArr;
 }
 
 void RestoreReferenceInfo()

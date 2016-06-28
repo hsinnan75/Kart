@@ -1,6 +1,6 @@
 #include "structure.h"
 
-const float MaxPenalty = -65535;
+const float MaxPenalty = -65536;
 const float OPEN_GAP = -1.5;
 const float EXTEND_GAP = -0.5;
 const float NEW_GAP = -2.0; //OPEN_GAP + EXTEND_GAP;
@@ -18,19 +18,18 @@ double max(float x, float y, float z)
 void PairwiseSequenceAlignment(int m, string& s1, int n, string& s2)
 {
 	int i, j;
-	float **r, **s, **t;
 
-	m = m + 1; n = n + 1;
+	m = m + 1, n = n + 1;
 
-	r = new float*[m];
-	s = new float*[m];
-	t = new float*[m];
+	float** r = new float*[m];
+	float** t = new float*[m];
+	float** s = new float*[m];
 
 	for (i = 0; i < m; i++)
 	{
 		r[i] = new float[n];
-		s[i] = new float[n];
 		t[i] = new float[n];
+		s[i] = new float[n];
 	}
 
 	// initialization
@@ -38,27 +37,26 @@ void PairwiseSequenceAlignment(int m, string& s1, int n, string& s2)
 	for (i = 1; i < m; i++)
 	{
 		r[i][0] = MaxPenalty;
-		//s[i][0] = t[i][0] = OPEN_GAP + i * EXTEND_GAP;
 		s[i][0] = t[i][0] = 0;
 	}
 
 	for (j = 1; j < n; j++)
 	{
 		t[0][j] = MaxPenalty;
-		//s[0][j] = r[0][j] = OPEN_GAP + j * EXTEND_GAP;
 		s[0][j] = r[0][j] = 0;
 	}
 
-	// Smith-Waterman with affine gap costs
 	for (i = 1; i < m; i++)
 	{
 		for (j = 1; j < n; j++)
 		{
 			r[i][j] = max(r[i][j - 1] + EXTEND_GAP, s[i][j - 1] + NEW_GAP);
 			t[i][j] = max(t[i - 1][j] + EXTEND_GAP, s[i - 1][j] + NEW_GAP);
-			s[i][j] = max(s[i - 1][j - 1] + (s1[i - 1] == s2[j - 1] ? 1 : -1), r[i][j], t[i][j]);
+			if (s1[i - 1] == 'N' || s2[j - 1] == 'N') s[i][j] = max(s[i - 1][j - 1] + 1, r[i][j], t[i][j]);
+			else s[i][j] = max(s[i - 1][j - 1] + (s1[i - 1] == s2[j - 1] ? 1 : -1), r[i][j], t[i][j]);
 		}
 	}
+
 	// back tracking
 	i = m - 1, j = n - 1;
 	while (i > 0 || j > 0) {
@@ -74,11 +72,10 @@ void PairwiseSequenceAlignment(int m, string& s1, int n, string& s2)
 			i--, j--;
 		}
 	}
+
 	for (i = 0; i < m; i++)
 	{
-		delete[] r[i];
-		delete[] t[i];
-		delete[] s[i];
+		delete[] r[i]; delete[] t[i]; delete[] s[i];
 	}
-	delete[] r; delete[] s; delete[] t;
+	delete[] r; delete[] t; delete[] s;
 }

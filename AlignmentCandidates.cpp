@@ -85,7 +85,7 @@ vector<AlignmentCandidate_t> GenerateAlignmentCandidateForIlluminaSeq(int rlen, 
 	AlignmentCandidate_t AlignmentCandidate;
 	vector<AlignmentCandidate_t> AlignmentVec;
 
-	if ((thr = (int)(rlen*0.1)) > 50) thr = 50;
+	if ((thr = (int)(rlen*0.2)) > 50) thr = 50;
 
 	//if (bDebugMode) printf("\n\nRaw seeds:\n"), ShowSeedInfo(SeedPairVec);
 	AlignmentCandidate.PairedAlnCanIdx = -1; num = (int)SeedPairVec.size();

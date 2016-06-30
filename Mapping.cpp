@@ -166,7 +166,7 @@ void OutputPairedSamFile(ReadItem_t& read1, ReadItem_t& read2)
 					rseq = new char[read1.rlen + 1]; rseq[read1.rlen] = '\0';
 					GetComplementarySeq(read1.rlen, seq, rseq);
 				}
-				if ((j = read1.AlnReportArr[i].PairedAlnCanIdx) != -1)
+				if ((j = read1.AlnReportArr[i].PairedAlnCanIdx) != -1 && read2.AlnReportArr[j].AlnScore > 0)
 				{
 					dist = (int)(read2.AlnReportArr[j].coor.gPos - read1.AlnReportArr[i].coor.gPos + (read1.AlnReportArr[i].coor.bDir ? read2.rlen : 0 - read1.rlen));
 					if (i == read1.iBestAlnCanIdx)
@@ -204,7 +204,7 @@ void OutputPairedSamFile(ReadItem_t& read1, ReadItem_t& read2)
 					seq = new char[read2.rlen + 1]; seq[read2.rlen] = '\0';
 					GetComplementarySeq(read2.rlen, rseq, seq);
 				}
-				if ((i = read2.AlnReportArr[j].PairedAlnCanIdx) != -1)
+				if ((i = read2.AlnReportArr[j].PairedAlnCanIdx) != -1 && read1.AlnReportArr[i].AlnScore > 0)
 				{
 					dist = 0 - ((int)(read2.AlnReportArr[j].coor.gPos - read1.AlnReportArr[i].coor.gPos + (read1.AlnReportArr[i].coor.bDir ? read2.rlen : 0 - read1.rlen)));
 					fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t=\t%ld\t%d\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read2.header, read2.AlnReportArr[j].iFrag, ChromosomeVec[read2.AlnReportArr[j].coor.ChromosomeIdx].name, read2.AlnReportArr[j].coor.gPos, read2.mapq, read2.AlnReportArr[j].coor.CIGAR.c_str(), read1.AlnReportArr[i].coor.gPos, dist, (read2.AlnReportArr[j].coor.bDir ? seq : rseq), read2.rlen - read2.score, read2.score, read2.sub_score);

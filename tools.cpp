@@ -201,11 +201,13 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 				{
 					if (PartitionVec[i].gLen == 0)
 					{
+						//iNPindels += PartitionVec[i].rLen;
 						aln1 += frag1.substr(PartitionVec[i].rPos, PartitionVec[i].rLen);
 						aln2 += string().assign(PartitionVec[i].rLen, '-');
 					}
 					else if (PartitionVec[i].rLen == 0)
 					{
+						//iNPindels += PartitionVec[i].gLen;
 						aln1 += string().assign(PartitionVec[i].gLen, '-');
 						aln2 += frag2.substr(PartitionVec[i].gPos, PartitionVec[i].gLen);
 					}
@@ -216,9 +218,13 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 						str2 = frag2.substr(PartitionVec[i].gPos, PartitionVec[i].gLen);
 						if (!PartitionVec[i].bSimple)
 						{
-							if (PartitionVec[i].rLen > 300 || PartitionVec[i].gLen > 300) GenerateNormalPairAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
-							else PairwiseSequenceAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
+							if (bPacBioData && (PartitionVec[i].rLen > 300 || PartitionVec[i].gLen > 300)) GenerateNormalPairAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
+							else
+							{
+								PairwiseSequenceAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
+							}
 						}
+
 						aln1 += str1; aln2 += str2;
 					}
 				}

@@ -381,7 +381,7 @@ void wgsim_core(FILE *fpout1, FILE *fpout2, const char *fn, int is_hap, int dist
 			for (j = 0; j < 2; ++j) {
 				for (i = 0; i < s[j]; ++i) qstr[i] = Q;
 				qstr[i] = 0;
-				fprintf(fpo[j], "@%ld:Pos=%u\t/%d\n", ii, ext_coor[j] + 1, j == 0 ? is_flip + 1 : 2 - is_flip);
+				fprintf(fpo[j], "@%ld_Pos=%u\t/%d\n", ii, ext_coor[j] + 1, j == 0 ? is_flip + 1 : 2 - is_flip);
 				//fprintf(fpo[j], "@%s_%u_%u_%d:%d:%d_%d:%d:%d_%llx/%d\n", ks->name.s, ext_coor[0] + 1, ext_coor[1] + 1,
 				//	n_err[0], n_sub[0], n_indel[0], n_err[1], n_sub[1], n_indel[1],
 				//	(long long)ii, j == 0 ? is_flip + 1 : 2 - is_flip);

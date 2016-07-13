@@ -20,7 +20,7 @@ fi
 #test alignment
 echo
 echo "Test2 -- Align 2000 E.Coli reads with 4 threads"
-echo "Command=./kart aln -t 4 -i test/EcoliIdx -q test/r1.fq -q2 test/r2.fq -o test/alignment.sam"
+echo "Command=./kart aln -t 4 -i test/EcoliIdx -f test/r1.fq -f2 test/r2.fq -o test/alignment.sam"
 echo
 ./kart aln -i test/EcoliIdx -f test/r1.fq -f2 test/r2.fq -o test/alignment.sam
 

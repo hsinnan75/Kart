@@ -42,30 +42,30 @@ bool CheckReadFile(char* filename, bool bFirst)
 				if ((FastQFormat && header[0] != '@') || (!FastQFormat && header[0] != '>')) return false;
 			}
 
-			if (FastQFormat) getline(file, seq);
-			else {
-				while (!file.eof())
-				{
-					getline(file, str); seq += str;
-					file.get(ch); file.unget();
-					if (ch == '>')
-					{
-						iBaseCount += (int)seq.length();
-						seq.clear();
-						if (++iCount == 100) break;
-					}
-				}
-			}
-			if (seq.length() > 0)
-			{
-				iCount++;
-				iBaseCount += (int)seq.length();
-			}
-			if (!bPacBioData && iCount > 0 && iBaseCount / iCount > 1000)
-			{
-				fprintf(stderr, "Warning! The input library contains long reads, sensitive mode (-pacbio) is switched on!\n");
-				bPacBioData = true; bPairEnd = false;
-			}
+			//if (FastQFormat) getline(file, seq);
+			//else {
+			//	while (!file.eof())
+			//	{
+			//		getline(file, str); seq += str;
+			//		file.get(ch); file.unget();
+			//		if (ch == '>')
+			//		{
+			//			iBaseCount += (int)seq.length();
+			//			seq.clear();
+			//			if (++iCount == 100) break;
+			//		}
+			//	}
+			//}
+			//if (seq.length() > 0)
+			//{
+			//	iCount++;
+			//	iBaseCount += (int)seq.length();
+			//}
+			//if (!bPacBioData && iCount > 0 && iBaseCount / iCount > 1000)
+			//{
+			//	fprintf(stderr, "Warning! The input library contains long reads, sensitive mode (-pacbio) is switched on!\n");
+			//	bPacBioData = true; bPairEnd = false;
+			//}
 		}
 	}
 	file.close();

@@ -284,23 +284,30 @@ int ProcessHeadSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	else
 	{
 		GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
-
-		//Case1: -X..X vs XX..X (leading gaps in the read block)
-		int p = 0; while (frag1[p] == '-') p++;
-		if (p > 0) // shrink the genome block
+		if (CalFragPairIdenticalBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.5))
 		{
-			frag1.erase(0, p); frag2.erase(0, p);
-			sp.gPos += p; sp.gLen -= p;
+			cigar_vec.push_back(make_pair(sp.rLen, 'S'));
+			score = 0;
 		}
-		//Case2: XX..X vs -X..X (leading gaps in the genome block)
-		p = 0; while (frag2[p] == '-') p++;
-		if (p > 0) // shrink the read block
+		else
 		{
-			frag1.erase(0, p); frag2.erase(0, p);
-			sp.rPos += p; sp.rLen -= p; cigar_vec.push_back(make_pair(p, 'S'));
+			//Case1: -X..X vs XX..X (leading gaps in the read block)
+			int p = 0; while (frag1[p] == '-') p++;
+			if (p > 0) // shrink the genome block
+			{
+				frag1.erase(0, p); frag2.erase(0, p);
+				sp.gPos += p; sp.gLen -= p;
+			}
+			//Case2: XX..X vs -X..X (leading gaps in the genome block)
+			p = 0; while (frag2[p] == '-') p++;
+			if (p > 0) // shrink the read block
+			{
+				frag1.erase(0, p); frag2.erase(0, p);
+				sp.rPos += p; sp.rLen -= p; cigar_vec.push_back(make_pair(p, 'S'));
+			}
+			score = AddNewCigarElements(frag1, frag2, cigar_vec);
+			if (bDebugMode) printf("Head2:\n%s #read[%d-%d]=%d\n%s #chr[%ld-%ld]=%d\nScore=%d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, score);
 		}
-		score = AddNewCigarElements(frag1, frag2, cigar_vec);
-		if (bDebugMode) printf("Head2:\n%s #read[%d-%d]=%d\n%s #chr[%ld-%ld]=%d\nScore=%d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, score);
 	}
 	return score;
 }
@@ -320,28 +327,35 @@ int ProcessTailSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	}
 	else
 	{
-		int p, c;
 
 		GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
-
-		//Case1: X..X- vs X..XX (tailing gaps in the read block)
-		p = (int)frag1.length() - 1, c = 0; while (frag1[p--] == '-') c++;
-		if (c > 0) // shrink the genome block
+		if (CalFragPairIdenticalBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.5))
 		{
-			frag1.resize((int)frag1.length() - c); frag2.resize((int)frag2.length() - c);
-			sp.gLen -= c;
-			if (bDebugMode) printf("find %d tailing gaps in the read block\n", c);
+			cigar_vec.push_back(make_pair(sp.rLen, 'S'));
+			score = 0;
 		}
-		//Case2: X..XX vs X..X- (tailing gaps in the genome block)
-		p = (int)frag2.length() - 1, c = 0; while (frag2[p--] == '-') c++;
-		if (c > 0) // shrink the read block
+		else
 		{
-			frag1.resize((int)frag1.length() - c); frag2.resize((int)frag2.length() - c);
-			sp.rLen -= c;
-			if (bDebugMode) printf("find %d tailing gaps in the genome block\n", c);
+			int p, c;
+			//Case1: X..X- vs X..XX (tailing gaps in the read block)
+			p = (int)frag1.length() - 1, c = 0; while (frag1[p--] == '-') c++;
+			if (c > 0) // shrink the genome block
+			{
+				frag1.resize((int)frag1.length() - c); frag2.resize((int)frag2.length() - c);
+				sp.gLen -= c;
+				if (bDebugMode) printf("find %d tailing gaps in the read block\n", c);
+			}
+			//Case2: X..XX vs X..X- (tailing gaps in the genome block)
+			p = (int)frag2.length() - 1, c = 0; while (frag2[p--] == '-') c++;
+			if (c > 0) // shrink the read block
+			{
+				frag1.resize((int)frag1.length() - c); frag2.resize((int)frag2.length() - c);
+				sp.rLen -= c;
+				if (bDebugMode) printf("find %d tailing gaps in the genome block\n", c);
+			}
+			score = AddNewCigarElements(frag1, frag2, cigar_vec); if (c > 0) cigar_vec.push_back(make_pair(c, 'S'));
+			if (bDebugMode) printf("Tail2:\n%s #read[%d-%d]=%d\n%s #chr[%ld-%ld]=%d\nScore=%d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, score);
 		}
-		score = AddNewCigarElements(frag1, frag2, cigar_vec); if (c > 0) cigar_vec.push_back(make_pair(c, 'S'));
-		if (bDebugMode) printf("Tail2:\n%s #read[%d-%d]=%d\n%s #chr[%ld-%ld]=%d\nScore=%d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, score);
 	}
 	return score;
 }

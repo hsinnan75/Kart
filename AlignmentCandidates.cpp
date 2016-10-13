@@ -657,7 +657,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 					if (bDebugMode) printf("Check normal pair#%d: R[%d-%d]=%d G[%ld-%ld]=%d\n", j + 1, AlignmentVec[i].SeedVec[j].rPos, AlignmentVec[i].SeedVec[j].rPos + AlignmentVec[i].SeedVec[j].rLen - 1, AlignmentVec[i].SeedVec[j].rLen, AlignmentVec[i].SeedVec[j].gPos, AlignmentVec[i].SeedVec[j].gPos + AlignmentVec[i].SeedVec[j].gLen - 1, AlignmentVec[i].SeedVec[j].gLen);
 					if (j == 0)
 					{
-						if (bPacBioData && AlignmentVec[i].SeedVec[0].rLen > 5000)
+						if (AlignmentVec[i].SeedVec[0].rLen > 5000 || (!bPacBioData && AlignmentVec[i].SeedVec[0].rLen > 100))
 						{
 							cigar_vec.push_back(make_pair(AlignmentVec[i].SeedVec[0].rLen, 'S'));
 							AlignmentVec[i].SeedVec[0].gPos = AlignmentVec[i].SeedVec[1].gPos;
@@ -667,7 +667,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 					}
 					else if (j == num - 1)
 					{
-						if (bPacBioData && AlignmentVec[i].SeedVec[j].rLen > 5000)
+						if (AlignmentVec[i].SeedVec[j].rLen > 5000 || (!bPacBioData && AlignmentVec[i].SeedVec[j].rLen > 100))
 						{
 							cigar_vec.push_back(make_pair(AlignmentVec[i].SeedVec[j].rLen, 'S'));
 							AlignmentVec[i].SeedVec[j].gPos = AlignmentVec[i].SeedVec[j-1].gPos + AlignmentVec[i].SeedVec[j - 1].gLen;

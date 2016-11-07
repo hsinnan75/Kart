@@ -115,6 +115,10 @@ int main(int argc, char* argv[])
 					iThreadNum = 16;
 				}
 			}
+			else if (parameter == "-g")
+			{
+				if((MaxGaps = atoi(argv[++i])) < 0) MaxGaps = 0;
+			}
 			else if (parameter == "-o") SamFileName = argv[++i];
 			else if (parameter == "-pacbio") bPacBioData = true;
 			else if (parameter == "-m") bMultiHit = true;

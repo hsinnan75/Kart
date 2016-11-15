@@ -281,6 +281,11 @@ int ProcessHeadSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 		cigar_vec.push_back(make_pair(sp.rLen, 'M'));
 		if (bDebugMode) printf("Head1:\n%s #read[%d-%d]=%d\n%s #chr[%ld-%ld]=%d\nScore=%d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, score);
 	}
+	else if (!bPacBioData && sp.rLen > 100)
+	{
+		score = 0;
+		cigar_vec.push_back(make_pair(sp.rLen, 'S'));
+	}
 	else
 	{
 		GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
@@ -324,6 +329,11 @@ int ProcessTailSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	{
 		cigar_vec.push_back(make_pair(sp.rLen, 'M'));
 		if (bDebugMode) printf("Tail1:\n%s #read[%d-%d]=%d\n%s #chr[%ld-%ld]=%d\nScore=%d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, score);
+	}
+	else if (!bPacBioData && sp.rLen > 100)
+	{
+		score = 0;
+		cigar_vec.push_back(make_pair(sp.rLen, 'S'));
 	}
 	else
 	{

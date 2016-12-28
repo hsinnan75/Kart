@@ -137,6 +137,7 @@ int main(int argc, char* argv[])
 			fprintf(stderr, "         -f2           files with #2 mates reads\n");
 			fprintf(stderr, "         -o            sam filename for output\n");
 			fprintf(stderr, "         -m            output multiple alignments\n");
+			fprintf(stderr, "         -g INT        max gaps (indels)\n");
 			fprintf(stderr, "         -p            paired-end reads are interlaced in the same file\n");
 			fprintf(stderr, "         -pacbio       pacbio data\n");
 			fprintf(stderr, "\n");

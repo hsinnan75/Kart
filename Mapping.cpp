@@ -127,7 +127,7 @@ void SetPairedAlignmentFlag(ReadItem_t& read1, ReadItem_t& read2)
 
 void EvaluateMAPQ(ReadItem_t& read)
 {
-	float f;
+	//float f;
 
 	if (read.score == 0 || read.score == read.sub_score) read.mapq = 0;
 	else
@@ -138,8 +138,8 @@ void EvaluateMAPQ(ReadItem_t& read)
 			read.mapq = (int)(MAPQ_COEF * (1 - (float)(read.score - read.sub_score)/read.score)*log(read.score) + 0.4999);
 			if (read.mapq > 60) read.mapq = 60;
 
-			f = 1.0*read.score / read.rlen;
-			read.mapq = (f < 0.95 ? (int)(read.mapq * f * f) : read.mapq);
+			//f = 1.0*read.score / read.rlen;
+			//read.mapq = (f < 0.95 ? (int)(read.mapq * f * f) : read.mapq);
 		}
 	}
 }

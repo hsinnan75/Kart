@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
 		if (IndexFileName == NULL || ReadFileName == NULL)
 		{
 			fprintf(stderr, "\n");
-			fprintf(stderr, "Kart v%s\n", VersionStr);
+			fprintf(stderr, "kart v%s\n", VersionStr);
 			fprintf(stderr, "Usage: %s aln [-i IndexFile Prefix] -f ReadFile [-f2 ReadFile2] > out.sam\n\n", argv[0]);
 			fprintf(stderr, "Options: -t INT        number of threads [16]\n");
 			fprintf(stderr, "         -f            files with #1 mates reads\n");

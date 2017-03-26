@@ -281,7 +281,7 @@ void RemoveRedundantCandidates(vector<AlignmentCandidate_t>& AlignmentVec)
 		if (bPacBioData || score1 == score2 || score1 - score2 > 20) thr = score1;
 		else thr = score2;
 
-		if (bDebugMode) printf("Candidate score threshold = %d\n", thr);
+		//if (bDebugMode) printf("Candidate score threshold = %d\n", thr);
 		for (iter = AlignmentVec.begin(); iter != AlignmentVec.end(); iter++) if (iter->Score < thr) iter->Score = 0;
 	}
 }
@@ -466,7 +466,7 @@ void *ReadMapping(void *arg)
 			//if (bDebugMode) printf("iDistance = %ld, iPaired=%d, EstiDistance=%d\n", iDistance, iPaired, EstDistance);
 			for (i = 0, j = 1; i != ReadNum; i += 2, j += 2)
 			{
-				if (bDebugMode) printf("Mapping paired reads#%d %s (len=%d) and %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen, ReadArr[j].header, ReadArr[j].rlen);
+				//if (bDebugMode) printf("Mapping paired reads#%d %s (len=%d) and %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen, ReadArr[j].header, ReadArr[j].rlen);
 
 				SeedPairVec1 = IdentifySeedPairs_FastMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
 				AlignmentVec1 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[i].rlen, SeedPairVec1);
@@ -474,21 +474,21 @@ void *ReadMapping(void *arg)
 				SeedPairVec2 = IdentifySeedPairs_FastMode(ReadArr[j].rlen, ReadArr[j].EncodeSeq);
 				AlignmentVec2 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[j].rlen, SeedPairVec2);
 
-				if (bDebugMode)
-				{
-					ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
-					ShowAlignmentCandidateInfo(0, ReadArr[j].header, AlignmentVec2);
-				}
+				//if (bDebugMode)
+				//{
+				//	ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
+				//	ShowAlignmentCandidateInfo(0, ReadArr[j].header, AlignmentVec2);
+				//}
 				bReadPairing = CheckPairedAlignmentCandidates(EstDistance, AlignmentVec1, AlignmentVec2);
 				if (!bReadPairing) bReadPairing = RescueUnpairedAlignment(EstDistance, ReadArr[i], ReadArr[j], AlignmentVec1, AlignmentVec2);
 				if (bReadPairing) RemoveUnMatedAlignmentCandidates(AlignmentVec1, AlignmentVec2);
 
 				RemoveRedundantCandidates(AlignmentVec1); RemoveRedundantCandidates(AlignmentVec2);
-				if (bDebugMode)
-				{
-					ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
-					ShowAlignmentCandidateInfo(0, ReadArr[j].header, AlignmentVec2);
-				}
+				//if (bDebugMode)
+				//{
+				//	ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
+				//	ShowAlignmentCandidateInfo(0, ReadArr[j].header, AlignmentVec2);
+				//}
 				GenMappingReport(true,  ReadArr[i], AlignmentVec1);
 				GenMappingReport(false, ReadArr[j], AlignmentVec2);
 
@@ -497,7 +497,7 @@ void *ReadMapping(void *arg)
 				SetPairedAlignmentFlag(ReadArr[i], ReadArr[j]);
 				EvaluateMAPQ(ReadArr[i]); EvaluateMAPQ(ReadArr[j]);
 
-				if (bDebugMode) printf("\nEnd of mapping for read#%s\n%s\n", ReadArr[i].header, string().assign(100, '=').c_str());
+				//if (bDebugMode) printf("\nEnd of mapping for read#%s\n%s\n", ReadArr[i].header, string().assign(100, '=').c_str());
 			}
 		}
 		else
@@ -540,6 +540,8 @@ void *ReadMapping(void *arg)
 void Mapping()
 {
 	int i;
+	vector<int> vec(iThreadNum); for (i = 0; i < iThreadNum; i++) vec[i] = i;
+	pthread_t *ThreadArr = new pthread_t[iThreadNum];
 
 	for (MinSeedLength = 13; MinSeedLength < 16; MinSeedLength++) if (TwoGenomeSize < pow(4, MinSeedLength)) break;
 
@@ -557,18 +559,15 @@ void Mapping()
 		fprintf(output, "@PG\tPN:Kart\tVN:%s\n", VersionStr);
 		for (i = 0; i < iChromsomeNum; i++) fprintf(output, "@SQ\tSN:%s\tLN:%ld\n", ChromosomeVec[i].name, ChromosomeVec[i].len);
 	}
-	vector<int> vec(iThreadNum); for (i = 0; i < iThreadNum; i++) vec[i] = i;
 	StartProcessTime = time(NULL);
-	pthread_t *ThreadArr = new pthread_t[iThreadNum];
 	for (i = 0; i < iThreadNum; i++) pthread_create(&ThreadArr[i], NULL, ReadMapping, &vec[i]);
 	for (i = 0; i < iThreadNum; i++) pthread_join(ThreadArr[i], NULL);
+	delete[] ThreadArr;
 
 	ReadFileHandler1.close(); if (ReadFileName2 != NULL) ReadFileHandler2.close();
 	fprintf(stderr, "\rAll the %d %s reads have been processed in %lld seconds.\n", iTotalReadNum, (bPairEnd? "paired-end":"single-end"), (long long)(time(NULL) - StartProcessTime));
 
 	if (SamFileName != NULL) fclose(output);
-
-	delete[] ThreadArr;
 
 	if(iTotalReadNum > 0)
 	{

@@ -203,12 +203,12 @@ vector<AlignmentCandidate_t> GenerateAlignmentCandidateForPacBioSeq(int rlen, ve
 				if (AlignmentCandidate.PosDiff < 0) AlignmentCandidate.PosDiff = 0;
 
 				AlignmentVec.push_back(AlignmentCandidate);
-				if (bDebugMode)
-				{
-					printf("\n\nCandidate score = %d\n", AlignmentCandidate.Score);
-					ShowSeedLocationInfo(AlignmentCandidate.PosDiff);
-					ShowSeedInfo(AlignmentCandidate.SeedVec);
-				}
+				//if (bDebugMode)
+				//{
+				//	printf("\n\nCandidate score = %d\n", AlignmentCandidate.Score);
+				//	ShowSeedLocationInfo(AlignmentCandidate.PosDiff);
+				//	ShowSeedInfo(AlignmentCandidate.SeedVec);
+				//}
 			}
 		}
 		delete[] TakenArr;
@@ -462,7 +462,7 @@ void IdentifyNormalPairs(int rlen, int glen, vector<SeedPair_t>& SeedVec)
 			SeedPair.gLen = gGaps;
 			SeedVec.insert(SeedVec.begin(), SeedPair);
 
-			if (bDebugMode) printf("Add missing head: r[%d-%d]=%d, g[%ld-%ld]=%d\n", SeedPair.rPos, SeedPair.rPos + SeedPair.rLen - 1, SeedPair.rLen, SeedPair.gPos, SeedPair.gPos + SeedPair.gLen - 1, SeedPair.gLen);
+			//if (bDebugMode) printf("Add missing head: r[%d-%d]=%d, g[%ld-%ld]=%d\n", SeedPair.rPos, SeedPair.rPos + SeedPair.rLen - 1, SeedPair.rLen, SeedPair.gPos, SeedPair.gPos + SeedPair.gLen - 1, SeedPair.gLen);
 		}
 		i = (int)SeedVec.size() - 1;
 		rGaps = rlen - (SeedVec[i].rPos + SeedVec[i].rLen);
@@ -477,7 +477,7 @@ void IdentifyNormalPairs(int rlen, int glen, vector<SeedPair_t>& SeedVec)
 			SeedPair.gLen = gGaps;
 			SeedVec.push_back(SeedPair);
 
-			if (bDebugMode) printf("Add missing tail: r[%d-%d]=%d, g[%ld-%ld]=%d\n", SeedPair.rPos, SeedPair.rPos + SeedPair.rLen - 1, SeedPair.rLen, SeedPair.gPos, SeedPair.gPos + SeedPair.gLen - 1, SeedPair.gLen);
+			//if (bDebugMode) printf("Add missing tail: r[%d-%d]=%d, g[%ld-%ld]=%d\n", SeedPair.rPos, SeedPair.rPos + SeedPair.rLen - 1, SeedPair.rLen, SeedPair.gPos, SeedPair.gPos + SeedPair.gLen - 1, SeedPair.gLen);
 		}
 	}
 	//if (bDebugMode) printf("after generating normal pairs\n"), ShowSeedInfo(SeedVec);
@@ -548,7 +548,7 @@ Coordinate_t GenCoordinateInfo(bool bFirstRead, int64_t gPos, int64_t end_gPos, 
 			//if(bDebugMode) printf("matched chr=%s, loc=%ld, gPos: %ld -> %ld\n", ChromosomeVec[coor.ChromosomeIdx].name, ChromosomeVec[coor.ChromosomeIdx].ReverseLocation, gPos, coor.gPos);
 		}
 	}
-	if (bDebugMode) printf("gPos: %ld --> %ld %s\n", gPos, coor.gPos, (coor.bDir? "Forward":"Reverse"));
+	//if (bDebugMode) printf("gPos: %ld --> %ld %s\n", gPos, coor.gPos, (coor.bDir? "Forward":"Reverse"));
 
 	coor.CIGAR = GenerateCIGAR(cigar_vec);
 
@@ -609,7 +609,7 @@ int GapPenalty(vector<pair<int, char> >& cigar_vec)
 	{
 		if (iter->second == 'I' || iter->second == 'D') GP += iter->first;
 	}
-	if (bDebugMode) printf("GapPenalty=%d\n", GP), fflush(stdout);
+	//if (bDebugMode) printf("GapPenalty=%d\n", GP), fflush(stdout);
 
 	return GP;
 }
@@ -621,7 +621,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 	vector<pair<int, char> > cigar_vec;
 	map<int64_t, int>::iterator ChrIter;
 
-	if (bDebugMode) printf("\n\n%s\nGenerate alignment for read %s (%d cans)\n", string().assign(100, '=').c_str(), read.header, (int)AlignmentVec.size()), fflush(stdout);
+	//if (bDebugMode) printf("\n\n%s\nGenerate alignment for read %s (%d cans)\n", string().assign(100, '=').c_str(), read.header, (int)AlignmentVec.size()), fflush(stdout);
 	
 	read.score = read.iBestAlnCanIdx = 0;
 	if ((read.CanNum = (int)AlignmentVec.size()) > 0)
@@ -635,11 +635,11 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 			if (AlignmentVec[i].Score == 0 || (bPacBioData && read.score > 0)) continue;
 
 			IdentifyNormalPairs(read.rlen, -1, AlignmentVec[i].SeedVec); // fill missing framgment pairs (normal pairs) between simple pairs
-			if (bDebugMode)
-			{
-				printf("Process candidate#%d (Score = %d, SegmentPair#=%d): \n", i + 1, AlignmentVec[i].Score, (int)AlignmentVec[i].SeedVec.size());
-				ShowSeedInfo(AlignmentVec[i].SeedVec);
-			}
+			//if (bDebugMode)
+			//{
+			//	printf("Process candidate#%d (Score = %d, SegmentPair#=%d): \n", i + 1, AlignmentVec[i].Score, (int)AlignmentVec[i].SeedVec.size());
+			//	ShowSeedInfo(AlignmentVec[i].SeedVec);
+			//}
 			if (CheckCoordinateValidity(AlignmentVec[i].SeedVec) == false) continue;
 
 			cigar_vec.clear();
@@ -654,7 +654,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 				}
 				else
 				{
-					if (bDebugMode) printf("Check normal pair#%d: R[%d-%d]=%d G[%ld-%ld]=%d\n", j + 1, AlignmentVec[i].SeedVec[j].rPos, AlignmentVec[i].SeedVec[j].rPos + AlignmentVec[i].SeedVec[j].rLen - 1, AlignmentVec[i].SeedVec[j].rLen, AlignmentVec[i].SeedVec[j].gPos, AlignmentVec[i].SeedVec[j].gPos + AlignmentVec[i].SeedVec[j].gLen - 1, AlignmentVec[i].SeedVec[j].gLen);
+					//if (bDebugMode) printf("Check normal pair#%d: R[%d-%d]=%d G[%ld-%ld]=%d\n", j + 1, AlignmentVec[i].SeedVec[j].rPos, AlignmentVec[i].SeedVec[j].rPos + AlignmentVec[i].SeedVec[j].rLen - 1, AlignmentVec[i].SeedVec[j].rLen, AlignmentVec[i].SeedVec[j].gPos, AlignmentVec[i].SeedVec[j].gPos + AlignmentVec[i].SeedVec[j].gLen - 1, AlignmentVec[i].SeedVec[j].gLen);
 					if (j == 0)
 					{
 						if (AlignmentVec[i].SeedVec[0].rLen > 5000 /*|| (!bPacBioData && AlignmentVec[i].SeedVec[0].rLen > 100)*/)
@@ -681,7 +681,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 					}
 				}
 			}
-			if (bDebugMode) printf("Alignment score = %d (rlen=%d) \n", read.AlnReportArr[i].AlnScore, read.rlen), fflush(stdout);
+			//if (bDebugMode) printf("Alignment score = %d (rlen=%d) \n", read.AlnReportArr[i].AlnScore, read.rlen), fflush(stdout);
 
 			if (!bPacBioData && cigar_vec.size() > 1)
 			{

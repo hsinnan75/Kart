@@ -22,7 +22,7 @@ bool CompByGenomePos(const SeedPair_t& p1, const SeedPair_t& p2)
 
 bool CompByReadPos(const SeedPair_t& p1, const SeedPair_t& p2)
 {
-	p1.rPos < p2.rPos;
+	return p1.rPos < p2.rPos;
 }
 
 bool CompByFirstInt(const pair<int, int>& p1, const pair<int, int>& p2)

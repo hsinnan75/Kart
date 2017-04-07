@@ -232,10 +232,7 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 			frag1 = aln1; frag2 = aln2;
 		}
 	}
-	if (bRunNW)
-	{
-		PairwiseSequenceAlignment(rLen, frag1, gLen, frag2);
-	}
+	if (bRunNW) PairwiseSequenceAlignment(rLen, frag1, gLen, frag2);
 }
 
 int ProcessNormalSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >& cigar_vec)

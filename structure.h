@@ -133,7 +133,7 @@ typedef struct
 typedef struct
 {
 	int AlnScore;
-	int iFrag; // sam flag
+	int SamFlag; // sam flag
 	int PairedAlnCanIdx;
 	Coordinate_t coor;
 } AlignmentReport_t;

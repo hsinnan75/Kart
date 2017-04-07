@@ -18,8 +18,8 @@ void SetSingleAlignmentFlag(ReadItem_t& read)
 	if (read.score > read.sub_score || bMultiHit == false) // unique mapping or bMultiHit=false
 	{
 		i = read.iBestAlnCanIdx;
-		if (read.AlnReportArr[i].coor.bDir == false) read.AlnReportArr[i].iFrag = 0x10;
-		else read.AlnReportArr[i].iFrag = 0;
+		if (read.AlnReportArr[i].coor.bDir == false) read.AlnReportArr[i].SamFlag = 0x10;
+		else read.AlnReportArr[i].SamFlag = 0;
 	}
 	else if(read.score > 0)
 	{
@@ -27,14 +27,14 @@ void SetSingleAlignmentFlag(ReadItem_t& read)
 		{
 			if (read.AlnReportArr[i].AlnScore > 0)
 			{
-				if (read.AlnReportArr[i].coor.bDir == false) read.AlnReportArr[i].iFrag = 0x10;
-				else read.AlnReportArr[i].iFrag = 0;
+				if (read.AlnReportArr[i].coor.bDir == false) read.AlnReportArr[i].SamFlag = 0x10;
+				else read.AlnReportArr[i].SamFlag = 0;
 			}
 		}
 	}
 	else
 	{
-		read.AlnReportArr[0].iFrag = 0x4;
+		read.AlnReportArr[0].SamFlag = 0x4;
 	}
 }
 
@@ -46,28 +46,28 @@ void SetPairedAlignmentFlag(ReadItem_t& read1, ReadItem_t& read2)
 	if (read1.score > read1.sub_score && read2.score > read2.sub_score) // unique mapping
 	{
 		i = read1.iBestAlnCanIdx;
-		read1.AlnReportArr[i].iFrag = 0x41; // read1 is the first read in a pair
+		read1.AlnReportArr[i].SamFlag = 0x41; // read1 is the first read in a pair
 
 		j = read2.iBestAlnCanIdx;
-		read2.AlnReportArr[j].iFrag = 0x81; // read2 is the second read in a pair
+		read2.AlnReportArr[j].SamFlag = 0x81; // read2 is the second read in a pair
 
 		if (j == read1.AlnReportArr[i].PairedAlnCanIdx) // reads are mapped in a proper pair
 		{
-			read1.AlnReportArr[i].iFrag |= 0x2;
-			read2.AlnReportArr[j].iFrag |= 0x2;
+			read1.AlnReportArr[i].SamFlag |= 0x2;
+			read2.AlnReportArr[j].SamFlag |= 0x2;
 		}
-		read1.AlnReportArr[i].iFrag |= (read1.AlnReportArr[i].coor.bDir ? 0x20 : 0x10);
-		read2.AlnReportArr[j].iFrag |= (read2.AlnReportArr[j].coor.bDir ? 0x20 : 0x10);
+		read1.AlnReportArr[i].SamFlag |= (read1.AlnReportArr[i].coor.bDir ? 0x20 : 0x10);
+		read2.AlnReportArr[j].SamFlag |= (read2.AlnReportArr[j].coor.bDir ? 0x20 : 0x10);
 	}
 	else
 	{
 		if (read1.score > read1.sub_score || bMultiHit == false) // unique mapping or bMultiHit=false
 		{
 			i = read1.iBestAlnCanIdx;
-			read1.AlnReportArr[i].iFrag = 0x41; // read1 is the first read in a pair
-			read1.AlnReportArr[i].iFrag |= (read1.AlnReportArr[i].coor.bDir ? 0x20 : 0x10);
-			if ((j = read1.AlnReportArr[i].PairedAlnCanIdx) != -1 && read2.AlnReportArr[j].AlnScore > 0) read1.AlnReportArr[i].iFrag |= 0x2;// reads are mapped in a proper pair
-			else read1.AlnReportArr[i].iFrag |= 0x8; // next segment unmapped
+			read1.AlnReportArr[i].SamFlag = 0x41; // read1 is the first read in a pair
+			read1.AlnReportArr[i].SamFlag |= (read1.AlnReportArr[i].coor.bDir ? 0x20 : 0x10);
+			if ((j = read1.AlnReportArr[i].PairedAlnCanIdx) != -1 && read2.AlnReportArr[j].AlnScore > 0) read1.AlnReportArr[i].SamFlag |= 0x2;// reads are mapped in a proper pair
+			else read1.AlnReportArr[i].SamFlag |= 0x8; // next segment unmapped
 		}
 		else if(read1.score > 0)
 		{
@@ -75,31 +75,31 @@ void SetPairedAlignmentFlag(ReadItem_t& read1, ReadItem_t& read2)
 			{
 				if (read1.AlnReportArr[i].AlnScore > 0)
 				{
-					read1.AlnReportArr[i].iFrag = 0x41; // read1 is the first read in a pair
-					read1.AlnReportArr[i].iFrag |= (read1.AlnReportArr[i].coor.bDir ? 0x20 : 0x10);
+					read1.AlnReportArr[i].SamFlag = 0x41; // read1 is the first read in a pair
+					read1.AlnReportArr[i].SamFlag |= (read1.AlnReportArr[i].coor.bDir ? 0x20 : 0x10);
 
-					if ((j = read1.AlnReportArr[i].PairedAlnCanIdx) != -1 && read2.AlnReportArr[j].AlnScore > 0) read1.AlnReportArr[i].iFrag |= 0x2;// reads are mapped in a proper pair
-					else read1.AlnReportArr[i].iFrag |= 0x8; // next segment unmapped
+					if ((j = read1.AlnReportArr[i].PairedAlnCanIdx) != -1 && read2.AlnReportArr[j].AlnScore > 0) read1.AlnReportArr[i].SamFlag |= 0x2;// reads are mapped in a proper pair
+					else read1.AlnReportArr[i].SamFlag |= 0x8; // next segment unmapped
 				}
 			}
 		}
 		else
 		{
-			read1.AlnReportArr[0].iFrag = 0x41; // read1 is the first read in a pair
-			read1.AlnReportArr[0].iFrag |= 0x4;
+			read1.AlnReportArr[0].SamFlag = 0x41; // read1 is the first read in a pair
+			read1.AlnReportArr[0].SamFlag |= 0x4;
 
-			if (read2.score == 0) read1.AlnReportArr[0].iFrag |= 0x8; // next segment unmapped
-			else read1.AlnReportArr[0].iFrag |= (read2.AlnReportArr[read2.iBestAlnCanIdx].coor.bDir ? 0x10 : 0x20);
+			if (read2.score == 0) read1.AlnReportArr[0].SamFlag |= 0x8; // next segment unmapped
+			else read1.AlnReportArr[0].SamFlag |= (read2.AlnReportArr[read2.iBestAlnCanIdx].coor.bDir ? 0x10 : 0x20);
 		}
 
 		if (read2.score > read2.sub_score || bMultiHit == false) // unique mapping or bMultiHit=false
 		{
 			j = read2.iBestAlnCanIdx;
-			read2.AlnReportArr[j].iFrag = 0x81; // read2 is the second read in a pair
-			read2.AlnReportArr[j].iFrag |= (read2.AlnReportArr[j].coor.bDir ? 0x20 : 0x10);
+			read2.AlnReportArr[j].SamFlag = 0x81; // read2 is the second read in a pair
+			read2.AlnReportArr[j].SamFlag |= (read2.AlnReportArr[j].coor.bDir ? 0x20 : 0x10);
 
-			if ((i = read2.AlnReportArr[j].PairedAlnCanIdx) != -1 && read1.AlnReportArr[i].AlnScore > 0) read2.AlnReportArr[j].iFrag |= 0x2;// reads are mapped in a proper pair
-			else read2.AlnReportArr[j].iFrag |= 0x8; // next segment unmapped
+			if ((i = read2.AlnReportArr[j].PairedAlnCanIdx) != -1 && read1.AlnReportArr[i].AlnScore > 0) read2.AlnReportArr[j].SamFlag |= 0x2;// reads are mapped in a proper pair
+			else read2.AlnReportArr[j].SamFlag |= 0x8; // next segment unmapped
 		}
 		else if (read2.score > 0)
 		{
@@ -107,20 +107,20 @@ void SetPairedAlignmentFlag(ReadItem_t& read1, ReadItem_t& read2)
 			{
 				if (read2.AlnReportArr[j].AlnScore > 0)
 				{
-					read2.AlnReportArr[j].iFrag = 0x81; // read2 is the second read in a pair
-					read2.AlnReportArr[j].iFrag |= (read2.AlnReportArr[j].coor.bDir ? 0x20 : 0x10);
+					read2.AlnReportArr[j].SamFlag = 0x81; // read2 is the second read in a pair
+					read2.AlnReportArr[j].SamFlag |= (read2.AlnReportArr[j].coor.bDir ? 0x20 : 0x10);
 
-					if ((i = read2.AlnReportArr[j].PairedAlnCanIdx) != -1 && read1.AlnReportArr[i].AlnScore > 0) read2.AlnReportArr[j].iFrag |= 0x2;// reads are mapped in a proper pair
-					else read2.AlnReportArr[j].iFrag |= 0x8; // next segment unmapped
+					if ((i = read2.AlnReportArr[j].PairedAlnCanIdx) != -1 && read1.AlnReportArr[i].AlnScore > 0) read2.AlnReportArr[j].SamFlag |= 0x2;// reads are mapped in a proper pair
+					else read2.AlnReportArr[j].SamFlag |= 0x8; // next segment unmapped
 				}
 			}
 		}
 		else
 		{
-			read2.AlnReportArr[0].iFrag = 0x81; // read2 is the second read in a pair
-			read2.AlnReportArr[0].iFrag |= 0x4; // segment unmapped
-			if (read1.score == 0) read2.AlnReportArr[0].iFrag |= 0x8; // next segment unmapped
-			else read2.AlnReportArr[0].iFrag |= (read1.AlnReportArr[read1.iBestAlnCanIdx].coor.bDir ? 0x10 : 0x20);
+			read2.AlnReportArr[0].SamFlag = 0x81; // read2 is the second read in a pair
+			read2.AlnReportArr[0].SamFlag |= 0x4; // segment unmapped
+			if (read1.score == 0) read2.AlnReportArr[0].SamFlag |= 0x8; // next segment unmapped
+			else read2.AlnReportArr[0].SamFlag |= (read1.AlnReportArr[read1.iBestAlnCanIdx].coor.bDir ? 0x10 : 0x20);
 		}
 	}
 }
@@ -152,7 +152,7 @@ void OutputPairedSamFile(ReadItem_t& read1, ReadItem_t& read2)
 	if (read1.score == 0)
 	{
 		iUnMapped++;
-		fprintf(output, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read1.header, read1.AlnReportArr[0].iFrag, read1.seq);
+		fprintf(output, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read1.header, read1.AlnReportArr[0].SamFlag, read1.seq);
 	}
 	else
 	{
@@ -174,9 +174,9 @@ void OutputPairedSamFile(ReadItem_t& read1, ReadItem_t& read2)
 						iPaired += 2;
 						if (abs(dist) < 10000) iDistance += abs(dist);
 					}
-					fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t=\t%ld\t%d\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read1.header, read1.AlnReportArr[i].iFrag, ChromosomeVec[read1.AlnReportArr[i].coor.ChromosomeIdx].name, read1.AlnReportArr[i].coor.gPos, read1.mapq, read1.AlnReportArr[i].coor.CIGAR.c_str(), read2.AlnReportArr[j].coor.gPos, dist, (read1.AlnReportArr[i].coor.bDir ? seq : rseq), read1.rlen - read1.score, read1.score, read1.sub_score);
+					fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t=\t%ld\t%d\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read1.header, read1.AlnReportArr[i].SamFlag, ChromosomeVec[read1.AlnReportArr[i].coor.ChromosomeIdx].name, read1.AlnReportArr[i].coor.gPos, read1.mapq, read1.AlnReportArr[i].coor.CIGAR.c_str(), read2.AlnReportArr[j].coor.gPos, dist, (read1.AlnReportArr[i].coor.bDir ? seq : rseq), read1.rlen - read1.score, read1.score, read1.sub_score);
 				}
-				else fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read1.header, read1.AlnReportArr[i].iFrag, ChromosomeVec[read1.AlnReportArr[i].coor.ChromosomeIdx].name, read1.AlnReportArr[i].coor.gPos, read1.mapq, read1.AlnReportArr[i].coor.CIGAR.c_str(), (read1.AlnReportArr[i].coor.bDir ? seq : rseq), read1.rlen - read1.score, read1.score, read1.sub_score);
+				else fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read1.header, read1.AlnReportArr[i].SamFlag, ChromosomeVec[read1.AlnReportArr[i].coor.ChromosomeIdx].name, read1.AlnReportArr[i].coor.gPos, read1.mapq, read1.AlnReportArr[i].coor.CIGAR.c_str(), (read1.AlnReportArr[i].coor.bDir ? seq : rseq), read1.rlen - read1.score, read1.score, read1.sub_score);
 			}
 			if (!bMultiHit) break;
 		}
@@ -190,7 +190,7 @@ void OutputPairedSamFile(ReadItem_t& read1, ReadItem_t& read2)
 	if (read2.score == 0)
 	{
 		iUnMapped++;
-		fprintf(output, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read2.header, read2.AlnReportArr[0].iFrag, read2.seq);
+		fprintf(output, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read2.header, read2.AlnReportArr[0].SamFlag, read2.seq);
 	}
 	else
 	{
@@ -207,9 +207,9 @@ void OutputPairedSamFile(ReadItem_t& read1, ReadItem_t& read2)
 				if ((i = read2.AlnReportArr[j].PairedAlnCanIdx) != -1 && read1.AlnReportArr[i].AlnScore > 0)
 				{
 					dist = 0 - ((int)(read2.AlnReportArr[j].coor.gPos - read1.AlnReportArr[i].coor.gPos + (read1.AlnReportArr[i].coor.bDir ? read2.rlen : 0 - read1.rlen)));
-					fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t=\t%ld\t%d\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read2.header, read2.AlnReportArr[j].iFrag, ChromosomeVec[read2.AlnReportArr[j].coor.ChromosomeIdx].name, read2.AlnReportArr[j].coor.gPos, read2.mapq, read2.AlnReportArr[j].coor.CIGAR.c_str(), read1.AlnReportArr[i].coor.gPos, dist, (read2.AlnReportArr[j].coor.bDir ? seq : rseq), read2.rlen - read2.score, read2.score, read2.sub_score);
+					fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t=\t%ld\t%d\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read2.header, read2.AlnReportArr[j].SamFlag, ChromosomeVec[read2.AlnReportArr[j].coor.ChromosomeIdx].name, read2.AlnReportArr[j].coor.gPos, read2.mapq, read2.AlnReportArr[j].coor.CIGAR.c_str(), read1.AlnReportArr[i].coor.gPos, dist, (read2.AlnReportArr[j].coor.bDir ? seq : rseq), read2.rlen - read2.score, read2.score, read2.sub_score);
 				}
-				else fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read2.header, read2.AlnReportArr[j].iFrag, ChromosomeVec[read2.AlnReportArr[j].coor.ChromosomeIdx].name, read2.AlnReportArr[j].coor.gPos, read2.mapq, read2.AlnReportArr[j].coor.CIGAR.c_str(), (read2.AlnReportArr[j].coor.bDir ? seq : rseq), read2.rlen - read2.score, read2.score, read2.sub_score);
+				else fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read2.header, read2.AlnReportArr[j].SamFlag, ChromosomeVec[read2.AlnReportArr[j].coor.ChromosomeIdx].name, read2.AlnReportArr[j].coor.gPos, read2.mapq, read2.AlnReportArr[j].coor.CIGAR.c_str(), (read2.AlnReportArr[j].coor.bDir ? seq : rseq), read2.rlen - read2.score, read2.score, read2.sub_score);
 			}
 			if (!bMultiHit) break;
 		}
@@ -226,7 +226,7 @@ void OutputSingledSamFile(ReadItem_t& read)
 	if (read.score == 0)
 	{
 		iUnMapped++;
-		fprintf(output, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read.header, read.AlnReportArr[0].iFrag, read.seq);
+		fprintf(output, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read.header, read.AlnReportArr[0].SamFlag, read.seq);
 	}
 	else
 	{
@@ -243,7 +243,7 @@ void OutputSingledSamFile(ReadItem_t& read)
 					rseq = new char[read.rlen + 1]; rseq[read.rlen] = '\0';
 					GetComplementarySeq(read.rlen, seq, rseq);
 				}
-				fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read.header, read.AlnReportArr[i].iFrag, ChromosomeVec[read.AlnReportArr[i].coor.ChromosomeIdx].name, read.AlnReportArr[i].coor.gPos, read.mapq, read.AlnReportArr[i].coor.CIGAR.c_str(), (read.AlnReportArr[i].coor.bDir? seq: rseq), read.rlen - read.score, read.score, read.sub_score);
+				fprintf(output, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read.header, read.AlnReportArr[i].SamFlag, ChromosomeVec[read.AlnReportArr[i].coor.ChromosomeIdx].name, read.AlnReportArr[i].coor.gPos, read.mapq, read.AlnReportArr[i].coor.CIGAR.c_str(), (read.AlnReportArr[i].coor.bDir? seq: rseq), read.rlen - read.score, read.score, read.sub_score);
 				if (!bMultiHit) break;
 			}
 		}

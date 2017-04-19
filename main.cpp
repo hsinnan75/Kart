@@ -96,11 +96,11 @@ bool CheckSamFileName()
 			fprintf(stderr, "Warning: %s is not a regular file!\n", SamFileName);
 		}
 	}
-	else
-	{
-		bRet = false;
-		fprintf(stderr, "Warning: %s is not a regular file!\n", SamFileName);
-	}
+	//else
+	//{
+	//	bRet = false;
+	//	fprintf(stderr, "Warning: %s is not a regular file!\n", SamFileName);
+	//}
 	return bRet;
 }
 

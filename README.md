@@ -16,7 +16,7 @@ Kart adopts a divide-and-conquer strategy, which separates a read into regions t
 We provide the executable file, please type 
 
   ```
-  $ ./kart
+  $ ./kart index | aln [options]
   ```
 to run the program. Or you can type 'make' to build the executable file.
 

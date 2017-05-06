@@ -11,6 +11,14 @@ Kart is an ultra-efficient NGS read aligner. It can rocess long reads as fast as
 
 Kart adopts a divide-and-conquer strategy, which separates a read into regions that are easy to align and regions that require gapped alignment, and align each region independently to compose the final alignment. In our experiments, the average size of fragments requiring gapped alignment is around 20 regardless of the original read length. The experiments on synthetic datasets show that Kart spends much less time on longer reads (150bp to 7000bp) than most aligners do, and still produces reliable alignments when the error rate is as high as 15%. The experiments on real datasets fur-ther demonstrate that Kart can handle reads with poor sequencing quality.
 
+# Download
+
+Please use the command 
+  ```
+  $ git clone https://github.com/hsinnan75/Kart
+  ```
+to download the package of Kart.
+
 # Instructions
 
 We provide the executable file, please type 

@@ -15,7 +15,7 @@ Kart adopts a divide-and-conquer strategy, which separates a read into regions t
 
 Please use the command 
   ```
-  $ git clone https://github.com/hsinnan75/Kart
+  $ git clone https://github.com/hsinnan75/Kart.git
   ```
 to download the package of Kart.
 

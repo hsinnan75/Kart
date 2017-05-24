@@ -24,7 +24,7 @@ to download the package of Kart.
 We provide the executable file, please type 
 
   ```
-  $ ./kart index | aln [options]
+  $ ./kart [options]
   ```
 to run the program. Or you can type 'make' to build the executable file.
 
@@ -33,14 +33,14 @@ to run the program. Or you can type 'make' to build the executable file.
 For indexing a reference genome, Kart requires the target genome file (in fasta format) and the prefix of the index files (including the directory path).
 
   ```
-  $ ./kart index -p ecoli Ecoli.fa
+  $ ./bwa_index Ecoli.fa ecoli.fa
   ```
 The above command is to index the genome file Ecoli.fa and store the index files begining with ecoli.
 
 For mapping short reads, Kart requires the the index files of the reference genome and at least one read file (two read files for the separated paired-end reads). Users should use -i to specify the prefix of the index files (including the directory path).
 
   ```
-  $ ./kart aln -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.sam
+  $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.sam
   ```
 
 The above command is to run Kart to align the paired-end reads in ReadFile1.fa and ReadFile2.fa with index files of ecoli. The output is redirected to out.sam.
@@ -66,7 +66,7 @@ We also provide a script (run_test.sh) to test the software. It will index a ref
 # Parameter setting
 
  ```
- -t INT number of threads [16]
+-t INT number of threads [16]
 
 -i STR index prefix [BWT based (BWA), required]
 

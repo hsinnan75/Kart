@@ -10,10 +10,17 @@ char *RefSequence, *IndexFileName, *ReadFileName, *ReadFileName2, *SamFileName;
 
 void ShowProgramUsage(const char* program)
 {
-	fprintf(stderr, "\nKart v%s [Developers: Hsin-Nan Lin and Wen-Lian Hsu]\n\n", VersionStr);
-	fprintf(stderr, "Usage: %s aln|index\n\n", program);
-	fprintf(stderr, "Command: index		index the reference sequences with FASTA format\n");
-	fprintf(stderr, "         aln		read alignment\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "kart v%s\n", VersionStr);
+	fprintf(stderr, "Usage: %s -i Index_Prefix -f ReadFile [-f2 ReadFile2] > out.sam\n\n", program);
+	fprintf(stderr, "Options: -t INT        number of threads [16]\n");
+	fprintf(stderr, "         -f            files with #1 mates reads\n");
+	fprintf(stderr, "         -f2           files with #2 mates reads\n");
+	fprintf(stderr, "         -o            sam filename for output\n");
+	fprintf(stderr, "         -m            output multiple alignments\n");
+	fprintf(stderr, "         -g INT        max gaps (indels)\n");
+	fprintf(stderr, "         -p            paired-end reads are interlaced in the same file\n");
+	fprintf(stderr, "         -pacbio       pacbio data\n");
 	fprintf(stderr, "\n");
 }
 
@@ -115,18 +122,10 @@ int main(int argc, char* argv[])
 	bMultiHit = false;
 	RefSequence = IndexFileName = ReadFileName = ReadFileName2 = SamFileName = NULL;
 
-	if (argc == 1) ShowProgramUsage(argv[0]);
-	else if (strcmp(argv[1], "index") == 0)
+	if (argc == 1 || strcmp(argv[1], "-h") == 0) ShowProgramUsage(argv[0]);
+	else
 	{
-		string cmd(argv[0]);
-		cmd = cmd.substr(0, cmd.find_last_of('/')+1) + "bwt_index";
-
-		for (i = 2; i < argc; i++) cmd += " " + (string)argv[i];
-		system((char*)cmd.c_str());
-	}
-	else if (strcmp(argv[1], "aln") == 0)
-	{
-		for (i = 2; i < argc; i++)
+		for (i = 1; i < argc; i++)
 		{
 			parameter = argv[i];
 
@@ -150,23 +149,18 @@ int main(int argc, char* argv[])
 			else if (parameter == "-m") bMultiHit = true;
 			else if (parameter == "-pair" || parameter == "-p") bPairEnd = true;
 			else if (parameter == "-d" || parameter == "-debug") bDebugMode = true;
-			else fprintf(stderr, "Warning! Unknow parameter: %s\n", argv[i]);
+			else
+			{
+				fprintf(stderr, "Warning! Unknow parameter: %s\n", argv[i]);
+				ShowProgramUsage(argv[0]);
+				exit(0);
+			}
 		}
 
 		if (IndexFileName == NULL || ReadFileName == NULL)
 		{
-			fprintf(stderr, "\n");
-			fprintf(stderr, "kart v%s\n", VersionStr);
-			fprintf(stderr, "Usage: %s aln [-i IndexFile Prefix] -f ReadFile [-f2 ReadFile2] > out.sam\n\n", argv[0]);
-			fprintf(stderr, "Options: -t INT        number of threads [16]\n");
-			fprintf(stderr, "         -f            files with #1 mates reads\n");
-			fprintf(stderr, "         -f2           files with #2 mates reads\n");
-			fprintf(stderr, "         -o            sam filename for output\n");
-			fprintf(stderr, "         -m            output multiple alignments\n");
-			fprintf(stderr, "         -g INT        max gaps (indels)\n");
-			fprintf(stderr, "         -p            paired-end reads are interlaced in the same file\n");
-			fprintf(stderr, "         -pacbio       pacbio data\n");
-			fprintf(stderr, "\n");
+			fprintf(stderr, "Warning! Please specify an index prefix and read files\n", argv[i]);
+			ShowProgramUsage(argv[0]);
 			exit(0);
 		}
 		if (CheckReadFile(ReadFileName, true) == false) fprintf(stderr, "Cannot open the read file: %s\n", ReadFileName), exit(0);
@@ -186,7 +180,6 @@ int main(int argc, char* argv[])
 			if (RefSequence != NULL) delete[] RefSequence;
 		}
 	}
-	else ShowProgramUsage(argv[0]);
 
 	return 0;
 }

@@ -13,7 +13,7 @@ main:		$(OBJECT)
 			$(Compiler) $(FLAGS) $(OBJECT) -o kart $(LIB)
 			
 static:		$(OBJECT)
-			$(Compiler) $(FLAGS) -static $(OBJECT) -o kart $(LIB)
+			$(Compiler) $(FLAGS) -static $(OBJECT) -o kart_static $(LIB)
 
 %.o:		%.cpp $(HEADER)
 			$(Compiler) $(FLAGS) -c $<

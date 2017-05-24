@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
 
 		if (IndexFileName == NULL || ReadFileName == NULL)
 		{
-			fprintf(stderr, "Warning! Please specify an index prefix and read files\n", argv[i]);
+			fprintf(stderr, "Warning! Please specify a valid index prefix and read files!\n", argv[i]);
 			ShowProgramUsage(argv[0]);
 			exit(0);
 		}

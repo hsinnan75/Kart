@@ -33,7 +33,7 @@ to run the program. Or you can type 'make' to build the executable file.
 For indexing a reference genome, Kart requires the target genome file (in fasta format) and the prefix of the index files (including the directory path).
 
   ```
-  $ ./bwa_index Ecoli.fa ecoli.fa
+  $ ./bwa_index ref_file[ex.ecoli.fa] index_prefix[ex. Ecoli]
   ```
 The above command is to index the genome file Ecoli.fa and store the index files begining with ecoli.
 

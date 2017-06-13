@@ -13,7 +13,7 @@ Kart adopts a divide-and-conquer strategy, which separates a read into regions t
 
 # Download
 
-Please use the command 
+Current version: 2.2.0. Please use the command 
   ```
   $ git clone https://github.com/hsinnan75/Kart.git
   ```
@@ -37,10 +37,26 @@ For indexing a reference genome, Kart requires the target genome file (in fasta 
   ```
 The above command is to index the genome file Ecoli.fa and store the index files begining with ecoli.
 
+Please note that if you find bwa_index does not work in your computer system, you may use bwa (http://bio-bwa.sourceforge.net/) to build the index files.
+  ```
+  $ ./bwa index -p index_prefix xxxx.fa
+  ```
+
 For mapping short reads, Kart requires the the index files of the reference genome and at least one read file (two read files for the separated paired-end reads). Users should use -i to specify the prefix of the index files (including the directory path).
 
+ case 1: standard sam output
   ```
-  $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.sam
+ $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.sam
+  ```
+
+ case 2: gzip compressed output
+  ```
+ $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.sam.gz
+  ```
+
+ case 3: bam output
+  ```
+ $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa | samtools view -bo out.bam
   ```
 
 The above command is to run Kart to align the paired-end reads in ReadFile1.fa and ReadFile2.fa with index files of ecoli. The output is redirected to out.sam.
@@ -55,13 +71,15 @@ We also provide a script (run_test.sh) to test the software. It will index a ref
 
 - Read files
 
-    All reads files should be in FASTA or FASTQ format. Read sequences should be capital letters. The quality scores in FASTQ are not considered in the alignments. The alignment result will not be different in either format.
+    All reads files should be in FASTA or FASTQ format. FASTQ files can be compressed with gzip format. We do not support FASTA files with gzip compression.
+    Read sequences should be capital letters. The quality scores in FASTQ are not considered in the alignments. The alignment result will not be different in either format.
 
     If paired-end reads are separated into two files, use -f and -f2 to indicate the two filenames. The i-th reads in the two files are paired. If paired-end reads are in the same file, use -p. The first and second reads are paired, the third and fourth reads are paired, and so on. For the latter case, use -p to indicate the input file contains paired-end reads.
 
 - Output file
 
     Output is in standard SAM format. For reads aligned with reverse strand of reference genome, they are converted into obverse strand. More detailed information about SAM format, please refer to the SAMtools documents.
+    Kart can also generate compressed output with gzip algorithm. 
 
 # Parameter setting
 

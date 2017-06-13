@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <stdio.h>
 #include <string.h>
 #include <fstream>
@@ -12,6 +13,7 @@
 #include <algorithm>
 #include <ctime>
 #include <ctype.h>
+#include <zlib.h>
 #include <pthread.h>
 #include <sys/time.h>
 
@@ -164,9 +166,9 @@ extern vector<int64_t> AccumulationLengthVec, PositionShiftPosVec;
 
 extern const char* VersionStr;
 extern map<int64_t, int> ChrLocMap;
-extern bool bDebugMode, bPairEnd, bPacBioData, FastQFormat, bMultiHit;
-extern char *RefSequence, *GenomeFileName, *IndexFileName, *ReadFileName, *ReadFileName2, *SamFileName;
-extern int MaxInsertSize, iThreadNum, iChromsomeNum, WholeChromosomeNum, ChromosomeNumMinusOne, MaxGaps, MinSeedLength;
+extern bool bDebugMode, bPairEnd, bPacBioData, gzCompressed, FastQFormat, bMultiHit;
+extern char *RefSequence, *GenomeFileName, *IndexFileName, *ReadFileName, *ReadFileName2, *OutputFileName;
+extern int MaxInsertSize, iThreadNum, iChromsomeNum, WholeChromosomeNum, ChromosomeNumMinusOne, MaxGaps, MinSeedLength, OutputFileFormat;
 
 // bwt_index.cpp
 extern void RestoreReferenceInfo();
@@ -197,9 +199,9 @@ extern Coordinate_t GenCoordinateInfo(bool bFirstRead, int64_t gPos, int64_t end
 extern bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, vector<AlignmentCandidate_t>& AlignmentVec1, vector<AlignmentCandidate_t>& AlignmentVec2);
 
 // GetData.cpp
-extern void GetGenomeSeq();
 extern bool CheckBWAIndexFiles(string IndexPrefix);
-extern int GetNextChunk(bool bSepLibrary, fstream& file, fstream& file2, ReadItem_t* ReadArr);
+extern int GetNextChunk(bool bSepLibrary, FILE *file, FILE *file2, ReadItem_t* ReadArr);
+extern int gzGetNextChunk(bool bSepLibrary, gzFile file, gzFile file2, ReadItem_t* ReadArr);
 
 // tools.cpp
 extern void ShowSeedLocationInfo(int64_t MyPos);

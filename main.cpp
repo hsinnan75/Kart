@@ -3,10 +3,10 @@
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.1.0";
-int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength;
-bool bDebugMode, bPairEnd, FastQFormat, bPacBioData, bMultiHit;
-char *RefSequence, *IndexFileName, *ReadFileName, *ReadFileName2, *SamFileName;
+const char* VersionStr = "2.2.0";
+int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
+bool bDebugMode, bPairEnd, bPacBioData, bMultiHit, gzCompressed, FastQFormat;
+char *RefSequence, *IndexFileName, *ReadFileName, *ReadFileName2, *OutputFileName;
 
 void ShowProgramUsage(const char* program)
 {
@@ -14,23 +14,21 @@ void ShowProgramUsage(const char* program)
 	fprintf(stderr, "kart v%s\n", VersionStr);
 	fprintf(stderr, "Usage: %s -i Index_Prefix -f ReadFile [-f2 ReadFile2] > out.sam\n\n", program);
 	fprintf(stderr, "Options: -t INT        number of threads [16]\n");
-	fprintf(stderr, "         -f            files with #1 mates reads\n");
-	fprintf(stderr, "         -f2           files with #2 mates reads\n");
-	fprintf(stderr, "         -o            sam filename for output\n");
+	fprintf(stderr, "         -f            files with #1 mates reads (format:fa, fq, fq.gz)\n");
+	fprintf(stderr, "         -f2           files with #2 mates reads (format:fa, fq, fq.gz)\n");
+	fprintf(stderr, "         -o            output filename [stdout]\n");
 	fprintf(stderr, "         -m            output multiple alignments\n");
-	fprintf(stderr, "         -g INT        max gaps (indels)\n");
+	fprintf(stderr, "         -g INT        max gaps (indels) [5]\n");
 	fprintf(stderr, "         -p            paired-end reads are interlaced in the same file\n");
 	fprintf(stderr, "         -pacbio       pacbio data\n");
 	fprintf(stderr, "\n");
 }
 
-bool CheckReadFile(char* filename, bool bFirst)
+bool CheckReadFile(char* filename, bool& bReadFormat)
 {
-	char ch;
 	fstream file;
+	string header;
 	bool bCheck = true;
-	string str, header, seq;
-	int iCount = 0, iBaseCount = 0;
 
 	file.open(filename, ios_base::in);
 	if (!file.is_open()) return false;
@@ -40,40 +38,8 @@ bool CheckReadFile(char* filename, bool bFirst)
 		if (header == "") return false;
 		else
 		{
-			if (bFirst)
-			{
-				if (header[0] == '>') FastQFormat = false;
-				else FastQFormat = true;
-			}
-			else
-			{
-				if ((FastQFormat && header[0] != '@') || (!FastQFormat && header[0] != '>')) return false;
-			}
-
-			//if (FastQFormat) getline(file, seq);
-			//else {
-			//	while (!file.eof())
-			//	{
-			//		getline(file, str); seq += str;
-			//		file.get(ch); file.unget();
-			//		if (ch == '>')
-			//		{
-			//			iBaseCount += (int)seq.length();
-			//			seq.clear();
-			//			if (++iCount == 100) break;
-			//		}
-			//	}
-			//}
-			//if (seq.length() > 0)
-			//{
-			//	iCount++;
-			//	iBaseCount += (int)seq.length();
-			//}
-			//if (!bPacBioData && iCount > 0 && iBaseCount / iCount > 1000)
-			//{
-			//	fprintf(stderr, "Warning! The input library contains long reads, sensitive mode (-pacbio) is switched on!\n");
-			//	bPacBioData = true; bPairEnd = false;
-			//}
+			if (header[0] == '@') bReadFormat = true;
+			else bReadFormat = false;
 		}
 	}
 	file.close();
@@ -81,26 +47,57 @@ bool CheckReadFile(char* filename, bool bFirst)
 	return bCheck;
 }
 
-bool CheckSamFileName()
+bool CheckCompressedFile(char* filename)
+{
+	gzFile file;
+	bool bCheck = true;
+
+	if ((file = gzopen(filename, "rb")) == Z_NULL) bCheck = false;
+	gzclose(file);
+
+	return bCheck;
+}
+
+bool Check_gzInputFormat()
+{
+	string filename, FileExt;
+	bool bCompressed = false;
+
+	filename = ReadFileName; FileExt = filename.substr(filename.find_last_of('.') + 1);
+	if (FileExt == "gz") bCompressed = true;
+
+	return bCompressed;
+}
+
+bool CheckOutputFileName()
 {
 	struct stat s;
 	bool bRet = true;
+	string filename, FileExt;
 
-	if (stat(SamFileName, &s) == 0)
+	filename = OutputFileName; FileExt = filename.substr(filename.find_last_of('.') + 1);
+
+	if (FileExt == "gz") OutputFileFormat = 1;
+	else if (FileExt == "bam") OutputFileFormat = 2;
+
+	//if (OutputFileFormat == 0) fprintf(stderr, "OutputFile = %s [format=sam]\n", OutputFileName);
+	//else if (OutputFileFormat == 1) fprintf(stderr, "OutputFile = %s [format=sam.gz]\n", OutputFileName);
+	//else fprintf(stderr, "OutputFile = %s [format=bam]\n", OutputFileName);
+
+	if (stat(OutputFileName, &s) == 0)
 	{
 		if (s.st_mode & S_IFDIR)
 		{
 			bRet = false;
-			fprintf(stderr, "Warning: %s is a directory!\n", SamFileName);
+			fprintf(stderr, "Warning: %s is a directory!\n", OutputFileName);
 		}
 		else if (s.st_mode & S_IFREG)
 		{
-			//it's a file
 		}
 		else
 		{
 			bRet = false;
-			fprintf(stderr, "Warning: %s is not a regular file!\n", SamFileName);
+			fprintf(stderr, "Warning: %s is not a regular file!\n", OutputFileName);
 		}
 	}
 	return bRet;
@@ -115,12 +112,13 @@ int main(int argc, char* argv[])
 	iThreadNum = 16;
 	bPairEnd = false;
 	bDebugMode = false;
-	FastQFormat = true; // fastq:true, fasta:false
 	MaxInsertSize = 1500;
 	MinSeedLength = 0;
 	bPacBioData = false;
 	bMultiHit = false;
-	RefSequence = IndexFileName = ReadFileName = ReadFileName2 = SamFileName = NULL;
+	FastQFormat = true;
+	OutputFileFormat = 0; // 0:sam 1:sam.gz, 2:bam
+	RefSequence = IndexFileName = ReadFileName = ReadFileName2 = OutputFileName = NULL;
 
 	if (argc == 1 || strcmp(argv[1], "-h") == 0) ShowProgramUsage(argv[0]);
 	else
@@ -144,7 +142,7 @@ int main(int argc, char* argv[])
 			{
 				if((MaxGaps = atoi(argv[++i])) < 0) MaxGaps = 0;
 			}
-			else if (parameter == "-o") SamFileName = argv[++i];
+			else if (parameter == "-o") OutputFileName = argv[++i];
 			else if (parameter == "-pacbio") bPacBioData = true;
 			else if (parameter == "-m") bMultiHit = true;
 			else if (parameter == "-pair" || parameter == "-p") bPairEnd = true;
@@ -159,13 +157,27 @@ int main(int argc, char* argv[])
 
 		if (IndexFileName == NULL || ReadFileName == NULL)
 		{
-			fprintf(stderr, "Warning! Please specify a valid index prefix and read files!\n", argv[i]);
+			fprintf(stderr, "Warning! Please specify a valid index prefix and read files!\n");
 			ShowProgramUsage(argv[0]);
 			exit(0);
 		}
-		if (CheckReadFile(ReadFileName, true) == false) fprintf(stderr, "Cannot open the read file: %s\n", ReadFileName), exit(0);
-		if (ReadFileName2 != NULL && CheckReadFile(ReadFileName2, false) == false) fprintf(stderr, "Read file: %s cannot be accessed or with incompatible format!\n", ReadFileName2), exit(0);
-		if (SamFileName != NULL && CheckSamFileName() == false) exit(0);
+		gzCompressed = Check_gzInputFormat();
+
+		if ((gzCompressed && CheckCompressedFile(ReadFileName) == false) ||
+			(!gzCompressed && CheckReadFile(ReadFileName, FastQFormat) == false))
+			fprintf(stderr, "Cannot open the read file: %s\n", ReadFileName), exit(0);
+
+		if (ReadFileName2 != NULL)
+		{
+			bool FastQFormat2 = true;
+			if ((gzCompressed && CheckCompressedFile(ReadFileName2) == false) ||
+				(!gzCompressed && CheckReadFile(ReadFileName2, FastQFormat2) == false))
+				fprintf(stderr, "Cannot open the read file: %s\n", ReadFileName2), exit(0);
+
+			if(FastQFormat2 != FastQFormat) fprintf(stderr, "The input files are not with the same format!\n"), exit(0);
+		}
+
+		if (OutputFileName != NULL && CheckOutputFileName() == false) exit(0);
 
 		if (CheckBWAIndexFiles(IndexFileName)) RefIdx = bwa_idx_load(IndexFileName);
 		else RefIdx = 0;
@@ -180,6 +192,5 @@ int main(int argc, char* argv[])
 			if (RefSequence != NULL) delete[] RefSequence;
 		}
 	}
-
 	return 0;
 }

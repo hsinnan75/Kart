@@ -6,7 +6,8 @@ static bwtint_t fread_fix(FILE *fp, bwtint_t size, void *a)
 	bwtint_t offset = 0;
 	while (size) {
 		bwtint_t x = bufsize < size ? bufsize : size;
-		x = fread((a + offset), 1, x, fp);
+		//x = fread(a + offset, 1, x, fp);
+		if ((x = fread((char*)a + offset, 1, x, fp)) == 0) break;
 		size -= x; offset += x;
 	}
 	return offset;
@@ -30,7 +31,7 @@ void bwt_restore_sa(const char *fn, bwt_t *bwt)
 	bwt->sa = (bwtint_t*)calloc(bwt->n_sa, sizeof(bwtint_t));
 	bwt->sa[0] = -1;
 
-	fread_fix(fp, sizeof(bwtint_t) * (bwt->n_sa - 1), bwt->sa + 1);
+	fread_fix(fp, sizeof(bwtint_t) * (bwt->n_sa - 1), (bwt->sa + 1));
 	fclose(fp);
 }
 
@@ -156,7 +157,7 @@ bwaidx_t *bwa_idx_load(const char *hint)
 	idx->bwt = bwa_idx_load_bwt(hint);
 	idx->bns = bns_restore(hint);
 	idx->pac = (uint8_t*)calloc(idx->bns->l_pac/4+1, 1);
-	fprintf(stderr, "Done!\n");
+	fprintf(stderr, "\n");
 
 	return idx;
 }
@@ -255,7 +256,7 @@ void RestoreReferenceInfo()
 	RefSequence = new char[TwoGenomeSize + 1]; RefSequence[TwoGenomeSize] = '\0';
 	RestoreReferenceSequences();
 
-	fprintf(stderr, "Done!\n");
+	fprintf(stderr, "\n");
 	//for (map<int64_t, int>::iterator iter = ChrLocMap.begin(); iter != ChrLocMap.end(); iter++)
 	//{
 	//	i = iter->second;

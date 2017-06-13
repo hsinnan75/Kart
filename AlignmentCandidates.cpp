@@ -164,7 +164,7 @@ vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq)
 vector<AlignmentCandidate_t> GenerateAlignmentCandidateForPacBioSeq(int rlen, vector<SeedPair_t>& SeedPairVec)
 {
 	bool *TakenArr;
-	int i, j, k, thr, max_score, num;
+	int i, j, k, thr, num;
 	AlignmentCandidate_t AlignmentCandidate;
 	vector<AlignmentCandidate_t> AlignmentVec;
 
@@ -265,7 +265,6 @@ int IdentifyTranslocationRange(int i, int num, vector<pair<int, int> >& vec, vec
 
 void RemoveTranslocatedSeeds(vector<SeedPair_t>& SeedVec)
 {
-	int64_t gPos;
 	int i, j, k, s1, s2, num;
 	bool bTranslocation = false;
 	vector<pair<int, int> > vec;
@@ -597,7 +596,7 @@ bool CheckCoordinateValidity(vector<SeedPair_t>& SeedVec)
 	if ((gPos1 < GenomeSize && gPos2 >= GenomeSize) || (gPos1 >= GenomeSize && gPos2 < GenomeSize) || ChrLocMap.lower_bound(gPos1)->second != ChrLocMap.lower_bound(gPos2)->second)
 	{
 		bValid = false;
-		if (bDebugMode) printf("%ld and %ld are not in the same chromosome!\n", gPos1, gPos2);
+		//if (bDebugMode) fprintf(stderr, "%ld and %ld are not in the same chromosome!\n", gPos1, gPos2);
 	}
 	return bValid;
 }

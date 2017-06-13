@@ -163,7 +163,6 @@ vector<SeedPair_t> GenerateSimplePairsFromCommonKmers(int MinSeedLength, vector<
 
 vector<SeedPair_t> GenerateSimplePairsFromFragmentPair(int MaxDist, int len1, char* frag1, int len2, char* frag2)
 {
-	SeedPair_t SeedPair;
 	vector<int> rPosVec;
 	vector<KmerPair_t> KmerPairVec;
 	vector<SeedPair_t> SimplePairVec;

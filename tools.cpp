@@ -40,8 +40,6 @@ void GetComplementarySeq(int len, char* seq, char* rseq)
 		rseq[j] = ReverseMap[(int)seq[i]];
 	}
 	if (i == j) rseq[i] = ReverseMap[(int)seq[i]];
-
-	rseq[len] = '\0';
 }
 
 void SelfComplementarySeq(int len, char* seq)

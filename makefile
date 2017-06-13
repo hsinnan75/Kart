@@ -3,8 +3,8 @@
 all: main
 
 Compiler	= g++
-FLAGS		= -D NDEBUG -O3 -m64 
-LIB		= -lm -lpthread
+FLAGS		= -D NDEBUG -O3
+LIB		= -lz -lm -lpthread
 SOURCE		= main.cpp GetData.cpp Mapping.cpp AlignmentCandidates.cpp AlignmentRescue.cpp KmerAnalysis.cpp PairwiseAlignment.cpp tools.cpp bwt_index.cpp bwt_search.cpp
 HEADER		= structure.h
 OBJECT		= $(SOURCE:%.cpp=%.o)

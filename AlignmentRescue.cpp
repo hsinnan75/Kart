@@ -13,7 +13,7 @@ int IdentifyMaxAlignmentCandidateScore(vector<AlignmentCandidate_t>& AlignmentVe
 
 int DetermineAnchorThreshold(vector<AlignmentCandidate_t>& AlignmentVec)
 {
-	int iCanNum = 0, thr = 0;
+	int thr = 0;
 
 	for (vector<AlignmentCandidate_t>::const_iterator iter = AlignmentVec.begin(); iter != AlignmentVec.end(); iter++)
 		if (iter->Score > thr) thr = iter->Score;
@@ -25,8 +25,7 @@ int DetermineAnchorThreshold(vector<AlignmentCandidate_t>& AlignmentVec)
 
 AlignmentCandidate_t IdnetifyRescueCandidate(int rlen, uint64_t gPos, vector<SeedPair_t>& vec)
 {
-	int i, j, k, num, s;
-	SeedPair_t SeedPair;
+	int i, j, num, s;
 	vector<SeedPair_t> SeedPairVec;
 	AlignmentCandidate_t AlignmentCandidate;
 

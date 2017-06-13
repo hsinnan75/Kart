@@ -5,95 +5,153 @@ map<int64_t, int> ChrLocMap;
 int64_t GenomeSize, TwoGenomeSize;
 vector<Chromosome_t> ChromosomeVec;
 
-int IdentifyHeaderBoundary(string& str)
+int IdentifyHeaderBoundary(char* str, int len)
 {
-	int i = 0;
-	for (string::iterator iter = str.begin(); iter != str.end(); iter++)
-	{
-		if (*iter == ' ' || *iter == '\t')
-		{
-			i = iter - str.begin();
-			break;
-		}
-	}
-	if (i == 0) i = (int)str.length();
+	int i;
 
-	return i-1;
+	for (i = 1; i < len; i++)
+	{
+		if (str[i] == ' ' || str[i] == '\t') return i;
+	}
+	return i - 1;
 }
 
-bool GetNextEntry(fstream& file, string& header, string& seq)
+ReadItem_t GetNextEntry(FILE *file)
 {
-	char ch;
-	string str;
+	ssize_t len;
+	size_t size = 0;
+	ReadItem_t read;
+	char *buffer = NULL;
 
-	getline(file, header);
-	if (header == "" || file.eof()) return false;
-	else
+	read.header = read.seq = NULL; read.rlen = 0;
+
+	if ((len = getline(&buffer, &size, file)) != -1)
 	{
+		len = IdentifyHeaderBoundary(buffer, len) - 1; read.header = new char[len + 1];
+		strncpy(read.header, (buffer + 1), len); read.header[len] = '\0';
+
 		if (FastQFormat)
 		{
-			getline(file, seq); getline(file, str), getline(file, str);
+			if ((read.rlen = getline(&buffer, &size, file)) != -1)
+			{
+				read.seq = new char[read.rlen];
+				strncpy(read.seq, buffer, read.rlen);
+				read.rlen -= 1; read.seq[read.rlen] = '\0';
+				getline(&buffer, &size, file); getline(&buffer, &size, file);
+			}
+			else read.rlen = 0;
 		}
 		else
 		{
-			seq.clear();
-			while (!file.eof())
+			string seq;
+			while (true)
 			{
-				getline(file, str); seq += str; file.get(ch);
-				if (file.eof()) break;
-				else file.unget();
-				if (ch == '>') break;
+				if ((len = getline(&buffer, &size, file)) == -1) break;
+				if (buffer[0] == '>')
+				{
+					fseek(file, 0 - len, SEEK_CUR);
+					break;
+				}
+				else
+				{
+					buffer[len - 1] = '\0'; seq += buffer;
+				}
+			}
+			if ((read.rlen = (int)seq.length()) > 0)
+			{
+				read.seq = new char[read.rlen + 1];
+				strcpy(read.seq, (char*)seq.c_str());
+				read.seq[read.rlen] = '\0';
 			}
 		}
-		return true;
 	}
+	free(buffer);
+
+	return read;
 }
 
-int GetNextChunk(bool bSepLibrary, fstream& file, fstream& file2, ReadItem_t* ReadArr)
+int GetNextChunk(bool bSepLibrary, FILE *file, FILE *file2, ReadItem_t* ReadArr)
 {
-	int i, p, len, iCount = 0;
-	string header, seq, quality;
+	char* rseq;
+	int i, iCount = 0;
 
-	while (!file.eof())
+	while (true)
 	{
-		if (!GetNextEntry(file, header, seq)) break;
-		//header
-		p = IdentifyHeaderBoundary(header);
-		ReadArr[iCount].header = new char[p + 1]; ReadArr[iCount].header[p] = '\0';
-		strncpy(ReadArr[iCount].header, (char*)header.c_str() + 1, p);
-
-		//sequence
-		ReadArr[iCount].rlen = len = (int)seq.length();
-		ReadArr[iCount].seq = new char[len + 1];
-		strcpy(ReadArr[iCount].seq, seq.c_str());
-
-		ReadArr[iCount].EncodeSeq = new uint8_t[len];
-		for (i = 0; i != len; i++) ReadArr[iCount].EncodeSeq[i] = nst_nt4_table[(int)ReadArr[iCount].seq[i]];
-
+		if ((ReadArr[iCount] = GetNextEntry(file)).rlen == 0) break;
+		ReadArr[iCount].EncodeSeq = new uint8_t[ReadArr[iCount].rlen];
+		for (i = 0; i != ReadArr[iCount].rlen; i++) ReadArr[iCount].EncodeSeq[i] = nst_nt4_table[(int)ReadArr[iCount].seq[i]];
 		iCount++;
 
-		if (bSepLibrary) GetNextEntry(file2, header, seq);
-		else if (!GetNextEntry(file, header, seq)) break;
-		//header
-		p = IdentifyHeaderBoundary(header);
-		ReadArr[iCount].header = new char[p + 1]; ReadArr[iCount].header[p] = '\0';
-		strncpy(ReadArr[iCount].header, (char*)header.c_str() + 1, p);
-		//sequence
-		ReadArr[iCount].rlen = len = (int)seq.length();
-		ReadArr[iCount].seq = new char[len + 1];
+		if (bSepLibrary) ReadArr[iCount] = GetNextEntry(file2);
+		else if ((ReadArr[iCount] = GetNextEntry(file)).rlen == 0) break;
 
-		if (bPairEnd) GetComplementarySeq(len, (char*)seq.c_str(), ReadArr[iCount].seq);
-		else strcpy(ReadArr[iCount].seq, seq.c_str());
-
-		ReadArr[iCount].EncodeSeq = new uint8_t[len];
-		for (i = 0; i != len; i++) ReadArr[iCount].EncodeSeq[i] = nst_nt4_table[(int)ReadArr[iCount].seq[i]];
+		if (bPairEnd)
+		{
+			rseq = new char[ReadArr[iCount].rlen];
+			GetComplementarySeq(ReadArr[iCount].rlen, ReadArr[iCount].seq, rseq);
+			copy(rseq, rseq + ReadArr[iCount].rlen, ReadArr[iCount].seq);
+			delete[] rseq;
+		}
+		ReadArr[iCount].EncodeSeq = new uint8_t[ReadArr[iCount].rlen];
+		for (i = 0; i != ReadArr[iCount].rlen; i++) ReadArr[iCount].EncodeSeq[i] = nst_nt4_table[(int)ReadArr[iCount].seq[i]];
 
 		iCount++;
-
-		if ((bPacBioData && iCount == 8) || iCount == ReadChunkSize) break;
+		if (iCount == ReadChunkSize || (bPacBioData && iCount == 10)) break;
 	}
 	return iCount;
 }
+
+ReadItem_t gzGetNextEntry(gzFile file)
+{
+	int len;
+	ReadItem_t read;
+	char buffer[1024];
+
+	read.header = read.seq = NULL; read.rlen = 0;
+
+	if (gzgets(file, buffer, 1024) != NULL)
+	{
+		len = IdentifyHeaderBoundary(buffer, strlen(buffer)) - 1; read.header = new char[len + 1]; 
+		strncpy(read.header, (buffer + 1), len); read.header[len] = '\0';
+		gzgets(file, buffer, 1024); read.rlen = strlen(buffer) - 1; read.seq = new char[read.rlen + 1]; read.seq[read.rlen] = '\0';
+		strncpy(read.seq, buffer, read.rlen);
+
+		gzgets(file, buffer, 1024); gzgets(file, buffer, 1024);
+	}
+	return read;
+}
+
+int gzGetNextChunk(bool bSepLibrary, gzFile file, gzFile file2, ReadItem_t* ReadArr)
+{
+	char* rseq;
+	int i, iCount = 0;
+
+	while (true)
+	{
+		if ((ReadArr[iCount] = gzGetNextEntry(file)).rlen == 0) break;
+		ReadArr[iCount].EncodeSeq = new uint8_t[ReadArr[iCount].rlen];
+		for (i = 0; i != ReadArr[iCount].rlen; i++) ReadArr[iCount].EncodeSeq[i] = nst_nt4_table[(int)ReadArr[iCount].seq[i]];
+		iCount++;
+
+		if (bSepLibrary) ReadArr[iCount] = gzGetNextEntry(file2);
+		else if ((ReadArr[iCount] = gzGetNextEntry(file)).rlen == 0) break;
+
+		if (bPairEnd)
+		{
+			rseq = new char[ReadArr[iCount].rlen];
+			GetComplementarySeq(ReadArr[iCount].rlen, ReadArr[iCount].seq, rseq);
+			copy(rseq, rseq + ReadArr[iCount].rlen, ReadArr[iCount].seq);
+			delete[] rseq;
+		}
+		ReadArr[iCount].EncodeSeq = new uint8_t[ReadArr[iCount].rlen];
+		for (i = 0; i != ReadArr[iCount].rlen; i++) ReadArr[iCount].EncodeSeq[i] = nst_nt4_table[(int)ReadArr[iCount].seq[i]];
+
+		iCount++;
+		if (iCount == ReadChunkSize) break;
+	}
+	return iCount;
+}
+
 
 bool CheckBWAIndexFiles(string IndexPrefix)
 {

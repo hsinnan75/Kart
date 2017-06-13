@@ -88,9 +88,9 @@ We also provide a script (run_test.sh) to test the software. It will index a ref
 
 -i STR index prefix [BWT based (BWA), required]
 
--f STR read filename [required, fasta or fastq]
+-f STR read filename [required, fasta or fastq or fq.gz]
 
--f2 STR read filename2 [optional, fasta or fastq], f and f2 are files with paired reads
+-f2 STR read filename2 [optional, fasta or fastq or fq.gz], f and f2 are files with paired reads
 
 -p the input read file consists of interleaved paired-end sequences
 

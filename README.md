@@ -59,7 +59,7 @@ For mapping short reads, Kart requires the the index files of the reference geno
  $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa | samtools view -bo out.bam
   ```
 
-The above command is to run Kart to align the paired-end reads in ReadFile1.fa and ReadFile2.fa with index files of ecoli. The output is redirected to out.sam.
+The above commands are to run Kart to align the paired-end reads in ReadFile1.fa and ReadFile2.fa with index files of ecoli.
 
 We also provide a script (run_test.sh) to test the software. It will index a reference genome and align 2000 paired-end reads.
 

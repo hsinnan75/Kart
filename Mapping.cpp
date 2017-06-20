@@ -2,6 +2,7 @@
 #include "structure.h"
 
 #define MAPQ_COEF 30
+#define Max_MAPQ  60
 
 gzFile gzOutput;
 FILE *output = stdout;
@@ -11,7 +12,7 @@ bool bSepLibrary = false;
 FILE *ReadFileHandler1, *ReadFileHandler2;
 gzFile gzReadFileHandler1, gzReadFileHandler2;
 static pthread_mutex_t LibraryLock, OutputLock;
-int iTotalReadNum = 0, iUnMapped = 0, iPaired = 0;
+int iTotalReadNum = 0, iUniqueMapping = 0, iUnMapping = 0, iPaired = 0;
 
 void SetSingleAlignmentFlag(ReadItem_t& read)
 {
@@ -129,24 +130,19 @@ void SetPairedAlignmentFlag(ReadItem_t& read1, ReadItem_t& read2)
 
 void EvaluateMAPQ(ReadItem_t& read)
 {
-	//float f;
-
 	if (read.score == 0 || read.score == read.sub_score) read.mapq = 0;
 	else
 	{
-		if (read.sub_score == 0 || read.score - read.sub_score > 10) read.mapq = 60;
+		if (read.sub_score == 0 || read.score - read.sub_score > 5) read.mapq = Max_MAPQ;
 		else
 		{
 			read.mapq = (int)(MAPQ_COEF * (1 - (float)(read.score - read.sub_score)/read.score)*log(read.score) + 0.4999);
-			if (read.mapq > 60) read.mapq = 60;
-
-			//f = 1.0*read.score / read.rlen;
-			//read.mapq = (f < 0.95 ? (int)(read.mapq * f * f) : read.mapq);
+			if (read.mapq > Max_MAPQ) read.mapq = Max_MAPQ;
 		}
 	}
 }
 
-void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2)
+void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2, int& myUniqueMapping, int& myUnMapping, vector<string>& SamOutputVec)
 {
 	char *seq, *rseq;
 	char* buffer = NULL;
@@ -156,14 +152,14 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2)
 
 	if (read1.score == 0)
 	{
-		iUnMapped++;
+		myUnMapping++;
 		len = sprintf(buffer, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read1.header, read1.AlnReportArr[0].SamFlag, read1.seq);
-
-		if (OutputFileFormat == 0) fprintf(output, "%s", buffer);
-		else gzwrite(gzOutput, buffer, len);
+		SamOutputVec.push_back(buffer);
 	}
 	else
 	{
+		if (read1.mapq == Max_MAPQ) myUniqueMapping++;
+
 		seq = read1.seq; rseq = NULL;
 		for (i = read1.iBestAlnCanIdx; i < read1.CanNum; i++)
 		{
@@ -185,9 +181,7 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2)
 					len = sprintf(buffer, "%s\t%d\t%s\t%ld\t%d\t%s\t=\t%ld\t%d\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read1.header, read1.AlnReportArr[i].SamFlag, ChromosomeVec[read1.AlnReportArr[i].coor.ChromosomeIdx].name, read1.AlnReportArr[i].coor.gPos, read1.mapq, read1.AlnReportArr[i].coor.CIGAR.c_str(), read2.AlnReportArr[j].coor.gPos, dist, (read1.AlnReportArr[i].coor.bDir ? seq : rseq), read1.rlen - read1.score, read1.score, read1.sub_score);
 				}
 				else len = sprintf(buffer, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read1.header, read1.AlnReportArr[i].SamFlag, ChromosomeVec[read1.AlnReportArr[i].coor.ChromosomeIdx].name, read1.AlnReportArr[i].coor.gPos, read1.mapq, read1.AlnReportArr[i].coor.CIGAR.c_str(), (read1.AlnReportArr[i].coor.bDir ? seq : rseq), read1.rlen - read1.score, read1.score, read1.sub_score);
-
-				if (OutputFileFormat == 0) fprintf(output, "%s", buffer);
-				else gzwrite(gzOutput, buffer, len);;
+				SamOutputVec.push_back(buffer);
 			}
 			if (!bMultiHit) break;
 		}
@@ -202,14 +196,14 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2)
 	buffer = (char*)malloc((400 + read2.rlen + (read2.rlen >> 1)));
 	if (read2.score == 0)
 	{
-		iUnMapped++;
+		myUnMapping++;
 		len = sprintf(buffer, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read2.header, read2.AlnReportArr[0].SamFlag, read2.seq);
-
-		if (OutputFileFormat == 0) fprintf(output, "%s", buffer);
-		else gzwrite(gzOutput, buffer, len);;
+		SamOutputVec.push_back(buffer);
 	}
 	else
 	{
+		if (read2.mapq == Max_MAPQ) myUniqueMapping++;
+
 		rseq = read2.seq; seq = NULL;
 		for (j = read2.iBestAlnCanIdx; j < read2.CanNum; j++)
 		{
@@ -227,8 +221,7 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2)
 				}
 				else len = sprintf(buffer, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read2.header, read2.AlnReportArr[j].SamFlag, ChromosomeVec[read2.AlnReportArr[j].coor.ChromosomeIdx].name, read2.AlnReportArr[j].coor.gPos, read2.mapq, read2.AlnReportArr[j].coor.CIGAR.c_str(), (read2.AlnReportArr[j].coor.bDir ? seq : rseq), read2.rlen - read2.score, read2.score, read2.sub_score);
 
-				if (OutputFileFormat == 0) fprintf(output, "%s", buffer);
-				else gzwrite(gzOutput, buffer, len);;
+				SamOutputVec.push_back(buffer);
 			}
 			if (!bMultiHit) break;
 		}
@@ -241,7 +234,7 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2)
 	free(buffer);
 }
 
-void OutputSingledAlignments(ReadItem_t& read)
+void OutputSingledAlignments(ReadItem_t& read, int& myUniqueMapping, int& myUnMapping, vector<string>& SamOutputVec)
 {
 	int len;
 	char* buffer = NULL;
@@ -249,15 +242,16 @@ void OutputSingledAlignments(ReadItem_t& read)
 	buffer = (char*)malloc((400 + read.rlen + (read.rlen >> 1)));
 	if (read.score == 0)
 	{
-		iUnMapped++;
+		myUnMapping++;
 		len = sprintf(buffer, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read.header, read.AlnReportArr[0].SamFlag, read.seq);
-		if (OutputFileFormat == 0) fprintf(output, "%s", buffer);
-		else gzwrite(gzOutput, buffer, len);;
+		SamOutputVec.push_back(buffer);
 	}
 	else
 	{
 		int i;
 		char *seq, *rseq;
+
+		if (read.mapq == Max_MAPQ) myUniqueMapping++;
 
 		seq = read.seq; rseq = NULL;
 		for (i = read.iBestAlnCanIdx; i < read.CanNum; i++)
@@ -271,8 +265,7 @@ void OutputSingledAlignments(ReadItem_t& read)
 				}
 				len = sprintf(buffer, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read.header, read.AlnReportArr[i].SamFlag, ChromosomeVec[read.AlnReportArr[i].coor.ChromosomeIdx].name, read.AlnReportArr[i].coor.gPos, read.mapq, read.AlnReportArr[i].coor.CIGAR.c_str(), (read.AlnReportArr[i].coor.bDir? seq: rseq), read.rlen - read.score, read.score, read.sub_score);
 
-				if (OutputFileFormat == 0) fprintf(output, "%s", buffer);
-				else gzwrite(gzOutput, buffer, len);;
+				SamOutputVec.push_back(buffer);
 
 				if (!bMultiHit) break;
 			}
@@ -453,9 +446,10 @@ void *ReadMapping(void *arg)
 {
 	bool bReadPairing;
 	ReadItem_t* ReadArr = NULL;
-	int i, j, ReadNum, EstDistance;
+	vector<string> SamOutputVec;
 	vector<SeedPair_t> SeedPairVec1, SeedPairVec2;
 	vector<AlignmentCandidate_t> AlignmentVec1, AlignmentVec2;
+	int i, j, ReadNum, EstDistance, myUniqueMapping, myUnMapping;
 
 	ReadArr = new ReadItem_t[ReadChunkSize];
 
@@ -546,13 +540,20 @@ void *ReadMapping(void *arg)
 				if (bDebugMode) printf("\nEnd of mapping for read#%s\n%s\n", ReadArr[i].header, string().assign(100, '=').c_str());
 			}
 		}
+		myUniqueMapping = myUnMapping = 0;
+		if (bPairEnd && ReadNum % 2 == 0) for (i = 0, j = 1; i != ReadNum; i += 2, j += 2) OutputPairedAlignments(ReadArr[i], ReadArr[j], myUniqueMapping, myUnMapping, SamOutputVec);
+		else for (i = 0; i != ReadNum; i++) OutputSingledAlignments(ReadArr[i], myUniqueMapping, myUnMapping, SamOutputVec);
+
 		pthread_mutex_lock(&OutputLock);
-		iTotalReadNum += ReadNum;
-		if (bPairEnd && ReadNum % 2 == 0) for (i = 0, j = 1; i != ReadNum; i += 2, j += 2) OutputPairedAlignments(ReadArr[i], ReadArr[j]);
-		else for (i = 0; i != ReadNum; i++) OutputSingledAlignments(ReadArr[i]);
-		//fflush(output);
+		iTotalReadNum += ReadNum; iUniqueMapping += myUniqueMapping; iUnMapping += myUnMapping;
+		for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++)
+		{
+			if (OutputFileFormat == 0) fprintf(output, "%s", iter->c_str());
+			else gzwrite(gzOutput, iter->c_str(), iter->length());
+		}
 		pthread_mutex_unlock(&OutputLock);
 
+		SamOutputVec.clear();
 		for (i = 0; i != ReadNum; i++)
 		{
 			delete[] ReadArr[i].header;
@@ -640,7 +641,7 @@ void Mapping()
 	}
 	if(iTotalReadNum > 0)
 	{
-		if (bPairEnd) fprintf(stderr, "\t# of total mapped sequences = %d (sensitivity = %.2f%%)\n\t# of paired sequences = %d (%.2f%%), average insert size = %d\n", iTotalReadNum - iUnMapped, (int)(10000 * (1.0*(iTotalReadNum - iUnMapped) / iTotalReadNum) + 0.5) / 100.0, iPaired, (int)(10000 * (1.0*iPaired / iTotalReadNum) + 0.5) / 100.0, (iPaired > 1 ? (int)(iDistance / (iPaired >> 1)) : 0));
-		else fprintf(stderr, "\t# of total mapped sequences = %d (sensitivity = %.2f%%)\n", iTotalReadNum - iUnMapped, (int)(10000 * (1.0*(iTotalReadNum - iUnMapped) / iTotalReadNum) + 0.5) / 100.0);
+		if (bPairEnd) fprintf(stderr, "\t# of total mapped sequences = %d (sensitivity = %.2f%%)\n\t# of paired sequences = %d (%.2f%%), average insert size = %d\n", iTotalReadNum - iUnMapping, (int)(10000 * (1.0*(iTotalReadNum - iUnMapping) / iTotalReadNum) + 0.5) / 100.0, iPaired, (int)(10000 * (1.0*iPaired / iTotalReadNum) + 0.5) / 100.0, (iPaired > 1 ? (int)(iDistance / (iPaired >> 1)) : 0));
+		else fprintf(stderr, "\t# of total mapped sequences = %d (sensitivity = %.2f%%)\n", iTotalReadNum - iUnMapping, (int)(10000 * (1.0*(iTotalReadNum - iUnMapping) / iTotalReadNum) + 0.5) / 100.0);
 	}
 }

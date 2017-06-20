@@ -19,5 +19,6 @@ static:		$(OBJECT)
 			$(Compiler) $(FLAGS) -c $<
 clean:
 		rm -f *.o *~
-eva:
+		
+eva:		SamEvaulation.cpp
 		$(Compiler) $(FLAGS) SamEvaulation.cpp -o eva

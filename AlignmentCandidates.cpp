@@ -134,7 +134,7 @@ vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq)
 	vector<SeedPair_t> SeedPairVec;
 	bwtSearchResult_t bwtSearchResult;
 
-	SeedPair.bSimple = true; pos = 0, stop_pos = 30; end_pos = rlen - MinSeedLength;
+	SeedPair.bSimple = true; pos = 0, stop_pos = 50; end_pos = rlen - MinSeedLength;
 	while (pos < end_pos)
 	{
 		if (EncodeSeq[pos] > 3) pos++, stop_pos++;
@@ -151,8 +151,13 @@ vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq)
 					SeedPairVec.push_back(SeedPair);
 				}
 				delete[] bwtSearchResult.LocArr;
+
+				pos += 50; stop_pos += 50;
 			}
-			pos += 15; stop_pos += 15;
+			else
+			{
+				pos += MinSeedLength; stop_pos += MinSeedLength;
+			}
 			if (stop_pos > rlen) stop_pos = rlen;
 		}
 	}
@@ -656,7 +661,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 					//if (bDebugMode) printf("Check normal pair#%d: R[%d-%d]=%d G[%ld-%ld]=%d\n", j + 1, AlignmentVec[i].SeedVec[j].rPos, AlignmentVec[i].SeedVec[j].rPos + AlignmentVec[i].SeedVec[j].rLen - 1, AlignmentVec[i].SeedVec[j].rLen, AlignmentVec[i].SeedVec[j].gPos, AlignmentVec[i].SeedVec[j].gPos + AlignmentVec[i].SeedVec[j].gLen - 1, AlignmentVec[i].SeedVec[j].gLen);
 					if (j == 0)
 					{
-						if (AlignmentVec[i].SeedVec[0].rLen > 5000 /*|| (!bPacBioData && AlignmentVec[i].SeedVec[0].rLen > 100)*/)
+						if (AlignmentVec[i].SeedVec[0].rLen > 5000)
 						{
 							cigar_vec.push_back(make_pair(AlignmentVec[i].SeedVec[0].rLen, 'S'));
 							AlignmentVec[i].SeedVec[0].gPos = AlignmentVec[i].SeedVec[1].gPos;
@@ -666,7 +671,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 					}
 					else if (j == num - 1)
 					{
-						if (AlignmentVec[i].SeedVec[j].rLen > 5000 /*|| (!bPacBioData && AlignmentVec[i].SeedVec[j].rLen > 100)*/)
+						if (AlignmentVec[i].SeedVec[j].rLen > 5000)
 						{
 							cigar_vec.push_back(make_pair(AlignmentVec[i].SeedVec[j].rLen, 'S'));
 							AlignmentVec[i].SeedVec[j].gPos = AlignmentVec[i].SeedVec[j-1].gPos + AlignmentVec[i].SeedVec[j - 1].gLen;

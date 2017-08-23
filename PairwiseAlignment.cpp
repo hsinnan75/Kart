@@ -15,7 +15,7 @@ double max(float x, float y, float z)
 	return x > y ? max(x, z) : max(y, z);
 }
 
-void PairwiseSequenceAlignment(int m, string& s1, int n, string& s2)
+pair<string, string> PairwiseSequenceAlignment(int m, string s1, int n, string s2)
 {
 	int i, j;
 
@@ -56,7 +56,6 @@ void PairwiseSequenceAlignment(int m, string& s1, int n, string& s2)
 			else s[i][j] = max(s[i - 1][j - 1] + (s1[i - 1] == s2[j - 1] ? 1 : -1), r[i][j], t[i][j]);
 		}
 	}
-
 	// back tracking
 	i = m - 1, j = n - 1;
 	while (i > 0 || j > 0) {
@@ -72,10 +71,13 @@ void PairwiseSequenceAlignment(int m, string& s1, int n, string& s2)
 			i--, j--;
 		}
 	}
-
 	for (i = 0; i < m; i++)
 	{
-		delete[] r[i]; delete[] t[i]; delete[] s[i];
+		delete[] r[i]; 
+		delete[] t[i]; 
+		delete[] s[i];
 	}
 	delete[] r; delete[] t; delete[] s;
+
+	return make_pair(s1, s2);
 }

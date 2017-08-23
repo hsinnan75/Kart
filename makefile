@@ -3,7 +3,7 @@
 all: main
 
 Compiler	= g++
-FLAGS		= -D NDEBUG -O3
+FLAGS		= -D NDEBUG -O2 -m64
 LIB		= -lz -lm -lpthread
 SOURCE		= main.cpp GetData.cpp Mapping.cpp AlignmentCandidates.cpp AlignmentRescue.cpp KmerAnalysis.cpp PairwiseAlignment.cpp tools.cpp bwt_index.cpp bwt_search.cpp
 HEADER		= structure.h

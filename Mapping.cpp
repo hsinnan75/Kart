@@ -565,6 +565,7 @@ void *ReadMapping(void *arg)
 void Mapping()
 {
 	int i;
+
 	vector<int> vec(iThreadNum); for (i = 0; i < iThreadNum; i++) vec[i] = i;
 	pthread_t *ThreadArr = new pthread_t[iThreadNum];
 
@@ -594,6 +595,7 @@ void Mapping()
 		if(OutputFileFormat == 0) output = fopen(OutputFileName, "w");
 		else gzOutput = gzopen(OutputFileName, "wb");
 	}
+
 	if (bDebugMode) iThreadNum = 1;
 	else
 	{

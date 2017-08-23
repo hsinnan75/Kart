@@ -191,10 +191,11 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 			bRunNW = false;
 			if (bDebugMode) printf("NormalPair Partition1: len1=%d len2=%d\n", rLen, gLen), ShowSeedInfo(PartitionVec);
 			
+			aln1.clear(); aln2.clear();
 			for (i = 0; i < num; i++)
 			{
 				// add the alignment of fragment pair in PartitionVec[i];
-				//printf("align %d-th pairs: R[%d-%d]=%d, G[%ld-%ld]=%d\n", i + 1, PartitionVec[i].rPos, PartitionVec[i].rPos+ PartitionVec[i].rLen - 1, PartitionVec[i].rLen, PartitionVec[i].gPos, PartitionVec[i].gPos+ PartitionVec[i].gLen -1, PartitionVec[i].gLen), fflush(stdout);
+				if (bDebugMode) printf("align %d-th pairs: R[%d-%d]=%d, G[%ld-%ld]=%d\n", i + 1, PartitionVec[i].rPos, PartitionVec[i].rPos+ PartitionVec[i].rLen - 1, PartitionVec[i].rLen, PartitionVec[i].gPos, PartitionVec[i].gPos+ PartitionVec[i].gLen -1, PartitionVec[i].gLen), fflush(stdout);
 				if (PartitionVec[i].rLen > 0 || PartitionVec[i].gLen > 0)
 				{
 					if (PartitionVec[i].gLen == 0)
@@ -211,26 +212,36 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 					}
 					else
 					{
-						//printf("substr: r[%d-%d]=%d, g[%d-%d]=%d\n", PartitionVec[i].rPos, PartitionVec[i].rPos + PartitionVec[i].rLen - 1, PartitionVec[i].rLen, PartitionVec[i].gPos, PartitionVec[i].gPos + PartitionVec[i].gLen - 1, PartitionVec[i].gLen), fflush(stdout);
+						//if (bDebugMode) printf("substr: r[%d-%d]=%d, g[%d-%d]=%d\n", PartitionVec[i].rPos, PartitionVec[i].rPos + PartitionVec[i].rLen - 1, PartitionVec[i].rLen, PartitionVec[i].gPos, PartitionVec[i].gPos + PartitionVec[i].gLen - 1, PartitionVec[i].gLen), fflush(stdout);
 						str1 = frag1.substr(PartitionVec[i].rPos, PartitionVec[i].rLen);
 						str2 = frag2.substr(PartitionVec[i].gPos, PartitionVec[i].gLen);
+						if (bDebugMode) printf("str1=%s\nstr2=%s\n\n", str1.c_str(), str2.c_str());
 						if (!PartitionVec[i].bSimple)
 						{
 							if (bPacBioData && (PartitionVec[i].rLen > 300 || PartitionVec[i].gLen > 300)) GenerateNormalPairAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
 							else
 							{
-								PairwiseSequenceAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
+								pair<string, string> str_pair = PairwiseSequenceAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
+								aln1 += str_pair.first;
+								aln2 += str_pair.second;
 							}
 						}
-
-						aln1 += str1; aln2 += str2;
+						else
+						{
+							aln1 += str1; aln2 += str2;
+						}
 					}
 				}
 			}
 			frag1 = aln1; frag2 = aln2;
 		}
 	}
-	if (bRunNW) PairwiseSequenceAlignment(rLen, frag1, gLen, frag2);
+	if (bRunNW)
+	{
+		pair<string, string> str_pair = PairwiseSequenceAlignment(rLen, frag1, gLen, frag2);
+		frag1 = str_pair.first;
+		frag2 = str_pair.second;
+	}
 }
 
 int ProcessNormalSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >& cigar_vec)

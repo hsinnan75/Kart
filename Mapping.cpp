@@ -548,9 +548,9 @@ void *ReadMapping(void *arg)
 		else for (i = 0; i != ReadNum; i++) OutputSingledAlignments(ReadArr[i], myUniqueMapping, myUnMapping, SamOutputVec);
 
 		pthread_mutex_lock(&OutputLock);
-		iTotalReadNum += ReadNum; //iUniqueMapping += myUniqueMapping; iUnMapping += myUnMapping;
-		//if (OutputFileFormat == 0) for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++) fprintf(output, "%s", iter->c_str());
-		//else for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++) gzwrite(gzOutput, iter->c_str(), iter->length());
+		iTotalReadNum += ReadNum; iUniqueMapping += myUniqueMapping; iUnMapping += myUnMapping;
+		if (OutputFileFormat == 0) for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++) fprintf(output, "%s", iter->c_str());
+		else for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++) gzwrite(gzOutput, iter->c_str(), iter->length());
 		pthread_mutex_unlock(&OutputLock);
 
 		for (i = 0; i != ReadNum; i++)

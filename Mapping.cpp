@@ -148,7 +148,7 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2, int& myUniqueM
 	char* buffer = NULL;
 	int i, j, len, dist = 0;
 
-	buffer = (char*)malloc(10000 + read1.rlen);
+	buffer = (char*)malloc(10000);
 
 	if (read1.score == 0)
 	{
@@ -191,8 +191,6 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2, int& myUniqueM
 			rseq = NULL;
 		}
 	}
-	free(buffer);
-	buffer = (char*)malloc(10000 + read2.rlen);
 
 	if (read2.score == 0)
 	{

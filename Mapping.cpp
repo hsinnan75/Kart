@@ -148,7 +148,9 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2, int& myUniqueM
 	char* buffer = NULL;
 	int i, j, len, dist = 0;
 
-	buffer = (char*)malloc(10000);
+	len = (read1.rlen > read2.rlen ? read1.rlen : read2.rlen);
+	if (len < 1000) buffer = (char*)malloc((10000));
+	else buffer = (char*)malloc((len * 10));
 
 	if (read1.score == 0)
 	{
@@ -234,19 +236,19 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2, int& myUniqueM
 void OutputSingledAlignments(ReadItem_t& read, int& myUniqueMapping, int& myUnMapping, vector<string>& SamOutputVec)
 {
 	int len;
-	stringstream ss;
-	//char* buffer = NULL;
+	//stringstream ss;
+	char* buffer = NULL;
 
-	//if(read.rlen > 1000) buffer = (char*)malloc(1000000);
-	//else buffer = (char*)malloc(40000);
+	if (read.rlen < 1000) buffer = (char*)malloc((10000));
+	else buffer = (char*)malloc((read.rlen * 10));
 
 	if (read.score == 0)
 	{
 		myUnMapping++;
-		ss.clear(); ss << read.header << "\t" << read.AlnReportArr[0].SamFlag << "\t*\t0\t0\t*\t*\t0\t0\t" << read.seq << "\t*\tAS:i:0\tXS:i:0\n";
-		SamOutputVec.push_back(ss.str());
-		//len = sprintf(buffer, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read.header, read.AlnReportArr[0].SamFlag, read.seq);
-		//SamOutputVec.push_back(buffer);
+		//ss.clear(); ss << read.header << "\t" << read.AlnReportArr[0].SamFlag << "\t*\t0\t0\t*\t*\t0\t0\t" << read.seq << "\t*\tAS:i:0\tXS:i:0\n";
+		//SamOutputVec.push_back(ss.str());
+		len = sprintf(buffer, "%s\t%d\t*\t0\t0\t*\t*\t0\t0\t%s\t*\tAS:i:0\tXS:i:0\n", read.header, read.AlnReportArr[0].SamFlag, read.seq);
+		SamOutputVec.push_back(buffer);
 	}
 	else
 	{
@@ -265,10 +267,10 @@ void OutputSingledAlignments(ReadItem_t& read, int& myUniqueMapping, int& myUnMa
 					rseq = new char[read.rlen + 1]; rseq[read.rlen] = '\0';
 					GetComplementarySeq(read.rlen, seq, rseq);
 				}
-				ss.clear(); ss.str(""); ss << read.header << "\t" << read.AlnReportArr[0].SamFlag << "\t" << ChromosomeVec[read.AlnReportArr[i].coor.ChromosomeIdx].name << "\t" << read.AlnReportArr[i].coor.gPos << "\t" << read.mapq << "\t" << read.AlnReportArr[i].coor.CIGAR.c_str() << "\t*\t0\t0\t" << (read.AlnReportArr[i].coor.bDir ? seq : rseq) << "\t*\tNM:i:" << read.rlen - read.score << "\tAS:i:" << read.score << "\tXS:i:" << read.sub_score << "\n";
-				SamOutputVec.push_back(ss.str());
-				//len = sprintf(buffer, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read.header, read.AlnReportArr[i].SamFlag, ChromosomeVec[read.AlnReportArr[i].coor.ChromosomeIdx].name, read.AlnReportArr[i].coor.gPos, read.mapq, read.AlnReportArr[i].coor.CIGAR.c_str(), (read.AlnReportArr[i].coor.bDir? seq: rseq), read.rlen - read.score, read.score, read.sub_score);
-				//SamOutputVec.push_back(buffer);
+				//ss.clear(); ss.str(""); ss << read.header << "\t" << read.AlnReportArr[0].SamFlag << "\t" << ChromosomeVec[read.AlnReportArr[i].coor.ChromosomeIdx].name << "\t" << read.AlnReportArr[i].coor.gPos << "\t" << read.mapq << "\t" << read.AlnReportArr[i].coor.CIGAR.c_str() << "\t*\t0\t0\t" << (read.AlnReportArr[i].coor.bDir ? seq : rseq) << "\t*\tNM:i:" << read.rlen - read.score << "\tAS:i:" << read.score << "\tXS:i:" << read.sub_score << "\n";
+				//SamOutputVec.push_back(ss.str());
+				len = sprintf(buffer, "%s\t%d\t%s\t%ld\t%d\t%s\t*\t0\t0\t%s\t*\tNM:i:%d\tAS:i:%d\tXS:i:%d\n", read.header, read.AlnReportArr[i].SamFlag, ChromosomeVec[read.AlnReportArr[i].coor.ChromosomeIdx].name, read.AlnReportArr[i].coor.gPos, read.mapq, read.AlnReportArr[i].coor.CIGAR.c_str(), (read.AlnReportArr[i].coor.bDir? seq: rseq), read.rlen - read.score, read.score, read.sub_score);
+				SamOutputVec.push_back(buffer);
 
 				if (!bMultiHit) break;
 			}
@@ -279,7 +281,7 @@ void OutputSingledAlignments(ReadItem_t& read, int& myUniqueMapping, int& myUnMa
 			rseq = NULL;
 		}
 	}
-	//free(buffer);
+	free(buffer);
 }
 
 void RemoveRedundantCandidates(vector<AlignmentCandidate_t>& AlignmentVec)

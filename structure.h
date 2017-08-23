@@ -191,8 +191,8 @@ extern vector<SeedPair_t> IdentifySeedPairs_FastMode(int rlen, uint8_t* EncodeSe
 extern vector<SeedPair_t> IdentifySeedPairs_RescueMode(int rlen, uint8_t* EncodeSeq);
 extern vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq);
 extern void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandidate_t>& AlignmentVec);
-extern vector<AlignmentCandidate_t> GenerateAlignmentCandidateForPacBioSeq(int rlen, vector<SeedPair_t>& SeedPairVec);
-extern vector<AlignmentCandidate_t> GenerateAlignmentCandidateForIlluminaSeq(int rlen, vector<SeedPair_t>& SeedPairVec);
+extern vector<AlignmentCandidate_t> GenerateAlignmentCandidateForPacBioSeq(int rlen, vector<SeedPair_t> SeedPairVec);
+extern vector<AlignmentCandidate_t> GenerateAlignmentCandidateForIlluminaSeq(int rlen, vector<SeedPair_t> SeedPairVec);
 extern Coordinate_t GenCoordinateInfo(bool bFirstRead, int64_t gPos, int64_t end_gPos, vector<pair<int, char> >& cigar_vec);
 
 // AlignmentRescue.cpp

@@ -13,7 +13,7 @@ Kart adopts a divide-and-conquer strategy, which separates a read into regions t
 
 # Download
 
-Current version: 2.2.2. Please use the command 
+Current version: 2.2.5. Please use the command 
   ```
   $ git clone https://github.com/hsinnan75/Kart.git
   ```

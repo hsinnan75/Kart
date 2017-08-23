@@ -79,7 +79,7 @@ vector<SeedPair_t> IdentifySeedPairs_FastMode(int rlen, uint8_t* EncodeSeq)
 	return SeedPairVec;
 }
 
-vector<AlignmentCandidate_t> GenerateAlignmentCandidateForIlluminaSeq(int rlen, vector<SeedPair_t>& SeedPairVec)
+vector<AlignmentCandidate_t> GenerateAlignmentCandidateForIlluminaSeq(int rlen, vector<SeedPair_t> SeedPairVec)
 {
 	int i, j, k, thr, num;
 	AlignmentCandidate_t AlignmentCandidate;
@@ -153,6 +153,7 @@ vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq)
 				delete[] bwtSearchResult.LocArr;
 
 				pos += 50; stop_pos += 50;
+				//pos += MinSeedLength; stop_pos += MinSeedLength;
 			}
 			else
 			{
@@ -166,7 +167,7 @@ vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq)
 	return SeedPairVec;
 }
 
-vector<AlignmentCandidate_t> GenerateAlignmentCandidateForPacBioSeq(int rlen, vector<SeedPair_t>& SeedPairVec)
+vector<AlignmentCandidate_t> GenerateAlignmentCandidateForPacBioSeq(int rlen, vector<SeedPair_t> SeedPairVec)
 {
 	bool *TakenArr;
 	int i, j, k, thr, num;

@@ -221,17 +221,10 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 							if (bPacBioData && (PartitionVec[i].rLen > 300 || PartitionVec[i].gLen > 300)) GenerateNormalPairAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
 							else
 							{
-								pair<string, string> str_pair = PairwiseSequenceAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
-								aln1 += str_pair.first;
-								aln2 += str_pair.second;
-								if (bDebugMode) printf("sub_aln\nstr1=%s\nstr2=%s\n\n", str_pair.first.c_str(), str_pair.second.c_str());
+								PairwiseSequenceAlignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
 							}
 						}
-						else
-						{
-							aln1 += str1; 
-							aln2 += str2;
-						}
+						aln1 += str1; aln2 += str2;
 					}
 				}
 			}
@@ -240,9 +233,7 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 	}
 	if (bRunNW)
 	{
-		pair<string, string> str_pair = PairwiseSequenceAlignment(rLen, frag1, gLen, frag2);
-		frag1 = str_pair.first; frag2 = str_pair.second;
-		if (bDebugMode) printf("sub_aln\nstr1=%s\nstr2=%s\n\n", str_pair.first.c_str(), str_pair.second.c_str());
+		PairwiseSequenceAlignment(rLen, frag1, gLen, frag2);
 	}
 }
 

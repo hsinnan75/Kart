@@ -223,4 +223,4 @@ extern vector<SeedPair_t> GenerateSimplePairsFromCommonKmers(int MinSeedLength, 
 extern vector<SeedPair_t> GenerateSimplePairsFromFragmentPair(int MaxDist, int len1, char* frag1, int len2, char* frag2);
 
 // PairwiseAlignment.cpp
-extern pair<string, string> PairwiseSequenceAlignment(int m, string s1, int n, string s2);
+extern void PairwiseSequenceAlignment(int m, string& s1, int n, string& s2);

@@ -3,7 +3,7 @@
 const float MaxPenalty = -65536;
 const float OPEN_GAP = -1.5;
 const float EXTEND_GAP = -0.5;
-const float NEW_GAP = -2.0; //OPEN_GAP + EXTEND_GAP;
+const float NEW_GAP = -2.0;
 
 double max(float x, float y)
 {

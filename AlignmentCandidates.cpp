@@ -152,7 +152,7 @@ vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq)
 				}
 				delete[] bwtSearchResult.LocArr;
 
-				pos += 50; stop_pos += 50;
+				pos += 30; stop_pos += 30;
 				//pos += MinSeedLength; stop_pos += MinSeedLength;
 			}
 			else

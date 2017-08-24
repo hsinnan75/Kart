@@ -19,6 +19,10 @@ Current version: 2.2.5. Please use the command
   ```
 to download the package of Kart.
 
+# Changes
+
+version 2.2.5 Fix a bug in the alignment report (This bug may cause memory corruption and lead to program crash).
+
 # Instructions
 
 We provide the executable file, please type 

@@ -21,7 +21,7 @@ to download the package of Kart.
 
 # Compiling
 
-To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and 'make index' to compile bwa_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
+To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwa_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
 

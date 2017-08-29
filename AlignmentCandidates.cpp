@@ -134,7 +134,7 @@ vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq)
 	vector<SeedPair_t> SeedPairVec;
 	bwtSearchResult_t bwtSearchResult;
 
-	SeedPair.bSimple = true; pos = 0, stop_pos = 50; end_pos = rlen - MinSeedLength;
+	SeedPair.bSimple = true; pos = 0, stop_pos = 100; end_pos = rlen - MinSeedLength;
 	while (pos < end_pos)
 	{
 		if (EncodeSeq[pos] > 3) pos++, stop_pos++;

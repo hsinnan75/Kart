@@ -19,6 +19,10 @@ Current version: 2.2.5. Please use the command
   ```
 to download the package of Kart.
 
+# Compiling
+
+To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and 'make index' to compile bwa_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
+
 # Changes
 
 version 2.2.5 Fix a bug in the alignment report (This bug may cause memory corruption and lead to program crash).

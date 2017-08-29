@@ -11,7 +11,7 @@ LIBS=		-lm -lz
 all:$(PROG)
 
 bwa_index:libbwa.a main.o
-		$(CC) $(CFLAGS) -static main.o -o $@ -L. -lbwa $(LIBS)
+		$(CC) $(CFLAGS) main.o -o $@ -L. -lbwa $(LIBS)
 
 libbwa.a:$(LOBJS)
 		$(AR) -csru $@ $(LOBJS)

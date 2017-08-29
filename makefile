@@ -9,6 +9,8 @@ SOURCE		= main.cpp GetData.cpp Mapping.cpp AlignmentCandidates.cpp AlignmentResc
 HEADER		= structure.h
 OBJECT		= $(SOURCE:%.cpp=%.o)
 
+all:		main index
+
 main:		$(OBJECT)
 			$(Compiler) $(FLAGS) $(OBJECT) -o kart $(LIB)
 			

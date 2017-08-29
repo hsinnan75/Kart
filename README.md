@@ -13,7 +13,7 @@ Kart adopts a divide-and-conquer strategy, which separates a read into regions t
 
 # Download
 
-Current version: 2.2.5. Please use the command 
+Current version: 2.2.6. Please use the command 
   ```
   $ git clone https://github.com/hsinnan75/Kart.git
   ```
@@ -25,7 +25,8 @@ To compile kart and the index tool, please change to kart's folder and just type
 
 # Changes
 
-version 2.2.5 Fix a bug in the alignment report (This bug may cause memory corruption and lead to program crash).
+version 2.2.6: Fix a bug in the alignment report.
+version 2.2.5: Fix a bug in the alignment report.
 
 # Instructions
 

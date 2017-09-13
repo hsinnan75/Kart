@@ -5,7 +5,7 @@ void ShowFragmentPair(char* ReadSeq, SeedPair_t& sp)
 	string frag1, frag2;
 	frag1.resize(sp.rLen); strncpy((char*)frag1.c_str(), ReadSeq + sp.rPos, sp.rLen);
 	frag2.resize(sp.gLen); strncpy((char*)frag2.c_str(), RefSequence + sp.gPos, sp.gLen);
-	printf("FragmentPair:\n%s #read[%d-%d]=%d\n%s #chr[%ld-%ld]=%d\nscore = %d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, sp.rLen), fflush(stdout);
+	printf("FragmentPair:\n%s #read[%d-%d]=%d\n%s #chr[%lld-%lld]=%d\nscore = %d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, sp.rLen), fflush(stdout);
 }
 
 bool CompByPosDiff(const SeedPair_t& p1, const SeedPair_t& p2)
@@ -95,13 +95,13 @@ vector<AlignmentCandidate_t> GenerateAlignmentCandidateForIlluminaSeq(int rlen, 
 	{
 		AlignmentCandidate.Score = SeedPairVec[i].rLen;
 		AlignmentCandidate.SeedVec.resize(1); AlignmentCandidate.SeedVec[0] = SeedPairVec[i];
-		//if (bDebugMode) printf("\nMaster seed: r[%d-%d] g[%ld-%ld], len=%d, PosDiff=%ld\n", SeedPairVec[i].rPos, SeedPairVec[i].rPos + SeedPairVec[i].rLen - 1, SeedPairVec[i].gPos, SeedPairVec[i].gPos + SeedPairVec[i].gLen - 1, SeedPairVec[i].rLen, SeedPairVec[i].PosDiff);
+		//if (bDebugMode) printf("\nMaster seed: r[%d-%d] g[%lld-%lld], len=%d, PosDiff=%lld\n", SeedPairVec[i].rPos, SeedPairVec[i].rPos + SeedPairVec[i].rLen - 1, SeedPairVec[i].gPos, SeedPairVec[i].gPos + SeedPairVec[i].gLen - 1, SeedPairVec[i].rLen, SeedPairVec[i].PosDiff);
 
 		for (j = i, k = i + 1; k < num; k++)
 		{
 			if (SeedPairVec[k].PosDiff == SeedPairVec[j].PosDiff || SeedPairVec[k].PosDiff - SeedPairVec[j].PosDiff < MaxGaps)
 			{
-				//if (bDebugMode) printf("add seed: r[%d-%d] g[%ld-%ld], len=%d, PosDiff=%ld\n", SeedPairVec[k].rPos, SeedPairVec[k].rPos + SeedPairVec[k].rLen - 1, SeedPairVec[k].gPos, SeedPairVec[k].gPos + SeedPairVec[k].gLen - 1, SeedPairVec[k].rLen, SeedPairVec[k].PosDiff);
+				//if (bDebugMode) printf("add seed: r[%d-%d] g[%lld-%lld], len=%d, PosDiff=%lld\n", SeedPairVec[k].rPos, SeedPairVec[k].rPos + SeedPairVec[k].rLen - 1, SeedPairVec[k].gPos, SeedPairVec[k].gPos + SeedPairVec[k].gLen - 1, SeedPairVec[k].rLen, SeedPairVec[k].PosDiff);
 				AlignmentCandidate.Score += SeedPairVec[k].rLen;
 				AlignmentCandidate.SeedVec.push_back(SeedPairVec[k]);
 				j = k;
@@ -186,7 +186,7 @@ vector<AlignmentCandidate_t> GenerateAlignmentCandidateForPacBioSeq(int rlen, ve
 			if (TakenArr[i]) continue;
 			AlignmentCandidate.Score = SeedPairVec[i].rLen; TakenArr[i] = true;
 			AlignmentCandidate.SeedVec.clear(); AlignmentCandidate.SeedVec.push_back(SeedPairVec[i]);
-			//if (bDebugMode) printf("Master seed: r[%d-%d] g[%ld-%ld], len=%d\n", SeedPairVec[i].rPos, SeedPairVec[i].rPos + SeedPairVec[i].rLen - 1, SeedPairVec[i].gPos, SeedPairVec[i].gPos + SeedPairVec[i].gLen - 1, SeedPairVec[i].rLen);
+			//if (bDebugMode) printf("Master seed: r[%d-%d] g[%lld-%lld], len=%d\n", SeedPairVec[i].rPos, SeedPairVec[i].rPos + SeedPairVec[i].rLen - 1, SeedPairVec[i].gPos, SeedPairVec[i].gPos + SeedPairVec[i].gLen - 1, SeedPairVec[i].rLen);
 			for (j = i, k = i + 1; k < num; k++)
 			{
 				if (TakenArr[k]) continue;
@@ -194,7 +194,7 @@ vector<AlignmentCandidate_t> GenerateAlignmentCandidateForPacBioSeq(int rlen, ve
 				{
 					if (SeedPairVec[k].rPos > SeedPairVec[j].rPos)
 					{
-						//if (bDebugMode) printf("add seed: r[%d-%d] g[%ld-%ld], len=%d\n", SeedPairVec[k].rPos, SeedPairVec[k].rPos + SeedPairVec[k].rLen - 1, SeedPairVec[k].gPos, SeedPairVec[k].gPos + SeedPairVec[k].gLen - 1, SeedPairVec[k].rLen);
+						//if (bDebugMode) printf("add seed: r[%d-%d] g[%lld-%lld], len=%d\n", SeedPairVec[k].rPos, SeedPairVec[k].rPos + SeedPairVec[k].rLen - 1, SeedPairVec[k].gPos, SeedPairVec[k].gPos + SeedPairVec[k].gLen - 1, SeedPairVec[k].rLen);
 						AlignmentCandidate.Score += SeedPairVec[k].rLen;
 						AlignmentCandidate.SeedVec.push_back(SeedPairVec[k]);
 						TakenArr[(j = k)] = true;
@@ -324,7 +324,7 @@ bool CheckSeedOverlapping(SeedPair_t& p1, SeedPair_t& p2)
 	int iOverlap;
 	bool bMaster = true;
 
-	//printf("[1]: p1: r[%d-%d]=%d g[%ld-%ld]=%d vs p2: r[%d-%d]=%d g[%ld-%ld]=%d\n", p1.rPos, p1.rPos + p1.rLen - 1, p1.rLen, p1.gPos, p1.gPos + p1.gLen - 1, p1.gLen, p2.rPos, p2.rPos + p2.rLen - 1, p2.rLen, p2.gPos, p2.gPos + p2.gLen - 1, p2.gLen);
+	//printf("[1]: p1: r[%d-%d]=%d g[%lld-%lld]=%d vs p2: r[%d-%d]=%d g[%lld-%lld]=%d\n", p1.rPos, p1.rPos + p1.rLen - 1, p1.rLen, p1.gPos, p1.gPos + p1.gLen - 1, p1.gLen, p2.rPos, p2.rPos + p2.rLen - 1, p2.rLen, p2.gPos, p2.gPos + p2.gLen - 1, p2.gLen);
 	if ((iOverlap = p1.rPos + p1.rLen - p2.rPos) > 0)
 	{
 		if (p1.rLen < p2.rLen)
@@ -367,7 +367,7 @@ bool CheckSeedOverlapping(SeedPair_t& p1, SeedPair_t& p2)
 			else p2.rLen = p2.gLen = 0;
 		}
 	}
-	//printf("[2]: p1: r[%d-%d]=%d g[%ld-%ld]=%d vs p2: r[%d-%d]=%d g[%ld-%ld]=%d\n\n", p1.rPos, p1.rPos + p1.rLen - 1, p1.rLen, p1.gPos, p1.gPos + p1.gLen - 1, p1.gLen, p2.rPos, p2.rPos + p2.rLen - 1, p2.rLen, p2.gPos, p2.gPos + p2.gLen - 1, p2.gLen);
+	//printf("[2]: p1: r[%d-%d]=%d g[%lld-%lld]=%d vs p2: r[%d-%d]=%d g[%lld-%lld]=%d\n\n", p1.rPos, p1.rPos + p1.rLen - 1, p1.rLen, p1.gPos, p1.gPos + p1.gLen - 1, p1.gLen, p2.rPos, p2.rPos + p2.rLen - 1, p2.rLen, p2.gPos, p2.gPos + p2.gLen - 1, p2.gLen);
 	return bMaster;
 }
 
@@ -392,7 +392,7 @@ void CheckOverlappingSeeds(vector<SeedPair_t>& SeedVec)
 			rEnd = SeedVec[i].rPos + SeedVec[i].rLen - 1;
 			gEnd = SeedVec[i].gPos + SeedVec[i].gLen - 1;
 
-			//printf("overlap check for seed#%d, rEnd=%d, gEned=%ld\n", i + 1, rEnd, gEnd);
+			//printf("overlap check for seed#%d, rEnd=%d, gEned=%lld\n", i + 1, rEnd, gEnd);
 			for (j = i + 1; j < num; j++)
 			{
 				if (SeedVec[j].rLen == 0) continue;
@@ -441,7 +441,7 @@ void IdentifyNormalPairs(int rlen, int glen, vector<SeedPair_t>& SeedVec)
 				SeedPair.gPos = SeedVec[i].gPos + SeedVec[i].gLen;
 				SeedPair.PosDiff = SeedPair.gPos - SeedPair.rPos;
 				SeedPair.rLen = rGaps; SeedPair.gLen = gGaps;
-				//printf("Add normal pair:\nR1[%d-%d] G1[%ld-%ld]\nNR[%d-%d]=%d NG[%ld-%ld]=%d\nR2[%d-%d] G2[%ld-%ld]\n", SeedVec[i].rPos, SeedVec[i].rPos + SeedVec[i].rLen - 1, SeedVec[i].gPos, SeedVec[i].gPos + SeedVec[i].gLen - 1, SeedPair.rPos, SeedPair.rPos + SeedPair.rLen - 1, SeedPair.rLen, SeedPair.gPos, SeedPair.gPos + SeedPair.gLen - 1, SeedPair.gLen, SeedVec[j].rPos, SeedVec[j].rPos + SeedVec[j].rLen - 1, SeedVec[j].gPos, SeedVec[j].gPos + SeedVec[j].gLen - 1); fflush(stdout);
+				//printf("Add normal pair:\nR1[%d-%d] G1[%lld-%lld]\nNR[%d-%d]=%d NG[%ld-%ld]=%d\nR2[%d-%d] G2[%lld-%lld]\n", SeedVec[i].rPos, SeedVec[i].rPos + SeedVec[i].rLen - 1, SeedVec[i].gPos, SeedVec[i].gPos + SeedVec[i].gLen - 1, SeedPair.rPos, SeedPair.rPos + SeedPair.rLen - 1, SeedPair.rLen, SeedPair.gPos, SeedPair.gPos + SeedPair.gLen - 1, SeedPair.gLen, SeedVec[j].rPos, SeedVec[j].rPos + SeedVec[j].rLen - 1, SeedVec[j].gPos, SeedVec[j].gPos + SeedVec[j].gLen - 1); fflush(stdout);
 				SeedVec.push_back(SeedPair);
 			}
 		}
@@ -452,7 +452,7 @@ void IdentifyNormalPairs(int rlen, int glen, vector<SeedPair_t>& SeedVec)
 	if (SeedVec.size() > 0)
 	{
 		i = 0;
-		//printf("Identify heading pair R[%d-%d]=%d, G[%ld-%ld]=%d\n", SeedVec[i].rPos, SeedVec[i].rPos + SeedVec[i].rLen - 1, SeedVec[i].rLen, SeedVec[i].gPos, SeedVec[i].gPos + SeedVec[i].gLen - 1, SeedVec[i].gLen); fflush(stdout);
+		//printf("Identify heading pair R[%d-%d]=%d, G[%lld-%lld]=%d\n", SeedVec[i].rPos, SeedVec[i].rPos + SeedVec[i].rLen - 1, SeedVec[i].rLen, SeedVec[i].gPos, SeedVec[i].gPos + SeedVec[i].gLen - 1, SeedVec[i].gLen); fflush(stdout);
 		rGaps = SeedVec[i].rPos > 0 ? SeedVec[i].rPos : 0;
 		gGaps = glen > 0 ? SeedVec[i].gPos : rGaps;
 		//printf("rGaps=%d, gGaps=%d\n", rGaps, gGaps); fflush(stdout);
@@ -467,7 +467,7 @@ void IdentifyNormalPairs(int rlen, int glen, vector<SeedPair_t>& SeedVec)
 			SeedPair.gLen = gGaps;
 			SeedVec.insert(SeedVec.begin(), SeedPair);
 
-			//if (bDebugMode) printf("Add missing head: r[%d-%d]=%d, g[%ld-%ld]=%d\n", SeedPair.rPos, SeedPair.rPos + SeedPair.rLen - 1, SeedPair.rLen, SeedPair.gPos, SeedPair.gPos + SeedPair.gLen - 1, SeedPair.gLen);
+			//if (bDebugMode) printf("Add missing head: r[%d-%d]=%d, g[%lld-%lld]=%d\n", SeedPair.rPos, SeedPair.rPos + SeedPair.rLen - 1, SeedPair.rLen, SeedPair.gPos, SeedPair.gPos + SeedPair.gLen - 1, SeedPair.gLen);
 		}
 		i = (int)SeedVec.size() - 1;
 		rGaps = rlen - (SeedVec[i].rPos + SeedVec[i].rLen);
@@ -482,7 +482,7 @@ void IdentifyNormalPairs(int rlen, int glen, vector<SeedPair_t>& SeedVec)
 			SeedPair.gLen = gGaps;
 			SeedVec.push_back(SeedPair);
 
-			//if (bDebugMode) printf("Add missing tail: r[%d-%d]=%d, g[%ld-%ld]=%d\n", SeedPair.rPos, SeedPair.rPos + SeedPair.rLen - 1, SeedPair.rLen, SeedPair.gPos, SeedPair.gPos + SeedPair.gLen - 1, SeedPair.gLen);
+			//if (bDebugMode) printf("Add missing tail: r[%d-%d]=%d, g[%lld-%lld]=%d\n", SeedPair.rPos, SeedPair.rPos + SeedPair.rLen - 1, SeedPair.rLen, SeedPair.gPos, SeedPair.gPos + SeedPair.gLen - 1, SeedPair.gLen);
 		}
 	}
 	//if (bDebugMode) printf("after generating normal pairs\n"), ShowSeedInfo(SeedVec);
@@ -531,7 +531,7 @@ Coordinate_t GenCoordinateInfo(bool bFirstRead, int64_t gPos, int64_t end_gPos, 
 			iter = ChrLocMap.lower_bound(gPos);
 			coor.ChromosomeIdx = iter->second;
 			coor.gPos = gPos + 1 - ChromosomeVec[coor.ChromosomeIdx].FowardLocation;
-			//if (bDebugMode) printf("matched chr=%s, loc=%ld, gPos: %ld -> %ld\n", ChromosomeVec[coor.ChromosomeIdx].name, ChromosomeVec[coor.ChromosomeIdx].FowardLocation, gPos, coor.gPos);
+			//if (bDebugMode) printf("matched chr=%s, loc=%lld, gPos: %lld -> %lld\n", ChromosomeVec[coor.ChromosomeIdx].name, ChromosomeVec[coor.ChromosomeIdx].FowardLocation, gPos, coor.gPos);
 		}
 	}
 	else
@@ -550,10 +550,10 @@ Coordinate_t GenCoordinateInfo(bool bFirstRead, int64_t gPos, int64_t end_gPos, 
 		{
 			iter = ChrLocMap.lower_bound(gPos);
 			coor.gPos = iter->first - end_gPos + 1; coor.ChromosomeIdx = iter->second;
-			//if(bDebugMode) printf("matched chr=%s, loc=%ld, gPos: %ld -> %ld\n", ChromosomeVec[coor.ChromosomeIdx].name, ChromosomeVec[coor.ChromosomeIdx].ReverseLocation, gPos, coor.gPos);
+			//if(bDebugMode) printf("matched chr=%s, loc=%lld, gPos: %lld -> %lld\n", ChromosomeVec[coor.ChromosomeIdx].name, ChromosomeVec[coor.ChromosomeIdx].ReverseLocation, gPos, coor.gPos);
 		}
 	}
-	//if (bDebugMode) printf("gPos: %ld --> %ld %s\n", gPos, coor.gPos, (coor.bDir? "Forward":"Reverse"));
+	//if (bDebugMode) printf("gPos: %lld --> %lld %s\n", gPos, coor.gPos, (coor.bDir? "Forward":"Reverse"));
 
 	coor.CIGAR = GenerateCIGAR(cigar_vec);
 
@@ -602,7 +602,7 @@ bool CheckCoordinateValidity(vector<SeedPair_t>& SeedVec)
 	if ((gPos1 < GenomeSize && gPos2 >= GenomeSize) || (gPos1 >= GenomeSize && gPos2 < GenomeSize) || ChrLocMap.lower_bound(gPos1)->second != ChrLocMap.lower_bound(gPos2)->second)
 	{
 		bValid = false;
-		//if (bDebugMode) fprintf(stderr, "%ld and %ld are not in the same chromosome!\n", gPos1, gPos2);
+		//if (bDebugMode) fprintf(stderr, "%lld and %lld are not in the same chromosome!\n", gPos1, gPos2);
 	}
 	return bValid;
 }
@@ -659,7 +659,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 				}
 				else
 				{
-					//if (bDebugMode) printf("Check normal pair#%d: R[%d-%d]=%d G[%ld-%ld]=%d\n", j + 1, AlignmentVec[i].SeedVec[j].rPos, AlignmentVec[i].SeedVec[j].rPos + AlignmentVec[i].SeedVec[j].rLen - 1, AlignmentVec[i].SeedVec[j].rLen, AlignmentVec[i].SeedVec[j].gPos, AlignmentVec[i].SeedVec[j].gPos + AlignmentVec[i].SeedVec[j].gLen - 1, AlignmentVec[i].SeedVec[j].gLen);
+					//if (bDebugMode) printf("Check normal pair#%d: R[%d-%d]=%d G[%lld-%lld]=%d\n", j + 1, AlignmentVec[i].SeedVec[j].rPos, AlignmentVec[i].SeedVec[j].rPos + AlignmentVec[i].SeedVec[j].rLen - 1, AlignmentVec[i].SeedVec[j].rLen, AlignmentVec[i].SeedVec[j].gPos, AlignmentVec[i].SeedVec[j].gPos + AlignmentVec[i].SeedVec[j].gLen - 1, AlignmentVec[i].SeedVec[j].gLen);
 					if (j == 0)
 					{
 						if (AlignmentVec[i].SeedVec[0].rLen > 5000)

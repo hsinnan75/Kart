@@ -36,12 +36,12 @@ AlignmentCandidate_t IdnetifyRescueCandidate(int rlen, uint64_t gPos, vector<See
 	{
 		vec[i].gPos += gPos; s = vec[i].rLen;
 		SeedPairVec.resize(1); SeedPairVec[0] = vec[i];
-		//if (bDebugMode) printf("\nMaster seed: r[%d-%d] g[%ld-%ld], len=%d, PosDiff=%ld\n", vec[i].rPos, vec[i].rPos + vec[i].rLen - 1, vec[i].gPos, vec[i].gPos + vec[i].gLen - 1, vec[i].rLen, vec[i].PosDiff);
+		//if (bDebugMode) printf("\nMaster seed: r[%d-%d] g[%lld-%lld], len=%d, PosDiff=%lld\n", vec[i].rPos, vec[i].rPos + vec[i].rLen - 1, vec[i].gPos, vec[i].gPos + vec[i].gLen - 1, vec[i].rLen, vec[i].PosDiff);
 		for (j = i + 1; j < num; j++)
 		{
 			if (vec[j].PosDiff - vec[i].PosDiff < MaxGaps)
 			{
-				//if (bDebugMode) printf("add seed: r[%d-%d] g[%ld-%ld], len=%d, PosDiff=%ld\n", vec[j].rPos, vec[j].rPos + vec[j].rLen - 1, vec[j].gPos, vec[j].gPos + vec[j].gLen - 1, vec[j].rLen, vec[i].PosDiff);
+				//if (bDebugMode) printf("add seed: r[%d-%d] g[%lld-%lld], len=%d, PosDiff=%lld\n", vec[j].rPos, vec[j].rPos + vec[j].rLen - 1, vec[j].gPos, vec[j].gPos + vec[j].gLen - 1, vec[j].rLen, vec[i].PosDiff);
 				vec[j].gPos += gPos; s += vec[j].rLen;
 				SeedPairVec.push_back(vec[j]);
 			}
@@ -111,7 +111,7 @@ bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, ve
 				right_boundary = ChrLocMap.lower_bound(left_boundary)->first;
 
 			if ((slen = (int)(right_boundary - left_boundary)) < r2.rlen) continue;
-			if (bDebugMode) printf("\n\nAnchor1-Candidate#%d (Score=%d) pos=%ld, Search region = [%ld - %ld], len = %d\n\n", i + 1, AlignmentVec1[i].Score, AlignmentVec1[i].PosDiff, left_boundary, right_boundary, slen), fflush(stdout);
+			if (bDebugMode) printf("\n\nAnchor1-Candidate#%d (Score=%d) pos=%lld, Search region = [%lld - %lld], len = %d\n\n", i + 1, AlignmentVec1[i].Score, AlignmentVec1[i].PosDiff, left_boundary, right_boundary, slen), fflush(stdout);
 
 			RefSeg  = RefSequence + left_boundary; vec2 = CreateKmerVecFromReadSeq(slen, RefSeg);
 			KmerPairVec = IdentifyCommonKmers(slen, vec1, vec2);
@@ -144,7 +144,7 @@ bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, ve
 				left_boundary = ChrLocMap.lower_bound(right_boundary)->first - ChromosomeVec[ChrLocMap.lower_bound(right_boundary)->second].len + 1;
 
 			if ((slen = (int)(right_boundary - left_boundary)) < r1.rlen) continue;
-			if (bDebugMode) printf("\n\nAnchor2-Candidate#%d (Score=%d) pos=%ld, Search region = [%ld - %ld], len = %d\n\n", i + 1, AlignmentVec2[i].Score, AlignmentVec2[i].PosDiff, left_boundary, right_boundary, slen);
+			if (bDebugMode) printf("\n\nAnchor2-Candidate#%d (Score=%d) pos=%lld, Search region = [%lld - %lld], len = %d\n\n", i + 1, AlignmentVec2[i].Score, AlignmentVec2[i].PosDiff, left_boundary, right_boundary, slen);
 
 			RefSeg = RefSequence + left_boundary; vec2 = CreateKmerVecFromReadSeq(slen, RefSeg);
 			KmerPairVec = IdentifyCommonKmers(slen, vec1, vec2);

@@ -3,7 +3,7 @@
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.2.6";
+const char* VersionStr = "2.3.0";
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
 bool bDebugMode, bPairEnd, bPacBioData, bMultiHit, gzCompressed, FastQFormat;
 char *RefSequence, *IndexFileName, *ReadFileName, *ReadFileName2, *OutputFileName;
@@ -132,10 +132,10 @@ int main(int argc, char* argv[])
 			else if (parameter == "-f2" || parameter =="-q2") ReadFileName2 = argv[++i];
 			else if (parameter == "-t")
 			{
-				if ((iThreadNum = atoi(argv[++i])) > 16)
+				if ((iThreadNum = atoi(argv[++i])) > 40)
 				{
-					fprintf(stderr, "Warning! Thread number is limited to 16!\n");
-					iThreadNum = 16;
+					fprintf(stderr, "Warning! Thread number is limited to 40!\n");
+					iThreadNum = 40;
 				}
 			}
 			else if (parameter == "-g")

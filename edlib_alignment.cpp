@@ -1445,10 +1445,10 @@ void edlib_alignment(int m, string& s1, int n, string& s2)
 	EdlibAlignResult result = edlibAlign(s1.c_str(), m, s2.c_str(), n, edlibNewAlignConfig(-1, EDLIB_MODE_NW, EDLIB_TASK_PATH, NULL, 0));
 	if (result.status == EDLIB_STATUS_OK)
 	{
-		for (i = 0; i < result.alignmentLength; i++, p++)
+		for (i = 0; i < result.alignmentLength; i++)
 		{
-			if (result.alignment[i] == EDLIB_EDOP_DELETE) s1.insert(s1.begin() + p, 1, '-');
-			else if (result.alignment[i] == EDLIB_EDOP_INSERT) s2.insert(s2.begin() + p, 1, '-');
+			if (result.alignment[i] == EDLIB_EDOP_DELETE) s1.insert(s1.begin() + i, 1, '-');
+			else if (result.alignment[i] == EDLIB_EDOP_INSERT) s2.insert(s2.begin() + i, 1, '-');
 		}
 	}
 	else nw_alignment(m, s1, n, s2);

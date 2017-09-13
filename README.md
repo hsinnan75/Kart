@@ -26,7 +26,9 @@ To compile kart and the index tool, please change to kart's folder and just type
 # Changes
 
 version 2.3.0: Add ksw2 and edlib alignment method to replace the Needleman-Wunsch algorithm.
+
 version 2.2.6: Fix a bug in the alignment report.
+
 version 2.2.5: Fix a bug in the alignment report.
 
 # Instructions

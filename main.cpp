@@ -13,7 +13,7 @@ void ShowProgramUsage(const char* program)
 	fprintf(stderr, "\n");
 	fprintf(stderr, "kart v%s\n", VersionStr);
 	fprintf(stderr, "Usage: %s -i Index_Prefix -f ReadFile [-f2 ReadFile2] > out.sam\n\n", program);
-	fprintf(stderr, "Options: -t INT        number of threads [16]\n");
+	fprintf(stderr, "Options: -t INT        number of threads [4]\n");
 	fprintf(stderr, "         -f            files with #1 mates reads (format:fa, fq, fq.gz)\n");
 	fprintf(stderr, "         -f2           files with #2 mates reads (format:fa, fq, fq.gz)\n");
 	fprintf(stderr, "         -o            output filename [stdout]\n");

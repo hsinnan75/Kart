@@ -51,7 +51,7 @@ The above command is to index the genome file Ecoli.fa and store the index files
 
 Please note that if you find bwa_index does not work in your computer system, you may use bwa (http://bio-bwa.sourceforge.net/) to build the index files.
   ```
-  $ ./bwa index -p index_prefix xxxx.fa
+  $ ./bwa_index -p index_prefix xxxx.fa
   ```
 
 For mapping short reads, Kart requires the the index files of the reference genome and at least one read file (two read files for the separated paired-end reads). Users should use -i to specify the prefix of the index files (including the directory path).

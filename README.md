@@ -42,7 +42,7 @@ to run the program. Or you can type 'make' to build the executable file.
 
 # Usage
 
-For indexing a reference genome, Kart requires the target genome file (in fasta format) and the prefix of the index files (including the directory path).
+To index a reference genome, Kart requires the target genome file (in fasta format) and the prefix of the index files (including the directory path).
 
   ```
   $ ./bwa_index ref_file[ex.ecoli.fa] index_prefix[ex. Ecoli]
@@ -54,7 +54,7 @@ Please note that if you find bwa_index does not work in your computer system, yo
   $ ./bwa index -p index_prefix xxxx.fa
   ```
 
-For mapping short reads, Kart requires the the index files of the reference genome and at least one read file (two read files for the separated paired-end reads). Users should use -i to specify the prefix of the index files (including the directory path).
+To map short reads, Kart requires the the index files of the reference genome and at least one read file (two read files for the separated paired-end reads). Users should use -i to specify the prefix of the index files (including the directory path).
 
  case 1: standard sam output
   ```

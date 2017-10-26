@@ -26,5 +26,5 @@ index:
 clean:
 		rm -f *.o *~
 		
-eva:		SamEvaulation.cpp
-		$(Compiler) $(FLAGS) SamEvaulation.cpp -o eva
+eva:		SamEvaluation.cpp
+		$(Compiler) $(FLAGS) SamEvaluation.cpp -o eva

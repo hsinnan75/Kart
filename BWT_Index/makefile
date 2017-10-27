@@ -13,6 +13,9 @@ all:$(PROG)
 bwa_index:libbwa.a main.o
 		$(CC) $(CFLAGS) main.o -o $@ -L. -lbwa $(LIBS)
 
+bwa_index_static: libbwa.a main.o
+		$(CC) $(CFLAGS) -static main.o -o $@ -L. -lbwa $(LIBS)
+
 libbwa.a:$(LOBJS)
 		$(AR) -csru $@ $(LOBJS)
 

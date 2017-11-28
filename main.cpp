@@ -3,7 +3,7 @@
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.3.0";
+const char* VersionStr = "2.3.1";
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
 bool bDebugMode, bPairEnd, bPacBioData, bMultiHit, gzCompressed, FastQFormat;
 char *RefSequence, *IndexFileName, *ReadFileName, *ReadFileName2, *OutputFileName;

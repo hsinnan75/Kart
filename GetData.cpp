@@ -5,6 +5,16 @@ map<int64_t, int> ChrLocMap;
 int64_t GenomeSize, TwoGenomeSize;
 vector<Chromosome_t> ChromosomeVec;
 
+bool CheckReadFormat(const char* filename)
+{
+	char buf[1];
+	gzFile file = gzopen(filename, "rb");
+	gzread(file, buf, 1); gzclose(file);
+
+	if (buf[0] == '@') return true; // fastq
+	else return false;
+}
+
 int IdentifyHeaderBoundary(char* str, int len)
 {
 	int i;
@@ -111,12 +121,19 @@ ReadItem_t gzGetNextEntry(gzFile file)
 
 	if (gzgets(file, buffer, 1024) != NULL)
 	{
-		len = IdentifyHeaderBoundary(buffer, strlen(buffer)) - 1; read.header = new char[len + 1]; 
-		strncpy(read.header, (buffer + 1), len); read.header[len] = '\0';
-		gzgets(file, buffer, 1024); read.rlen = strlen(buffer) - 1; read.seq = new char[read.rlen + 1]; read.seq[read.rlen] = '\0';
-		strncpy(read.seq, buffer, read.rlen);
+		len = IdentifyHeaderBoundary(buffer, strlen(buffer)) - 1;
+		if (len > 0 && (buffer[0] == '@' || buffer[0] == '>'))
+		{
+			read.header = new char[len + 1];
+			strncpy(read.header, (buffer + 1), len); read.header[len] = '\0';
+			gzgets(file, buffer, 1024); read.rlen = strlen(buffer) - 1; read.seq = new char[read.rlen + 1]; read.seq[read.rlen] = '\0';
+			strncpy(read.seq, buffer, read.rlen);
 
-		gzgets(file, buffer, 1024); gzgets(file, buffer, 1024);
+			if (FastQFormat)
+			{
+				gzgets(file, buffer, 1024); gzgets(file, buffer, 1024);
+			}
+		}
 	}
 	return read;
 }

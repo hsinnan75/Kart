@@ -3,16 +3,16 @@
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.3.1";
+const char* VersionStr = "2.3.2";
+vector<string> ReadFileNameVec1, ReadFileNameVec2;
+char *RefSequence, *IndexFileName, *OutputFileName;
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
 bool bDebugMode, bPairEnd, bPacBioData, bMultiHit, gzCompressed, FastQFormat;
-char *RefSequence, *IndexFileName, *ReadFileName, *ReadFileName2, *OutputFileName;
 
 void ShowProgramUsage(const char* program)
 {
-	fprintf(stderr, "\n");
-	fprintf(stderr, "kart v%s\n", VersionStr);
-	fprintf(stderr, "Usage: %s -i Index_Prefix -f ReadFile [-f2 ReadFile2] > out.sam\n\n", program);
+	fprintf(stderr, "kart v%s (Hsin-Nan Lin & Wen-Lian Hsu)\n\n", VersionStr);
+	fprintf(stderr, "Usage: %s -i Index_Prefix -f <ReadFile_A1 ReadFile_B1 ...> [-f2 <ReadFile_A2 ReadFile_B2 ...>] > out.sam\n\n", program);
 	fprintf(stderr, "Options: -t INT        number of threads [4]\n");
 	fprintf(stderr, "         -f            files with #1 mates reads (format:fa, fq, fq.gz)\n");
 	fprintf(stderr, "         -f2           files with #2 mates reads (format:fa, fq, fq.gz)\n");
@@ -24,80 +24,56 @@ void ShowProgramUsage(const char* program)
 	fprintf(stderr, "\n");
 }
 
-bool CheckReadFile(char* filename, bool& bReadFormat)
+bool CheckOutputFileName()
 {
-	fstream file;
-	string header;
-	bool bCheck = true;
+	bool bRet = true;
 
-	file.open(filename, ios_base::in);
-	if (!file.is_open()) return false;
-	else
+	if (OutputFileName != NULL)
 	{
-		getline(file, header);
-		if (header == "") return false;
-		else
+		struct stat s;
+		string filename, FileExt;
+
+		filename = OutputFileName; FileExt = filename.substr(filename.find_last_of('.') + 1);
+		if (FileExt == "gz") OutputFileFormat = 1;
+		if (stat(OutputFileName, &s) == 0)
 		{
-			if (header[0] == '@') bReadFormat = true;
-			else bReadFormat = false;
+			if (s.st_mode & S_IFDIR)
+			{
+				bRet = false;
+				fprintf(stderr, "Warning: %s is a directory!\n", OutputFileName);
+			}
+			else if (s.st_mode & S_IFREG)
+			{
+			}
+			else
+			{
+				bRet = false;
+				fprintf(stderr, "Warning: %s is not a regular file!\n", OutputFileName);
+			}
 		}
 	}
-	file.close();
-
-	return bCheck;
+	return bRet;
 }
 
-bool CheckCompressedFile(char* filename)
-{
-	gzFile file;
-	bool bCheck = true;
-
-	if ((file = gzopen(filename, "rb")) == Z_NULL) bCheck = false;
-	gzclose(file);
-
-	return bCheck;
-}
-
-bool Check_gzInputFormat()
-{
-	string filename, FileExt;
-	bool bCompressed = false;
-
-	filename = ReadFileName; FileExt = filename.substr(filename.find_last_of('.') + 1);
-	if (FileExt == "gz") bCompressed = true;
-
-	return bCompressed;
-}
-
-bool CheckOutputFileName()
+bool CheckInputFiles()
 {
 	struct stat s;
 	bool bRet = true;
-	string filename, FileExt;
 
-	filename = OutputFileName; FileExt = filename.substr(filename.find_last_of('.') + 1);
-
-	if (FileExt == "gz") OutputFileFormat = 1;
-	else if (FileExt == "bam") OutputFileFormat = 2;
-
-	//if (OutputFileFormat == 0) fprintf(stderr, "OutputFile = %s [format=sam]\n", OutputFileName);
-	//else if (OutputFileFormat == 1) fprintf(stderr, "OutputFile = %s [format=sam.gz]\n", OutputFileName);
-	//else fprintf(stderr, "OutputFile = %s [format=bam]\n", OutputFileName);
-
-	if (stat(OutputFileName, &s) == 0)
+	for (vector<string>::iterator iter = ReadFileNameVec1.begin(); iter != ReadFileNameVec1.end(); iter++)
 	{
-		if (s.st_mode & S_IFDIR)
+		if (stat(iter->c_str(), &s) == -1)
 		{
 			bRet = false;
-			fprintf(stderr, "Warning: %s is a directory!\n", OutputFileName);
+			fprintf(stderr, "Cannot access file:[%s]\n", (char*)iter->c_str());
 		}
-		else if (s.st_mode & S_IFREG)
-		{
-		}
-		else
+	}
+	for (vector<string>::iterator iter = ReadFileNameVec2.begin(); iter != ReadFileNameVec2.end(); iter++)
+	{
+		if (stat(iter->c_str(), &s) == -1)
 		{
 			bRet = false;
-			fprintf(stderr, "Warning: %s is not a regular file!\n", OutputFileName);
+			fprintf(stderr, "Cannot access file:[%s]\n", (char*)iter->c_str());
 		}
 	}
 	return bRet;
@@ -117,8 +93,8 @@ int main(int argc, char* argv[])
 	bPacBioData = false;
 	bMultiHit = false;
 	FastQFormat = true;
-	OutputFileFormat = 0; // 0:sam 1:sam.gz, 2:bam
-	RefSequence = IndexFileName = ReadFileName = ReadFileName2 = OutputFileName = NULL;
+	OutputFileFormat = 0; // 0:sam 1:sam.gz
+	RefSequence = IndexFileName = OutputFileName = NULL;
 
 	if (argc == 1 || strcmp(argv[1], "-h") == 0) ShowProgramUsage(argv[0]);
 	else
@@ -128,8 +104,16 @@ int main(int argc, char* argv[])
 			parameter = argv[i];
 
 			if (parameter == "-i") IndexFileName = argv[++i];
-			else if (parameter == "-f" || parameter == "-q") ReadFileName = argv[++i];
-			else if (parameter == "-f2" || parameter =="-q2") ReadFileName2 = argv[++i];
+			else if (parameter == "-f")
+			{
+				while (++i < argc && argv[i][0] != '-') ReadFileNameVec1.push_back(argv[i]);
+				i--;
+			}
+			else if (parameter == "-f2")
+			{
+				while (++i < argc && argv[i][0] != '-') ReadFileNameVec2.push_back(argv[i]);
+				i--;
+			}
 			else if (parameter == "-t")
 			{
 				if ((iThreadNum = atoi(argv[++i])) > 40)
@@ -155,33 +139,27 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		if (IndexFileName == NULL || ReadFileName == NULL)
+		if (ReadFileNameVec1.size() == 0)
 		{
-			fprintf(stderr, "Warning! Please specify a valid index prefix and read files!\n");
+			fprintf(stderr, "Warning! Please specify a valid read input!\n");
 			ShowProgramUsage(argv[0]);
 			exit(0);
 		}
-		gzCompressed = Check_gzInputFormat();
-
-		if ((gzCompressed && CheckCompressedFile(ReadFileName) == false) ||
-			(!gzCompressed && CheckReadFile(ReadFileName, FastQFormat) == false))
-			fprintf(stderr, "Cannot open the read file: %s\n", ReadFileName), exit(0);
-
-		if (ReadFileName2 != NULL)
+		if (ReadFileNameVec2.size() > 0 && ReadFileNameVec1.size() != ReadFileNameVec2.size())
 		{
-			bool FastQFormat2 = true;
-			if ((gzCompressed && CheckCompressedFile(ReadFileName2) == false) ||
-				(!gzCompressed && CheckReadFile(ReadFileName2, FastQFormat2) == false))
-				fprintf(stderr, "Cannot open the read file: %s\n", ReadFileName2), exit(0);
-
-			if(FastQFormat2 != FastQFormat) fprintf(stderr, "The input files are not with the same format!\n"), exit(0);
+			fprintf(stderr, "Warning! Paired-end reads input numbers do not match!\n");
+			fprintf(stderr, "Read1:\n"); for (vector<string>::iterator iter = ReadFileNameVec1.begin(); iter != ReadFileNameVec1.end(); iter++) fprintf(stderr, "\t%s\n", (char*)iter->c_str());
+			fprintf(stderr, "Read2:\n"); for (vector<string>::iterator iter = ReadFileNameVec2.begin(); iter != ReadFileNameVec2.end(); iter++) fprintf(stderr, "\t%s\n", (char*)iter->c_str());
+			exit(0);
 		}
-
-		if (OutputFileName != NULL && CheckOutputFileName() == false) exit(0);
-
-		if (CheckBWAIndexFiles(IndexFileName)) RefIdx = bwa_idx_load(IndexFileName);
-		else RefIdx = 0;
-
+		if (CheckInputFiles() == false || CheckOutputFileName() == false) exit(0);
+		if (IndexFileName != NULL && CheckBWAIndexFiles(IndexFileName)) RefIdx = bwa_idx_load(IndexFileName);
+		else
+		{
+			fprintf(stderr, "Warning! Please specify a valid reference index!\n");
+			ShowProgramUsage(argv[0]);
+			exit(0);
+		}
 		if (RefIdx == 0) fprintf(stderr, "\n\nError! Index files are corrupt!\n");
 		else
 		{

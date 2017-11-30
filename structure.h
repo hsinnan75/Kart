@@ -166,8 +166,9 @@ extern vector<int64_t> AccumulationLengthVec, PositionShiftPosVec;
 
 extern const char* VersionStr;
 extern map<int64_t, int> ChrLocMap;
+extern vector<string> ReadFileNameVec1, ReadFileNameVec2;
+extern char *RefSequence, *GenomeFileName, *IndexFileName, *OutputFileName;
 extern bool bDebugMode, bPairEnd, bPacBioData, gzCompressed, FastQFormat, bMultiHit;
-extern char *RefSequence, *GenomeFileName, *IndexFileName, *ReadFileName, *ReadFileName2, *OutputFileName;
 extern int MaxInsertSize, iThreadNum, iChromsomeNum, WholeChromosomeNum, ChromosomeNumMinusOne, MaxGaps, MinSeedLength, OutputFileFormat;
 
 // bwt_index.cpp
@@ -199,6 +200,7 @@ extern Coordinate_t GenCoordinateInfo(bool bFirstRead, int64_t gPos, int64_t end
 extern bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, vector<AlignmentCandidate_t>& AlignmentVec1, vector<AlignmentCandidate_t>& AlignmentVec2);
 
 // GetData.cpp
+extern bool CheckReadFormat(const char* filename);
 extern bool CheckBWAIndexFiles(string IndexPrefix);
 extern int GetNextChunk(bool bSepLibrary, FILE *file, FILE *file2, ReadItem_t* ReadArr);
 extern int gzGetNextChunk(bool bSepLibrary, gzFile file, gzFile file2, ReadItem_t* ReadArr);

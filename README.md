@@ -24,6 +24,8 @@ to download the package of Kart.
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwa_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
+version 2.3.2: Allow multiple read files as the input.
+
 version 2.3.1: Fix the buf when read number exceeds 2^32.
 
 version 2.3.0: Add ksw2 and edlib alignment method to replace the Needleman-Wunsch algorithm.
@@ -62,12 +64,17 @@ To map short reads, Kart requires the the index files of the reference genome an
  $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.sam
   ```
 
- case 2: gzip compressed output
+ case 2: multiple input 
+  ```
+ $ ./kart -i ecoli -f ReadFileA_1.fq ReadFileB_1.fq ReadFileC_1.fq -f2 ReadFileA_2.fq ReadFileB_2.fq ReadFileC_2.fq -o out.sam
+  ```
+
+ case 3: gzip compressed output
   ```
  $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.sam.gz
   ```
 
- case 3: bam output
+ case 4: bam output
   ```
  $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa | samtools view -bo out.bam
   ```

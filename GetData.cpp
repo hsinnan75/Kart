@@ -23,7 +23,7 @@ int IdentifyHeaderBoundary(char* str, int len)
 	{
 		if (str[i] == ' ' || str[i] == '\t') return i;
 	}
-	return i - 1;
+	return len;
 }
 
 ReadItem_t GetNextEntry(FILE *file)

@@ -23,7 +23,7 @@ int IdentifyHeaderBoundary(char* str, int len)
 	{
 		if (str[i] == ' ' || str[i] == '\t') return i;
 	}
-	return len;
+	return len - 1;
 }
 
 ReadItem_t GetNextEntry(FILE *file)
@@ -174,16 +174,16 @@ bool CheckBWAIndexFiles(string IndexPrefix)
 {
 	fstream file;
 	string filename;
-	bool bChecked=true;
+	bool bChecked = true;
 
 	filename = IndexPrefix + ".ann"; file.open(filename.c_str(), ios_base::in);
-	if(!file.is_open()) return false; else file.close();
-	
+	if (!file.is_open()) return false; else file.close();
+
 	filename = IndexPrefix + ".amb"; file.open(filename.c_str(), ios_base::in);
-	if(!file.is_open()) return false; else file.close();
+	if (!file.is_open()) return false; else file.close();
 
 	filename = IndexPrefix + ".pac"; file.open(filename.c_str(), ios_base::in);
-	if(!file.is_open()) return false; else file.close();
+	if (!file.is_open()) return false; else file.close();
 
 	return bChecked;
 }

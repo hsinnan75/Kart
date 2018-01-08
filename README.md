@@ -13,7 +13,7 @@ Kart adopts a divide-and-conquer strategy, which separates a read into regions t
 
 # Download
 
-Current version: 2.3.1. Please use the command 
+Current version: 2.3.3. Please use the command 
   ```
   $ git clone https://github.com/hsinnan75/Kart.git
   ```
@@ -24,6 +24,8 @@ to download the package of Kart.
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwa_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
+version 2.3.3: Remove edlib and ksw algorithms
+
 version 2.3.2: Allow multiple read files as the input.
 
 version 2.3.1: Fix the buf when read number exceeds 2^32.

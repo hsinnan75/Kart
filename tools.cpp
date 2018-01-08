@@ -228,7 +228,7 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 								//if (bDebugMode) printf("PairwiseSequenceAlignment2\n");
 								//nw_alignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
 								//edlib_alignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
-								ksw2_alignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
+								nw_alignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
 								//if (bDebugMode) printf("str1=%s\nstr2=%s\n\n", str1.c_str(), str2.c_str());
 							}
 						}
@@ -242,9 +242,7 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 	if (bRunNW)
 	{
 		//if (bDebugMode) printf("PairwiseSequenceAlignment2\n");
-		//nw_alignment(rLen, frag1, gLen, frag2);
-		//edlib_alignment(rLen, frag1, gLen, frag2);
-		ksw2_alignment(rLen, frag1, gLen, frag2);
+		nw_alignment(rLen, frag1, gLen, frag2);
 	}
 }
 

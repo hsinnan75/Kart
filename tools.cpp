@@ -297,7 +297,7 @@ int ProcessHeadSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	else
 	{
 		GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
-		if (CalFragPairIdenticalBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.5))
+		if (CalFragPairIdenticalBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.2))
 		{
 			cigar_vec.push_back(make_pair(sp.rLen, 'S'));
 			score = 0;
@@ -347,7 +347,7 @@ int ProcessTailSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	{
 
 		GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
-		if (CalFragPairIdenticalBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.5))
+		if (CalFragPairIdenticalBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.2))
 		{
 			cigar_vec.push_back(make_pair(sp.rLen, 'S'));
 			score = 0;

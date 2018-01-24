@@ -261,7 +261,7 @@ int ProcessNormalSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> 
 		frag1.resize(sp.rLen); strncpy((char*)frag1.c_str(), seq + sp.rPos, sp.rLen);
 		frag2.resize(sp.gLen); strncpy((char*)frag2.c_str(), RefSequence + sp.gPos, sp.gLen);
 
-		if (sp.rLen == sp.gLen && (sp.rLen - (score = CalFragPairIdenticalBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str())) <= (sp.rLen < 25 ? 5 : (int)(sp.rLen*.2))))
+		if (sp.rLen == sp.gLen && (sp.rLen - (score = CalFragPairIdenticalBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str())) <= (int)(sp.rLen*.2)))
 		{
 			cigar_vec.push_back(make_pair(sp.rLen, 'M'));
 		}

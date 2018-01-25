@@ -24,9 +24,9 @@ to download the package of Kart.
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwa_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
-version 2.3.4: Fix the alignment of poor-quality sequences at both ends
+version 2.3.4: Fix the alignment of poor-quality sequences at both ends.
 
-version 2.3.3: Remove edlib and ksw algorithms
+version 2.3.3: Remove edlib and ksw algorithms.
 
 version 2.3.2: Allow multiple read files as the input.
 
@@ -37,6 +37,15 @@ version 2.3.0: Add ksw2 and edlib alignment method to replace the Needleman-Wuns
 version 2.2.6: Fix a bug in the alignment report.
 
 version 2.2.5: Fix a bug in the alignment report.
+
+# Get updates
+
+We keep improving Kart from time to time, please check if new version is available by using the following commands.
+
+  ```
+  $ git fetch
+  $ git merge origin/master master
+  ```
 
 # Instructions
 

@@ -40,7 +40,7 @@ version 2.2.5: Fix a bug in the alignment report.
 
 # Get updates
 
-We keep improving Kart from time to time, please check if new version is available by using the following commands.
+We update Kart from time to time, please check if new version is available by using the following commands.
 
   ```
   $ git fetch

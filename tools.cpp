@@ -261,7 +261,7 @@ int ProcessNormalSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> 
 		frag1.resize(sp.rLen); strncpy((char*)frag1.c_str(), seq + sp.rPos, sp.rLen);
 		frag2.resize(sp.gLen); strncpy((char*)frag2.c_str(), RefSequence + sp.gPos, sp.gLen);
 
-		if (sp.rLen == sp.gLen && (sp.rLen - (score = CalFragPairIdenticalBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str())) <= (int)(sp.rLen*.2)))
+		if (sp.rLen == sp.gLen && (sp.rLen - (score = CalFragPairIdenticalBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str()))) <= (int)(sp.rLen*.2))
 		{
 			cigar_vec.push_back(make_pair(sp.rLen, 'M'));
 		}
@@ -284,7 +284,7 @@ int ProcessHeadSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	frag2.resize(sp.gLen); strncpy((char*)frag2.c_str(), RefSequence + sp.gPos, sp.gLen); 
 
 	//printf("frag1=%s\nfrag2=%s\n", frag1.c_str(), frag2.c_str());
-	if (!bPacBioData && sp.rLen == sp.gLen && (sp.rLen - (score = CalFragPairIdenticalBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str()))) <= (sp.rLen < 25 ? 5 : (int)(sp.rLen*0.2)))
+	if (!bPacBioData && sp.rLen == sp.gLen && (sp.rLen - (score = CalFragPairIdenticalBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str()))) <= (int)(sp.rLen*0.2))
 	{
 		cigar_vec.push_back(make_pair(sp.rLen, 'M'));
 		//if (bDebugMode) printf("Head1:\n%s #read[%d-%d]=%d\n%s #chr[%lld-%lld]=%d\nScore=%d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, score);
@@ -297,7 +297,7 @@ int ProcessHeadSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	else
 	{
 		GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
-		if (CalFragPairIdenticalBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.2))
+		if (CalFragPairIdenticalBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= (int)(frag1.length()*0.2))
 		{
 			cigar_vec.push_back(make_pair(sp.rLen, 'S'));
 			score = 0;
@@ -333,7 +333,7 @@ int ProcessTailSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	frag1.resize(sp.rLen); strncpy((char*)frag1.c_str(), seq + sp.rPos, sp.rLen);
 	frag2.resize(sp.gLen); strncpy((char*)frag2.c_str(), RefSequence + sp.gPos, sp.gLen);
 
-	if (!bPacBioData && sp.rLen == sp.gLen && (sp.rLen - (score = CalFragPairIdenticalBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str()))) <= (sp.rLen < 25 ? 5 : (int)(sp.rLen*0.2)))
+	if (!bPacBioData && sp.rLen == sp.gLen && (sp.rLen - (score = CalFragPairIdenticalBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str()))) <= (int)(sp.rLen*0.2))
 	{
 		cigar_vec.push_back(make_pair(sp.rLen, 'M'));
 		//if (bDebugMode) printf("Tail1:\n%s #read[%d-%d]=%d\n%s #chr[%lld-%lld]=%d\nScore=%d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, score);

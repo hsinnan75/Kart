@@ -3,10 +3,10 @@
 all: main
 
 Compiler	= g++
-FLAGS		= -D NDEBUG -O2 -m64
+FLAGS		= -D NDEBUG -O3 -m64
 LIB		= -lz -lm -lpthread
 SOURCE		= main.cpp GetData.cpp Mapping.cpp AlignmentCandidates.cpp AlignmentRescue.cpp KmerAnalysis.cpp nw_alignment.cpp tools.cpp bwt_index.cpp bwt_search.cpp
-HEADER		= structure.h edlib.h
+HEADER		= structure.h
 OBJECT		= $(SOURCE:%.cpp=%.o)
 
 all:		main index

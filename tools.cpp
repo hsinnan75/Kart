@@ -261,7 +261,7 @@ int ProcessNormalSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> 
 		frag1.resize(sp.rLen); strncpy((char*)frag1.c_str(), seq + sp.rPos, sp.rLen);
 		frag2.resize(sp.gLen); strncpy((char*)frag2.c_str(), RefSequence + sp.gPos, sp.gLen);
 
-		if (sp.rLen == sp.gLen && (n = CalFragPairMismatchBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str())) <= 1 && n <= (int)(sp.rLen*0.2))
+		if (sp.rLen == sp.gLen && (n = CalFragPairMismatchBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str())) <= 2 && n <= (int)(sp.rLen*0.2))
 		{
 			score = sp.rLen - n;
 			cigar_vec.push_back(make_pair(sp.rLen, 'M'));
@@ -285,7 +285,7 @@ int ProcessHeadSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	frag2.resize(sp.gLen); strncpy((char*)frag2.c_str(), RefSequence + sp.gPos, sp.gLen); 
 
 	//printf("frag1=%s\nfrag2=%s\n", frag1.c_str(), frag2.c_str());
-	if (!bPacBioData && sp.rLen == sp.gLen && (n = CalFragPairMismatchBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str())) <= 1 && n <= (int)(sp.rLen*0.2))
+	if (!bPacBioData && sp.rLen == sp.gLen && (n = CalFragPairMismatchBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str())) <= 2 && n <= (int)(sp.rLen*0.2))
 	{
 		score = sp.rLen - n;
 		cigar_vec.push_back(make_pair(sp.rLen, 'M'));
@@ -299,7 +299,7 @@ int ProcessHeadSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	else
 	{
 		GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
-		if (CalFragPairIdenticalBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= (int)(frag1.length()*0.2))
+		if (CalFragPairMismatchBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= (int)(frag1.length()*0.2))
 		{
 			cigar_vec.push_back(make_pair(sp.rLen, 'S'));
 			score = 0;
@@ -335,7 +335,7 @@ int ProcessTailSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	frag1.resize(sp.rLen); strncpy((char*)frag1.c_str(), seq + sp.rPos, sp.rLen);
 	frag2.resize(sp.gLen); strncpy((char*)frag2.c_str(), RefSequence + sp.gPos, sp.gLen);
 
-	if (!bPacBioData && sp.rLen == sp.gLen && (n = CalFragPairMismatchBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str())) <= 1 && n <= (int)(sp.rLen*0.2))
+	if (!bPacBioData && sp.rLen == sp.gLen && (n = CalFragPairMismatchBases(sp.rLen, (char*)frag1.c_str(), (char*)frag2.c_str())) <= 2 && n <= (int)(sp.rLen*0.2))
 	{
 		score = sp.rLen - n;
 		cigar_vec.push_back(make_pair(sp.rLen, 'M'));
@@ -350,7 +350,7 @@ int ProcessTailSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	{
 
 		GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
-		if (CalFragPairIdenticalBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.2))
+		if (CalFragPairMismatchBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.2))
 		{
 			cigar_vec.push_back(make_pair(sp.rLen, 'S'));
 			score = 0;

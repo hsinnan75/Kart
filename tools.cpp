@@ -56,15 +56,6 @@ void SelfComplementarySeq(int len, char* seq)
 	if (i == j) seq[i] = ReverseMap[(int)seq[i]];
 }
 
-int CalFragPairNonIdenticalBases(int len, char* frag1, char* frag2)
-{
-	int i, c;
-
-	for (c = 0, i = 0; i < len; i++) if (frag1[i] != frag2[i]) c++;
-
-	return c;
-}
-
 int CalFragPairIdenticalBases(int len, char* frag1, char* frag2)
 {
 	int i, c;

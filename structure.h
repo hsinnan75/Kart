@@ -16,6 +16,7 @@
 #include <zlib.h>
 #include <pthread.h>
 #include <sys/time.h>
+#include <inttypes.h>
 
 #define ReadChunkSize 4000
 
@@ -24,12 +25,8 @@
 
 using namespace std;
 
+typedef uint64_t bwtint_t;
 typedef unsigned char ubyte_t;
-typedef unsigned char uint8_t;
-typedef unsigned int uint32_t;
-typedef unsigned short uint16_t;
-typedef unsigned long long uint64_t;
-typedef unsigned long long bwtint_t;
 
 typedef struct {
 	bwtint_t primary; // S^{-1}(0), or the primary index of BWT

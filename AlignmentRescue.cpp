@@ -23,7 +23,7 @@ int DetermineAnchorThreshold(vector<AlignmentCandidate_t>& AlignmentVec)
 	return thr;
 }
 
-AlignmentCandidate_t IdnetifyRescueCandidate(int rlen, uint64_t gPos, vector<SeedPair_t>& vec)
+AlignmentCandidate_t IdnetifyRescueCandidate(int rlen, int64_t gPos, vector<SeedPair_t>& vec)
 {
 	int i, j, num, s;
 	vector<SeedPair_t> SeedPairVec;

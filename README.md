@@ -24,6 +24,8 @@ to download the package of Kart.
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwa_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
+version 2.3.7: Add an update command.
+
 version 2.3.6: Fix the alignment of segment pairs with multiple mismatches.
 
 version 2.3.5: Fix the alignment when DNA sequences are shown in lower case.
@@ -46,9 +48,15 @@ version 2.2.5: Fix a bug in the alignment report.
 
 We update Kart from time to time, please check if new version is available by using the following commands.
 
+with Kart version 2.3.7 up
+  ```
+  $ ./kart update 
+  ```
+or
   ```
   $ git fetch
   $ git merge origin/master master
+  $ make
   ```
 
 # Instructions

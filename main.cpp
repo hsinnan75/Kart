@@ -97,6 +97,11 @@ int main(int argc, char* argv[])
 	RefSequence = IndexFileName = OutputFileName = NULL;
 
 	if (argc == 1 || strcmp(argv[1], "-h") == 0) ShowProgramUsage(argv[0]);
+	else if (strcmp(argv[1], "update") == 0)
+	{
+		system("git fetch; git merge origin/master master;make");
+		exit(0);
+	}
 	else
 	{
 		for (i = 1; i < argc; i++)

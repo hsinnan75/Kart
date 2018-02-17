@@ -587,7 +587,7 @@ void Mapping()
 	{
 		int len;
 		char buffer[1024];
-		len = sprintf(buffer, "@PG\tPN:Kart\tVN:%s\n", VersionStr);
+		len = sprintf(buffer, "@PG\tID:kart\tPN:Kart\tVN:%s\n", VersionStr);
 
 		if (OutputFileFormat == 0) fprintf(output, "%s", buffer);
 		else gzwrite(gzOutput, buffer, len);

@@ -33,7 +33,7 @@ ReadItem_t GetNextEntry(FILE *file)
 	ReadItem_t read;
 	char *buffer = NULL;
 
-	read.header = read.seq = NULL; read.rlen = 0;
+	read.header = read.seq = read.qual = NULL; read.rlen = 0;
 
 	if ((len = getline(&buffer, &size, file)) != -1)
 	{
@@ -120,7 +120,7 @@ ReadItem_t gzGetNextEntry(gzFile file)
 	ReadItem_t read;
 	char buffer[1024];
 
-	read.header = read.seq = NULL; read.rlen = 0;
+	read.header = read.seq = read.qual = NULL; read.rlen = 0;
 
 	if (gzgets(file, buffer, 1024) != NULL)
 	{
@@ -163,9 +163,12 @@ int gzGetNextChunk(bool bSepLibrary, gzFile file, gzFile file2, ReadItem_t* Read
 			rseq = new char[ReadArr[iCount].rlen];
 			GetComplementarySeq(ReadArr[iCount].rlen, ReadArr[iCount].seq, rseq);
 			copy(rseq, rseq + ReadArr[iCount].rlen, ReadArr[iCount].seq);
-			string rqual = ReadArr[iCount].qual; reverse(rqual.begin(), rqual.end());
-			copy(rqual.c_str(), rqual.c_str() + ReadArr[iCount].rlen, ReadArr[iCount].qual);
 			delete[] rseq;
+			if (FastQFormat)
+			{
+				string rqual = ReadArr[iCount].qual; reverse(rqual.begin(), rqual.end());
+				copy(rqual.c_str(), rqual.c_str() + ReadArr[iCount].rlen, ReadArr[iCount].qual);
+			}
 		}
 		ReadArr[iCount].EncodeSeq = new uint8_t[ReadArr[iCount].rlen];
 		for (i = 0; i != ReadArr[iCount].rlen; i++) ReadArr[iCount].EncodeSeq[i] = nst_nt4_table[(int)ReadArr[iCount].seq[i]];

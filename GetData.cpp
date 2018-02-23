@@ -100,10 +100,12 @@ int GetNextChunk(bool bSepLibrary, FILE *file, FILE *file2, ReadItem_t* ReadArr)
 		{
 			rseq = new char[ReadArr[iCount].rlen];
 			GetComplementarySeq(ReadArr[iCount].rlen, ReadArr[iCount].seq, rseq);
-			copy(rseq, rseq + ReadArr[iCount].rlen, ReadArr[iCount].seq);
-			string rqual = ReadArr[iCount].qual; reverse(rqual.begin(), rqual.end());
-			copy(rqual.c_str(), rqual.c_str() + ReadArr[iCount].rlen, ReadArr[iCount].qual);
-			delete[] rseq;
+			copy(rseq, rseq + ReadArr[iCount].rlen, ReadArr[iCount].seq); delete[] rseq;
+			if (FastQFormat)
+			{
+				string rqual = ReadArr[iCount].qual; reverse(rqual.begin(), rqual.end());
+				copy(rqual.c_str(), rqual.c_str() + ReadArr[iCount].rlen, ReadArr[iCount].qual);
+			}
 		}
 		ReadArr[iCount].EncodeSeq = new uint8_t[ReadArr[iCount].rlen];
 		for (i = 0; i != ReadArr[iCount].rlen; i++) ReadArr[iCount].EncodeSeq[i] = nst_nt4_table[(int)ReadArr[iCount].seq[i]];

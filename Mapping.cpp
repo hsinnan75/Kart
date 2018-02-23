@@ -216,7 +216,10 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2, int& myUniqueM
 				if (read2.AlnReportArr[j].coor.bDir == true && seq == NULL)
 				{
 					seq = new char[read2.rlen + 1]; seq[read2.rlen] = '\0'; GetComplementarySeq(read2.rlen, rseq, seq);
-					rqual = read2.qual; reverse(rqual.begin(), rqual.end());
+					if (FastQFormat)
+					{
+						rqual = read2.qual; reverse(rqual.begin(), rqual.end());
+					}
 				}
 				if ((i = read2.AlnReportArr[j].PairedAlnCanIdx) != -1 && read1.AlnReportArr[i].AlnScore > 0)
 				{

@@ -270,7 +270,10 @@ void OutputSingledAlignments(ReadItem_t& read, int& myUniqueMapping, int& myUnMa
 				if (read.AlnReportArr[i].coor.bDir == false && rseq == NULL)
 				{
 					rseq = new char[read.rlen + 1]; rseq[read.rlen] = '\0'; GetComplementarySeq(read.rlen, seq, rseq);
-					rqual = read.qual; reverse(rqual.begin(), rqual.end());
+					if (FastQFormat)
+					{
+						rqual = read.qual; reverse(rqual.begin(), rqual.end());
+					}
 				}
 				//ss.clear(); ss.str(""); ss << read.header << "\t" << read.AlnReportArr[0].SamFlag << "\t" << ChromosomeVec[read.AlnReportArr[i].coor.ChromosomeIdx].name << "\t" << read.AlnReportArr[i].coor.gPos << "\t" << read.mapq << "\t" << read.AlnReportArr[i].coor.CIGAR.c_str() << "\t*\t0\t0\t" << (read.AlnReportArr[i].coor.bDir ? seq : rseq) << "\t*\tNM:i:" << read.rlen - read.score << "\tAS:i:" << read.score << "\tXS:i:" << read.sub_score << "\n";
 				//SamOutputVec.push_back(ss.str());

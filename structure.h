@@ -141,6 +141,7 @@ typedef struct
 {
 	int rlen;
 	char* header;
+	char* qual;
 	char* seq;
 	uint8_t* EncodeSeq;
 	// aln report

@@ -561,6 +561,7 @@ void *ReadMapping(void *arg)
 		{
 			delete[] ReadArr[i].header;
 			delete[] ReadArr[i].seq;
+			delete[] ReadArr[i].qual;
 			delete[] ReadArr[i].EncodeSeq;
 			delete[] ReadArr[i].AlnReportArr;
 		}

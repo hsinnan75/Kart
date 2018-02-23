@@ -21,7 +21,7 @@ int IdentifyHeaderBoundary(char* str, int len)
 
 	for (i = 1; i < len; i++)
 	{
-		if (str[i] == ' ' || str[i] == '\t') return i;
+		if (str[i] == ' ' || str[i] == '/' || str[i] == '\t') return i;
 	}
 	return len - 1;
 }

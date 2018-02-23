@@ -1,9 +1,9 @@
 #include "structure.h"
 
 const float MaxPenalty = -65536;
-const float OPEN_GAP = -1.5;
+const float OPEN_GAP = -1;
 const float EXTEND_GAP = -0.5;
-const float NEW_GAP = -2.0;
+const float NEW_GAP = -1.5;
 
 double max(float x, float y)
 {

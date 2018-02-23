@@ -23,7 +23,7 @@ int DetermineAnchorThreshold(vector<AlignmentCandidate_t>& AlignmentVec)
 	return thr;
 }
 
-AlignmentCandidate_t IdnetifyRescueCandidate(int rlen, int64_t gPos, vector<SeedPair_t>& vec)
+AlignmentCandidate_t IdnetifyRescueCandidate(int64_t gPos, vector<SeedPair_t>& vec)
 {
 	int i, j, num, s;
 	vector<SeedPair_t> SeedPairVec;
@@ -116,7 +116,7 @@ bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, ve
 			RefSeg  = RefSequence + left_boundary; vec2 = CreateKmerVecFromReadSeq(slen, RefSeg);
 			KmerPairVec = IdentifyCommonKmers(slen, vec1, vec2);
 			SimplePairVec = GenerateSimplePairsFromCommonKmers(10, KmerPairVec);
-			AlignmentCandidate = IdnetifyRescueCandidate(r2.rlen, left_boundary, SimplePairVec);
+			AlignmentCandidate = IdnetifyRescueCandidate(left_boundary, SimplePairVec);
 
 			if (AlignmentCandidate.Score > score2)
 			{
@@ -149,7 +149,7 @@ bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, ve
 			RefSeg = RefSequence + left_boundary; vec2 = CreateKmerVecFromReadSeq(slen, RefSeg);
 			KmerPairVec = IdentifyCommonKmers(slen, vec1, vec2);
 			SimplePairVec = GenerateSimplePairsFromCommonKmers(10, KmerPairVec);
-			AlignmentCandidate = IdnetifyRescueCandidate(r2.rlen, left_boundary, SimplePairVec);
+			AlignmentCandidate = IdnetifyRescueCandidate(left_boundary, SimplePairVec);
 
 			if (AlignmentCandidate.Score > score1)
 			{

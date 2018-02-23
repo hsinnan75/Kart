@@ -24,6 +24,8 @@ to download the package of Kart.
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwt_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
+version 2.3.8: Fix the alignment of segment pairs with poor sequence identity.
+
 version 2.3.7: Add an update command.
 
 version 2.3.6: Fix the alignment of segment pairs with multiple mismatches.

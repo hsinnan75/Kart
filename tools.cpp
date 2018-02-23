@@ -276,6 +276,43 @@ int ProcessNormalSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> 
 	return score;
 }
 
+bool CheckLocalAlignmentQuality(string& aln1, string& aln2)
+{
+	int i, n, mis, len, AlnType, iStatus;
+
+	AlnType = -1; len = (int)aln1.length(); n = mis = iStatus = 0;
+	for (i = 0; i < len; i++)
+	{
+		if (aln1[i] == '-') // type 0
+		{
+			if (AlnType != 0)
+			{
+				AlnType = 0;
+				iStatus++;
+			}
+		}
+		else if (aln2[i] == '-') // type 1
+		{
+			if (AlnType != 1)
+			{
+				AlnType = 1;
+				iStatus++;
+			}
+		}
+		else // type 2
+		{
+			n++; if (aln1[i] != aln2[i]) mis++;
+			if (AlnType != 2)
+			{
+				AlnType = 2;
+				iStatus++;
+			}
+		}
+	}
+	if (iStatus >= 4 || (mis >= 3 && mis >= (int)(n*0.3))) return false;
+	else return true;
+}
+
 int ProcessHeadSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >& cigar_vec)
 {
 	int score, thr, n;
@@ -299,7 +336,8 @@ int ProcessHeadSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	else
 	{
 		GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
-		if (CalFragPairMismatchBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= (int)(frag1.length()*0.2))
+		//if (CalFragPairMismatchBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= (int)(frag1.length()*0.2))
+		if(CheckLocalAlignmentQuality(frag1, frag2)==false)
 		{
 			cigar_vec.push_back(make_pair(sp.rLen, 'S'));
 			score = 0;
@@ -350,7 +388,8 @@ int ProcessTailSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	{
 
 		GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
-		if (CalFragPairMismatchBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.2))
+		//if (CalFragPairMismatchBases((int)frag1.length(), (char*)frag1.c_str(), (char*)frag2.c_str()) <= ((int)frag1.length()*0.2))
+		if (CheckLocalAlignmentQuality(frag1, frag2) == false)
 		{
 			cigar_vec.push_back(make_pair(sp.rLen, 'S'));
 			score = 0;

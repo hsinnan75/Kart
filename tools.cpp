@@ -243,7 +243,7 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 	if (bRunNW)
 	{
 		//if (bDebugMode) printf("PairwiseSequenceAlignment2\n");
-		if(bPacBioData) ksw2_alignment(rLen, frag1, gLen, frag2);
+		if(bPacBioData && (rLen > 100 || gLen > 100)) ksw2_alignment(rLen, frag1, gLen, frag2);
 		else nw_alignment(rLen, frag1, gLen, frag2);
 	}
 }

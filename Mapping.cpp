@@ -133,12 +133,15 @@ void EvaluateMAPQ(ReadItem_t& read)
 	if (read.score == 0 || read.score == read.sub_score) read.mapq = 0;
 	else
 	{
-		if (read.sub_score == 0 || read.score - read.sub_score > 5) read.mapq = Max_MAPQ;
-		else
+		if (bPacBioData)
 		{
-			read.mapq = (int)(MAPQ_COEF * (1 - (float)(read.score - read.sub_score)/read.score)*log(read.score) + 0.4999);
-			if (read.mapq > Max_MAPQ) read.mapq = Max_MAPQ;
+			float fScale = 100.0*(int)(ceil(read.rlen / 100 + 0.5));
+			if (fScale > 300) fScale = 300;
+			read.mapq = (int)(Max_MAPQ * (read.score / fScale));
 		}
+		else if (read.sub_score == 0 || read.score - read.sub_score > 5) read.mapq = Max_MAPQ;
+		else read.mapq = (int)(MAPQ_COEF * (1 - (float)(read.score - read.sub_score) / read.score)*log(read.score) + 0.4999);
+		if (read.mapq > Max_MAPQ) read.mapq = Max_MAPQ;
 	}
 }
 

@@ -24,6 +24,8 @@ to download the package of Kart.
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwt_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
+version 2.4.1: Fix a bug when reporting alignment coordinate with soft clipping.
+
 version 2.4.0: Use ksw algorithm for PacBio long read alignment.
 
 version 2.3.9: Fix a bug in SAM output.

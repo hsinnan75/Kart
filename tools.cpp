@@ -228,7 +228,7 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 								//if (bDebugMode) printf("PairwiseSequenceAlignment2\n");
 								//nw_alignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
 								//edlib_alignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
-								//if (bPacBioData) ksw2_alignment(rLen, frag1, gLen, frag2);
+								//if (rLen > 100 && gLen > 100) ksw2_alignment(rLen, frag1, gLen, frag2);
 								//else nw_alignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
 								nw_alignment(PartitionVec[i].rLen, str1, PartitionVec[i].gLen, str2);
 								//if (bDebugMode) printf("str1=%s\nstr2=%s\n\n", str1.c_str(), str2.c_str());
@@ -244,7 +244,7 @@ void GenerateNormalPairAlignment(int rLen, string& frag1, int gLen, string& frag
 	if (bRunNW)
 	{
 		//if (bDebugMode) printf("PairwiseSequenceAlignment2\n");
-		//if(bPacBioData && (rLen > 100 || gLen > 100)) ksw2_alignment(rLen, frag1, gLen, frag2);
+		//if (rLen > 100 && gLen > 100) ksw2_alignment(rLen, frag1, gLen, frag2);
 		//else nw_alignment(rLen, frag1, gLen, frag2);
 		nw_alignment(rLen, frag1, gLen, frag2);
 	}
@@ -275,7 +275,7 @@ int ProcessNormalSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> 
 			GenerateNormalPairAlignment(sp.rLen, frag1, sp.gLen, frag2);
 			score = AddNewCigarElements(frag1, frag2, cigar_vec);
 		}
-		//if (bDebugMode) printf("NormalPair:\n%s #read[%d-%d]=%d\n%s #chr[%lld-%lld]=%d\nScore=%d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, score);
+		if (bDebugMode) printf("NormalPair:\n%s #read[%d-%d]=%d\n%s #chr[%lld-%lld]=%d\nScore=%d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, score);
 	}
 	return score;
 }

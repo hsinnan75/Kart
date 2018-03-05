@@ -621,7 +621,7 @@ int GapPenalty(vector<pair<int, char> >& cigar_vec)
 
 void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandidate_t>& AlignmentVec)
 {
-	int i, j, num;
+	int i, j, num, s;
 	map<int, int>::iterator iter;
 	vector<pair<int, char> > cigar_vec;
 	map<int64_t, int>::iterator ChrIter;
@@ -668,7 +668,16 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 							AlignmentVec[i].SeedVec[0].gPos = AlignmentVec[i].SeedVec[1].gPos;
 							AlignmentVec[i].SeedVec[0].gLen = 0;
 						}
-						else read.AlnReportArr[i].AlnScore += ProcessHeadSequencePair(read.seq, AlignmentVec[i].SeedVec[0], cigar_vec);
+						else
+						{
+							s = ProcessHeadSequencePair(read.seq, AlignmentVec[i].SeedVec[0], cigar_vec);
+							read.AlnReportArr[i].AlnScore += s;
+							if (s == 0)
+							{
+								AlignmentVec[i].SeedVec[0].gPos = AlignmentVec[i].SeedVec[1].gPos;
+								AlignmentVec[i].SeedVec[0].gLen = 0;
+							}
+						}
 					}
 					else if (j == num - 1)
 					{
@@ -678,7 +687,16 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 							AlignmentVec[i].SeedVec[j].gPos = AlignmentVec[i].SeedVec[j-1].gPos + AlignmentVec[i].SeedVec[j - 1].gLen;
 							AlignmentVec[i].SeedVec[j].gLen = 0;
 						}
-						else read.AlnReportArr[i].AlnScore += ProcessTailSequencePair(read.seq, AlignmentVec[i].SeedVec[j], cigar_vec);
+						else
+						{
+							s = ProcessTailSequencePair(read.seq, AlignmentVec[i].SeedVec[j], cigar_vec);
+							read.AlnReportArr[i].AlnScore += s;
+							if (s == 0)
+							{
+								AlignmentVec[i].SeedVec[j].gPos = AlignmentVec[i].SeedVec[j - 1].gPos + AlignmentVec[i].SeedVec[j - 1].gLen;
+								AlignmentVec[i].SeedVec[j].gLen = 0;
+							}
+						}
 					}
 					else
 					{
@@ -687,7 +705,6 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 				}
 			}
 			//if (bDebugMode) printf("Alignment score = %d (rlen=%d) \n", read.AlnReportArr[i].AlnScore, read.rlen), fflush(stdout);
-
 			if (!bPacBioData && cigar_vec.size() > 1)
 			{
 				read.AlnReportArr[i].AlnScore -= GapPenalty(cigar_vec);

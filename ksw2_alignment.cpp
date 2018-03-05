@@ -13,8 +13,6 @@ typedef struct {
 	int mqe, mqe_t;        // max score when reaching the end of query
 	int mte, mte_q;        // max score when reaching the end of target
 	int score;             // max score reaching both ends; may be KSW_NEG_INF
-						   //int m_cigar, n_cigar;
-						   //uint32_t *cigar;
 } ksw_extz_t;
 
 void ksw_reset_extz(ksw_extz_t *ez)

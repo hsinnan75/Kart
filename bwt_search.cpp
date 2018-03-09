@@ -172,6 +172,7 @@ bwtSearchResult_t BWT_Search(uint8_t* seq, int start, int stop)
 	if ((bwtSearchResult.len = pos - start) < MinSeedLength) bwtSearchResult.freq = 0;
 	else
 	{
+		//if ((bwtSearchResult.freq = (int)ik.x[2]) <= (bPacBioData ? 1000 : OCC_Thr))
 		if ((bwtSearchResult.freq = (int)ik.x[2]) <= OCC_Thr)
 		{
 			bwtSearchResult.LocArr = new bwtint_t[bwtSearchResult.freq];

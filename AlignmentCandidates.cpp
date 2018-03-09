@@ -134,7 +134,7 @@ vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq)
 	vector<SeedPair_t> SeedPairVec;
 	bwtSearchResult_t bwtSearchResult;
 
-	SeedPair.bSimple = true; pos = 0, stop_pos = 100; end_pos = rlen - MinSeedLength;
+	SeedPair.bSimple = true; pos = 0, stop_pos = 30; end_pos = rlen - MinSeedLength;
 	while (pos < end_pos)
 	{
 		if (EncodeSeq[pos] > 3) pos++, stop_pos++;
@@ -151,9 +151,8 @@ vector<SeedPair_t> IdentifySeedPairs_SensitiveMode(int rlen, uint8_t* EncodeSeq)
 					SeedPairVec.push_back(SeedPair);
 				}
 				delete[] bwtSearchResult.LocArr;
-
-				pos += 30; stop_pos += 30;
-				//pos += MinSeedLength; stop_pos += MinSeedLength;
+				//pos += 30; stop_pos += 30;
+				pos += bwtSearchResult.len; stop_pos += bwtSearchResult.len;
 			}
 			else
 			{
@@ -628,7 +627,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 
 	//if (bDebugMode) printf("\n\n%s\nGenerate alignment for read %s (%d cans)\n", string().assign(100, '=').c_str(), read.header, (int)AlignmentVec.size()), fflush(stdout);
 	
-	read.score = read.iBestAlnCanIdx = 0;
+	read.score = read.sub_score = read.iBestAlnCanIdx = 0;
 	if ((read.CanNum = (int)AlignmentVec.size()) > 0)
 	{
 		read.AlnReportArr = new AlignmentReport_t[read.CanNum];
@@ -637,14 +636,18 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 			read.AlnReportArr[i].AlnScore = 0;
 			read.AlnReportArr[i].PairedAlnCanIdx = AlignmentVec[i].PairedAlnCanIdx;
 
-			if (AlignmentVec[i].Score == 0 || (bPacBioData && read.score > 0)) continue;
-
+			if (AlignmentVec[i].Score == 0) continue;
+			if (bPacBioData && read.score > 0)
+			{
+				read.sub_score = read.score;
+				continue;
+			}
 			IdentifyNormalPairs(read.rlen, -1, AlignmentVec[i].SeedVec); // fill missing framgment pairs (normal pairs) between simple pairs
-			//if (bDebugMode)
-			//{
-			//	printf("Process candidate#%d (Score = %d, SegmentPair#=%d): \n", i + 1, AlignmentVec[i].Score, (int)AlignmentVec[i].SeedVec.size());
-			//	ShowSeedInfo(AlignmentVec[i].SeedVec);
-			//}
+			if (bDebugMode)
+			{
+				printf("Process candidate#%d (Score = %d, SegmentPair#=%d): \n", i + 1, AlignmentVec[i].Score, (int)AlignmentVec[i].SeedVec.size());
+				ShowSeedInfo(AlignmentVec[i].SeedVec);
+			}
 			if (CheckCoordinateValidity(AlignmentVec[i].SeedVec) == false) continue;
 
 			cigar_vec.clear();
@@ -662,7 +665,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 					//if (bDebugMode) printf("Check normal pair#%d: R[%d-%d]=%d G[%lld-%lld]=%d\n", j + 1, AlignmentVec[i].SeedVec[j].rPos, AlignmentVec[i].SeedVec[j].rPos + AlignmentVec[i].SeedVec[j].rLen - 1, AlignmentVec[i].SeedVec[j].rLen, AlignmentVec[i].SeedVec[j].gPos, AlignmentVec[i].SeedVec[j].gPos + AlignmentVec[i].SeedVec[j].gLen - 1, AlignmentVec[i].SeedVec[j].gLen);
 					if (j == 0)
 					{
-						if (AlignmentVec[i].SeedVec[0].rLen > 5000)
+						if (AlignmentVec[i].SeedVec[0].rLen > 3000)
 						{
 							cigar_vec.push_back(make_pair(AlignmentVec[i].SeedVec[0].rLen, 'S'));
 							AlignmentVec[i].SeedVec[0].gPos = AlignmentVec[i].SeedVec[1].gPos;
@@ -681,7 +684,7 @@ void GenMappingReport(bool bFirstRead, ReadItem_t& read, vector<AlignmentCandida
 					}
 					else if (j == num - 1)
 					{
-						if (AlignmentVec[i].SeedVec[j].rLen > 5000)
+						if (AlignmentVec[i].SeedVec[j].rLen > 3000)
 						{
 							cigar_vec.push_back(make_pair(AlignmentVec[i].SeedVec[j].rLen, 'S'));
 							AlignmentVec[i].SeedVec[j].gPos = AlignmentVec[i].SeedVec[j-1].gPos + AlignmentVec[i].SeedVec[j - 1].gLen;

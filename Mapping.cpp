@@ -18,7 +18,7 @@ void SetSingleAlignmentFlag(ReadItem_t& read)
 {
 	int i;
 
-	if (read.score > read.sub_score || bMultiHit == false) // unique mapping or bMultiHit=false
+	if (read.score > read.sub_score) // unique mapping
 	{
 		i = read.iBestAlnCanIdx;
 		if (read.AlnReportArr[i].coor.bDir == false) read.AlnReportArr[i].SamFlag = 0x10;
@@ -35,10 +35,7 @@ void SetSingleAlignmentFlag(ReadItem_t& read)
 			}
 		}
 	}
-	else
-	{
-		read.AlnReportArr[0].SamFlag = 0x4;
-	}
+	else read.AlnReportArr[0].SamFlag = 0x4;
 }
 
 void SetPairedAlignmentFlag(ReadItem_t& read1, ReadItem_t& read2)
@@ -64,7 +61,7 @@ void SetPairedAlignmentFlag(ReadItem_t& read1, ReadItem_t& read2)
 	}
 	else
 	{
-		if (read1.score > read1.sub_score || bMultiHit == false) // unique mapping or bMultiHit=false
+		if (read1.score > read1.sub_score) // unique mapping or bMultiHit=false
 		{
 			i = read1.iBestAlnCanIdx;
 			read1.AlnReportArr[i].SamFlag = 0x41; // read1 is the first read in a pair
@@ -95,7 +92,7 @@ void SetPairedAlignmentFlag(ReadItem_t& read1, ReadItem_t& read2)
 			else read1.AlnReportArr[0].SamFlag |= (read2.AlnReportArr[read2.iBestAlnCanIdx].coor.bDir ? 0x10 : 0x20);
 		}
 
-		if (read2.score > read2.sub_score || bMultiHit == false) // unique mapping or bMultiHit=false
+		if (read2.score > read2.sub_score) // unique mapping or bMultiHit=false
 		{
 			j = read2.iBestAlnCanIdx;
 			read2.AlnReportArr[j].SamFlag = 0x81; // read2 is the second read in a pair
@@ -135,8 +132,8 @@ void EvaluateMAPQ(ReadItem_t& read)
 	{
 		if (bPacBioData)
 		{
-			float fScale = 100.0*(int)(ceil(read.rlen / 100 + 0.5));
-			if (fScale > 300) fScale = 300;
+			float fScale = 85.0*(int)(ceil(read.rlen / 100 + 0.5));
+			if (fScale > 2000) fScale = 2000;
 			read.mapq = (int)(Max_MAPQ * (read.score / fScale));
 		}
 		else if (read.sub_score == 0 || read.score - read.sub_score > 5) read.mapq = Max_MAPQ;
@@ -489,6 +486,7 @@ void *ReadMapping(void *arg)
 				
 				SeedPairVec1 = IdentifySeedPairs_SensitiveMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
 				AlignmentVec1 = GenerateAlignmentCandidateForPacBioSeq(ReadArr[i].rlen, SeedPairVec1);
+				//if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
 				RemoveRedundantCandidates(AlignmentVec1);
 				if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
 				GenMappingReport(true, ReadArr[i], AlignmentVec1);

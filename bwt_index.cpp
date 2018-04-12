@@ -257,9 +257,6 @@ void RestoreReferenceInfo()
 	RestoreReferenceSequences();
 
 	fprintf(stderr, "\n");
-	//for (map<int64_t, int>::iterator iter = ChrLocMap.begin(); iter != ChrLocMap.end(); iter++)
-	//{
-	//	i = iter->second;
-	//	printf("Chr: %s [%ld -- %ld]\n", ChromosomeVec[i].name, iter->first - ChromosomeVec[i].len + 1, iter->first);
-	//}
+	//for (map<int64_t, int>::iterator iter = ChrLocMap.begin(); iter != ChrLocMap.end(); iter++) printf("chr%d: %lld\n", iter->second, iter->first);
+	//for (map<int64_t, int>::iterator iter = ChrLocMap.begin(); iter != ChrLocMap.end(); iter++) printf("Chr: %s [%ld -- %ld]\n", ChromosomeVec[iter->second].name, iter->first - ChromosomeVec[iter->second].len + 1, iter->first);
 }

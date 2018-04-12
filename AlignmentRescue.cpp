@@ -78,9 +78,10 @@ bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, ve
 	vector<KmerItem_t> vec1, vec2;
 	vector<KmerPair_t> KmerPairVec;
 	vector<SeedPair_t> SimplePairVec;
+	map<int64_t, int>::iterator iter;
 	int64_t left_boundary, right_boundary;
 	AlignmentCandidate_t AlignmentCandidate;
-	int i, j, score1, score2, thr, num1, num2, slen;
+	int i, j, chr_id, score1, score2, thr, num1, num2, slen;
 
 	score1 = IdentifyMaxAlignmentCandidateScore(AlignmentVec1);
 	score2 = IdentifyMaxAlignmentCandidateScore(AlignmentVec2);
@@ -105,10 +106,13 @@ bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, ve
 
 			left_boundary  = AlignmentVec1[i].PosDiff;
 			right_boundary = AlignmentVec1[i].PosDiff + EstDistance + r2.rlen;
-			if (right_boundary > TwoGenomeSize) right_boundary = TwoGenomeSize - 1;
 
-			if (ChrLocMap.lower_bound(left_boundary)->second != ChrLocMap.lower_bound(right_boundary)->second)
-				right_boundary = ChrLocMap.lower_bound(left_boundary)->first;
+			iter = ChrLocMap.lower_bound(left_boundary); chr_id = iter->second;
+			if (right_boundary < GenomeSize && right_boundary > ChromosomeVec[chr_id].FowardLocation) right_boundary = ChromosomeVec[chr_id].FowardLocation - 1;
+			else if (right_boundary >= GenomeSize && right_boundary > ChromosomeVec[chr_id].ReverseLocation) right_boundary = ChromosomeVec[chr_id].ReverseLocation - 1;
+
+			//if (ChrLocMap.lower_bound(left_boundary)->second != ChrLocMap.lower_bound(right_boundary)->second)
+			//	right_boundary = ChrLocMap.lower_bound(left_boundary)->first;
 
 			if ((slen = (int)(right_boundary - left_boundary)) < r2.rlen) continue;
 			if (bDebugMode) printf("\n\nAnchor1-Candidate#%d (Score=%d) pos=%lld, Search region = [%lld - %lld], len = %d\n\n", i + 1, AlignmentVec1[i].Score, AlignmentVec1[i].PosDiff, left_boundary, right_boundary, slen), fflush(stdout);
@@ -138,10 +142,12 @@ bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, ve
 			left_boundary = AlignmentVec2[j].PosDiff - EstDistance;
 			right_boundary = AlignmentVec2[j].PosDiff + r2.rlen;
 
-			if (right_boundary > TwoGenomeSize) right_boundary = TwoGenomeSize - 1;
+			iter = ChrLocMap.lower_bound(right_boundary); chr_id = iter->second;
+			if (left_boundary < GenomeSize && left_boundary < (ChromosomeVec[chr_id].FowardLocation - ChromosomeVec[chr_id].len)) left_boundary = (ChromosomeVec[chr_id].FowardLocation - ChromosomeVec[chr_id].len + 1);
+			else if (right_boundary >= GenomeSize && left_boundary < (ChromosomeVec[chr_id].ReverseLocation - ChromosomeVec[chr_id].len)) left_boundary = (ChromosomeVec[chr_id].ReverseLocation - ChromosomeVec[chr_id].len + 1);
 
-			if (ChrLocMap.lower_bound(left_boundary)->second != ChrLocMap.lower_bound(right_boundary)->second)
-				left_boundary = ChrLocMap.lower_bound(right_boundary)->first - ChromosomeVec[ChrLocMap.lower_bound(right_boundary)->second].len + 1;
+			//if (ChrLocMap.lower_bound(left_boundary)->second != ChrLocMap.lower_bound(right_boundary)->second)
+			//	left_boundary = ChrLocMap.lower_bound(right_boundary)->first - ChromosomeVec[ChrLocMap.lower_bound(right_boundary)->second].len + 1;
 
 			if ((slen = (int)(right_boundary - left_boundary)) < r1.rlen) continue;
 			if (bDebugMode) printf("\n\nAnchor2-Candidate#%d (Score=%d) pos=%lld, Search region = [%lld - %lld], len = %d\n\n", i + 1, AlignmentVec2[i].Score, AlignmentVec2[i].PosDiff, left_boundary, right_boundary, slen);

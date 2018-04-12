@@ -24,6 +24,8 @@ to download the package of Kart.
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwt_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
+version 2.4.4: Fix a bug on resuce mode
+
 version 2.4.3: Fix a bug on reading paired-end inputs.
 
 version 2.4.2: Modify the MAPQ measure for the PacBio read mapping. 

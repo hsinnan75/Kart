@@ -93,10 +93,10 @@ int GetNextChunk(bool bSepLibrary, FILE *file, FILE *file2, ReadItem_t* ReadArr)
 		for (i = 0; i != ReadArr[iCount].rlen; i++) ReadArr[iCount].EncodeSeq[i] = nst_nt4_table[(int)ReadArr[iCount].seq[i]];
 		//if (bPacBioData) bp_sum += ReadArr[iCount].rlen;
 		iCount++;
-
 		if (bSepLibrary) ReadArr[iCount] = GetNextEntry(file2);
-		else if ((ReadArr[iCount] = GetNextEntry(file)).rlen == 0) break;
+		else ReadArr[iCount] = GetNextEntry(file);
 
+		if (ReadArr[iCount].rlen == 0) break;
 		if (bPairEnd)
 		{
 			rseq = new char[ReadArr[iCount].rlen];
@@ -159,7 +159,9 @@ int gzGetNextChunk(bool bSepLibrary, gzFile file, gzFile file2, ReadItem_t* Read
 		iCount++;
 
 		if (bSepLibrary) ReadArr[iCount] = gzGetNextEntry(file2);
-		else if ((ReadArr[iCount] = gzGetNextEntry(file)).rlen == 0) break;
+		else ReadArr[iCount] = gzGetNextEntry(file);
+
+		if (ReadArr[iCount].rlen == 0) break;
 
 		if (bPairEnd)
 		{

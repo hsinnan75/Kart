@@ -573,7 +573,7 @@ void *ReadMapping(void *arg)
 			delete[] ReadArr[i].seq;
 			if (FastQFormat) delete[] ReadArr[i].qual;
 			delete[] ReadArr[i].EncodeSeq;
-			//delete[] ReadArr[i].AlnReportArr;
+			delete[] ReadArr[i].AlnReportArr;
 		}
 	}
 	delete[] ReadArr;

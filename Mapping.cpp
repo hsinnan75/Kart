@@ -478,93 +478,93 @@ void *ReadMapping(void *arg)
 		pthread_mutex_unlock(&LibraryLock);
 		
 		if (ReadNum == 0) break;
-		//if (bPacBioData)
-		//{
-		//	for (i = 0; i != ReadNum; i++)
-		//	{
-		//		if (bDebugMode) printf("\n\n\nMapping pacbio read#%d %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen);
-		//		
-		//		SeedPairVec1 = IdentifySeedPairs_SensitiveMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
-		//		AlignmentVec1 = GenerateAlignmentCandidateForPacBioSeq(ReadArr[i].rlen, SeedPairVec1);
-		//		//if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
-		//		RemoveRedundantCandidates(AlignmentVec1);
-		//		if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
-		//		GenMappingReport(true, ReadArr[i], AlignmentVec1);
+		if (bPacBioData)
+		{
+			for (i = 0; i != ReadNum; i++)
+			{
+				if (bDebugMode) printf("\n\n\nMapping pacbio read#%d %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen);
+				
+				SeedPairVec1 = IdentifySeedPairs_SensitiveMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
+				AlignmentVec1 = GenerateAlignmentCandidateForPacBioSeq(ReadArr[i].rlen, SeedPairVec1);
+				//if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
+				RemoveRedundantCandidates(AlignmentVec1);
+				if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
+				GenMappingReport(true, ReadArr[i], AlignmentVec1);
 
-		//		SetSingleAlignmentFlag(ReadArr[i]); EvaluateMAPQ(ReadArr[i]);
-		//		if (bDebugMode) printf("\nEnd of mapping for read#%s (len=%d)\n%s\n", ReadArr[i].header, ReadArr[i].rlen, string().assign(100, '=').c_str());
-		//	}
-		//}
-		//else if (bPairEnd && ReadNum % 2 == 0)
-		//{
-		//	if (iPaired >= 1000)
-		//	{
-		//		EstDistance = (int)(iDistance / (iPaired >> 2));
-		//		EstDistance = EstDistance + (EstDistance >> 1);
-		//	}
-		//	else  EstDistance = MaxInsertSize;
+				SetSingleAlignmentFlag(ReadArr[i]); EvaluateMAPQ(ReadArr[i]);
+				if (bDebugMode) printf("\nEnd of mapping for read#%s (len=%d)\n%s\n", ReadArr[i].header, ReadArr[i].rlen, string().assign(100, '=').c_str());
+			}
+		}
+		else if (bPairEnd && ReadNum % 2 == 0)
+		{
+			if (iPaired >= 1000)
+			{
+				EstDistance = (int)(iDistance / (iPaired >> 2));
+				EstDistance = EstDistance + (EstDistance >> 1);
+			}
+			else  EstDistance = MaxInsertSize;
 
-		//	//if (bDebugMode) printf("iDistance = %ld, iPaired=%d, EstiDistance=%d\n", iDistance, iPaired, EstDistance);
-		//	for (i = 0, j = 1; i != ReadNum; i += 2, j += 2)
-		//	{
-		//		//if (bDebugMode) printf("Mapping paired reads#%d %s (len=%d) and %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen, ReadArr[j].header, ReadArr[j].rlen);
+			//if (bDebugMode) printf("iDistance = %ld, iPaired=%d, EstiDistance=%d\n", iDistance, iPaired, EstDistance);
+			for (i = 0, j = 1; i != ReadNum; i += 2, j += 2)
+			{
+				//if (bDebugMode) printf("Mapping paired reads#%d %s (len=%d) and %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen, ReadArr[j].header, ReadArr[j].rlen);
 
-		//		SeedPairVec1 = IdentifySeedPairs_FastMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
-		//		AlignmentVec1 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[i].rlen, SeedPairVec1);
+				SeedPairVec1 = IdentifySeedPairs_FastMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
+				AlignmentVec1 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[i].rlen, SeedPairVec1);
 
-		//		SeedPairVec2 = IdentifySeedPairs_FastMode(ReadArr[j].rlen, ReadArr[j].EncodeSeq);
-		//		AlignmentVec2 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[j].rlen, SeedPairVec2);
+				SeedPairVec2 = IdentifySeedPairs_FastMode(ReadArr[j].rlen, ReadArr[j].EncodeSeq);
+				AlignmentVec2 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[j].rlen, SeedPairVec2);
 
-		//		//if (bDebugMode)
-		//		//{
-		//		//	ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
-		//		//	ShowAlignmentCandidateInfo(0, ReadArr[j].header, AlignmentVec2);
-		//		//}
-		//		bReadPairing = CheckPairedAlignmentCandidates(EstDistance, AlignmentVec1, AlignmentVec2);
-		//		if (!bReadPairing) bReadPairing = RescueUnpairedAlignment(EstDistance, ReadArr[i], ReadArr[j], AlignmentVec1, AlignmentVec2);
-		//		if (bReadPairing) RemoveUnMatedAlignmentCandidates(AlignmentVec1, AlignmentVec2);
+				//if (bDebugMode)
+				//{
+				//	ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
+				//	ShowAlignmentCandidateInfo(0, ReadArr[j].header, AlignmentVec2);
+				//}
+				bReadPairing = CheckPairedAlignmentCandidates(EstDistance, AlignmentVec1, AlignmentVec2);
+				if (!bReadPairing) bReadPairing = RescueUnpairedAlignment(EstDistance, ReadArr[i], ReadArr[j], AlignmentVec1, AlignmentVec2);
+				if (bReadPairing) RemoveUnMatedAlignmentCandidates(AlignmentVec1, AlignmentVec2);
 
-		//		RemoveRedundantCandidates(AlignmentVec1); RemoveRedundantCandidates(AlignmentVec2);
-		//		//if (bDebugMode)
-		//		//{
-		//		//	ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
-		//		//	ShowAlignmentCandidateInfo(0, ReadArr[j].header, AlignmentVec2);
-		//		//}
-		//		GenMappingReport(true,  ReadArr[i], AlignmentVec1);
-		//		GenMappingReport(false, ReadArr[j], AlignmentVec2);
+				RemoveRedundantCandidates(AlignmentVec1); RemoveRedundantCandidates(AlignmentVec2);
+				//if (bDebugMode)
+				//{
+				//	ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
+				//	ShowAlignmentCandidateInfo(0, ReadArr[j].header, AlignmentVec2);
+				//}
+				GenMappingReport(true,  ReadArr[i], AlignmentVec1);
+				GenMappingReport(false, ReadArr[j], AlignmentVec2);
 
-		//		CheckPairedFinalAlignments(ReadArr[i], ReadArr[j]);
+				CheckPairedFinalAlignments(ReadArr[i], ReadArr[j]);
 
-		//		SetPairedAlignmentFlag(ReadArr[i], ReadArr[j]);
-		//		EvaluateMAPQ(ReadArr[i]); EvaluateMAPQ(ReadArr[j]);
+				SetPairedAlignmentFlag(ReadArr[i], ReadArr[j]);
+				EvaluateMAPQ(ReadArr[i]); EvaluateMAPQ(ReadArr[j]);
 
-		//		//if (bDebugMode) printf("\nEnd of mapping for read#%s\n%s\n", ReadArr[i].header, string().assign(100, '=').c_str());
-		//	}
-		//}
-		//else
-		//{
-		//	for (i = 0; i != ReadNum; i++)
-		//	{
-		//		if (bDebugMode) printf("Mapping single read#%d %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen);
+				//if (bDebugMode) printf("\nEnd of mapping for read#%s\n%s\n", ReadArr[i].header, string().assign(100, '=').c_str());
+			}
+		}
+		else
+		{
+			for (i = 0; i != ReadNum; i++)
+			{
+				if (bDebugMode) printf("Mapping single read#%d %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen);
 
-		//		SeedPairVec1 = IdentifySeedPairs_FastMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
-		//		AlignmentVec1 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[i].rlen, SeedPairVec1);
-		//		RemoveRedundantCandidates(AlignmentVec1); if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
-		//		GenMappingReport(true, ReadArr[i], AlignmentVec1);
+				SeedPairVec1 = IdentifySeedPairs_FastMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
+				AlignmentVec1 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[i].rlen, SeedPairVec1);
+				RemoveRedundantCandidates(AlignmentVec1); if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
+				GenMappingReport(true, ReadArr[i], AlignmentVec1);
 
-		//		SetSingleAlignmentFlag(ReadArr[i]); EvaluateMAPQ(ReadArr[i]);
-		//		
-		//		if (bDebugMode) printf("\nEnd of mapping for read#%s\n%s\n", ReadArr[i].header, string().assign(100, '=').c_str());
-		//	}
-		//}
-		//myUniqueMapping = myUnMapping = 0; SamOutputVec.clear();
-		//if (bPairEnd && ReadNum % 2 == 0) for (i = 0; i != ReadNum; i += 2) OutputPairedAlignments(ReadArr[i], ReadArr[i+1], myUniqueMapping, myUnMapping, SamOutputVec);
-		//else for (i = 0; i != ReadNum; i++) OutputSingledAlignments(ReadArr[i], myUniqueMapping, myUnMapping, SamOutputVec);
+				SetSingleAlignmentFlag(ReadArr[i]); EvaluateMAPQ(ReadArr[i]);
+				
+				if (bDebugMode) printf("\nEnd of mapping for read#%s\n%s\n", ReadArr[i].header, string().assign(100, '=').c_str());
+			}
+		}
+		myUniqueMapping = myUnMapping = 0; SamOutputVec.clear();
+		if (bPairEnd && ReadNum % 2 == 0) for (i = 0; i != ReadNum; i += 2) OutputPairedAlignments(ReadArr[i], ReadArr[i+1], myUniqueMapping, myUnMapping, SamOutputVec);
+		else for (i = 0; i != ReadNum; i++) OutputSingledAlignments(ReadArr[i], myUniqueMapping, myUnMapping, SamOutputVec);
 
 		pthread_mutex_lock(&OutputLock);
 		iTotalReadNum += ReadNum; iUniqueMapping += myUniqueMapping; iUnMapping += myUnMapping;
-		//if (OutputFileFormat == 0) for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++) fprintf(output, "%s", iter->c_str());
-		//else for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++) gzwrite(gzOutput, iter->c_str(), iter->length());
+		if (OutputFileFormat == 0) for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++) fprintf(output, "%s", iter->c_str());
+		else for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++) gzwrite(gzOutput, iter->c_str(), iter->length());
 		pthread_mutex_unlock(&OutputLock);
 
 		for (i = 0; i != ReadNum; i++)

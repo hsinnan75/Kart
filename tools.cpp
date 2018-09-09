@@ -423,3 +423,30 @@ int ProcessTailSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >&
 	}
 	return score;
 }
+
+int64_t GetAlignmentBoundary(int64_t gPos)
+{
+	map<int64_t, int>::iterator iter = ChrLocMap.lower_bound(gPos);
+
+	return iter->first;
+}
+
+bool CheckFragValidity(SeedPair_t SeedPair)
+{
+	map<int64_t, int>::iterator iter1, iter2;
+
+	iter1 = ChrLocMap.lower_bound(SeedPair.gPos);
+	iter2 = ChrLocMap.lower_bound(SeedPair.gPos + SeedPair.gLen - 1);
+
+	return (iter1->first == iter2->first);
+}
+
+bool CheckAlignmentValidity(vector<SeedPair_t>& SeedPairVec)
+{
+	map<int64_t, int>::iterator iter1, iter2;
+
+	iter1 = ChrLocMap.lower_bound(SeedPairVec.begin()->gPos);
+	iter2 = ChrLocMap.lower_bound(SeedPairVec.rbegin()->gPos + SeedPairVec.rbegin()->gLen - 1);
+
+	return (iter1->first == iter2->first);
+}

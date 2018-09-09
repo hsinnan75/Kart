@@ -3,7 +3,7 @@
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.4.4";
+const char* VersionStr = "2.4.5";
 vector<string> ReadFileNameVec1, ReadFileNameVec2;
 char *RefSequence, *IndexFileName, *OutputFileName;
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
@@ -21,6 +21,7 @@ void ShowProgramUsage(const char* program)
 	fprintf(stderr, "         -g INT        max gaps (indels) [5]\n");
 	fprintf(stderr, "         -p            paired-end reads are interlaced in the same file\n");
 	fprintf(stderr, "         -pacbio       pacbio data\n");
+	fprintf(stderr, "         -v			version\n");
 	fprintf(stderr, "\n");
 }
 
@@ -129,13 +130,18 @@ int main(int argc, char* argv[])
 			}
 			else if (parameter == "-g")
 			{
-				if((MaxGaps = atoi(argv[++i])) < 0) MaxGaps = 0;
+				if ((MaxGaps = atoi(argv[++i])) < 0) MaxGaps = 0;
 			}
 			else if (parameter == "-o") OutputFileName = argv[++i];
 			else if (parameter == "-pacbio") bPacBioData = true;
 			else if (parameter == "-m") bMultiHit = true;
 			else if (parameter == "-pair" || parameter == "-p") bPairEnd = true;
 			else if (parameter == "-d" || parameter == "-debug") bDebugMode = true;
+			else if (parameter == "-v" || parameter == "--version")
+			{
+				fprintf(stderr, "kart v%s\n\n", VersionStr);
+				exit(0);
+			}
 			else
 			{
 				fprintf(stderr, "Warning! Unknow parameter: %s\n", argv[i]);

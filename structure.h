@@ -205,9 +205,12 @@ extern int gzGetNextChunk(bool bSepLibrary, gzFile file, gzFile file2, ReadItem_
 
 // tools.cpp
 extern void ShowSeedLocationInfo(int64_t MyPos);
+extern int64_t GetAlignmentBoundary(int64_t gPos);
+extern bool CheckFragValidity(SeedPair_t SeedPair);
 extern void SelfComplementarySeq(int len, char* rseq);
 extern void ShowSeedInfo(vector<SeedPair_t>& SeedPairVec);
 extern void GetComplementarySeq(int len, char* seq, char* rseq);
+extern bool CheckAlignmentValidity(vector<SeedPair_t>& SeedPairVec);
 extern int CalFragPairIdenticalBases(int len, char* frag1, char* frag2);
 extern int AddNewCigarElements(string& str1, string& str2, vector<pair<int, char> >& cigar_vec);
 extern int ProcessHeadSequencePair(char* seq, SeedPair_t& sp, vector<pair<int, char> >& cigar_vec);

@@ -81,6 +81,7 @@ vector<SeedPair_t> IdentifySeedPairs_FastMode(int rlen, uint8_t* EncodeSeq)
 
 vector<AlignmentCandidate_t> GenerateAlignmentCandidateForIlluminaSeq(int rlen, vector<SeedPair_t> SeedPairVec)
 {
+	int64_t gPos_end;
 	int i, j, k, thr, num;
 	AlignmentCandidate_t AlignmentCandidate;
 	vector<AlignmentCandidate_t> AlignmentVec;
@@ -93,23 +94,24 @@ vector<AlignmentCandidate_t> GenerateAlignmentCandidateForIlluminaSeq(int rlen, 
 	i = 0; while (i < num && SeedPairVec[i].PosDiff < 0) i++;
 	for (; i < num;)
 	{
-		AlignmentCandidate.Score = SeedPairVec[i].rLen;
-		AlignmentCandidate.SeedVec.resize(1); AlignmentCandidate.SeedVec[0] = SeedPairVec[i];
+		AlignmentCandidate.Score = SeedPairVec[i].rLen; gPos_end = GetAlignmentBoundary(SeedPairVec[i].gPos); AlignmentCandidate.SeedVec.clear();
+		//AlignmentCandidate.SeedVec.resize(1); AlignmentCandidate.SeedVec[0] = SeedPairVec[i]; 
 		//if (bDebugMode) printf("\nMaster seed: r[%d-%d] g[%lld-%lld], len=%d, PosDiff=%lld\n", SeedPairVec[i].rPos, SeedPairVec[i].rPos + SeedPairVec[i].rLen - 1, SeedPairVec[i].gPos, SeedPairVec[i].gPos + SeedPairVec[i].gLen - 1, SeedPairVec[i].rLen, SeedPairVec[i].PosDiff);
 
 		for (j = i, k = i + 1; k < num; k++)
 		{
-			if (SeedPairVec[k].PosDiff == SeedPairVec[j].PosDiff || SeedPairVec[k].PosDiff - SeedPairVec[j].PosDiff < MaxGaps)
+			if (SeedPairVec[k].gPos > gPos_end || (SeedPairVec[k].PosDiff - SeedPairVec[j].PosDiff) > MaxGaps) break;
+			else
 			{
 				//if (bDebugMode) printf("add seed: r[%d-%d] g[%lld-%lld], len=%d, PosDiff=%lld\n", SeedPairVec[k].rPos, SeedPairVec[k].rPos + SeedPairVec[k].rLen - 1, SeedPairVec[k].gPos, SeedPairVec[k].gPos + SeedPairVec[k].gLen - 1, SeedPairVec[k].rLen, SeedPairVec[k].PosDiff);
 				AlignmentCandidate.Score += SeedPairVec[k].rLen;
-				AlignmentCandidate.SeedVec.push_back(SeedPairVec[k]);
+				//AlignmentCandidate.SeedVec.push_back(SeedPairVec[k]);
 				j = k;
 			}
-			else break;
 		}
 		if (AlignmentCandidate.Score > thr)
 		{
+			copy(SeedPairVec.begin() + i, SeedPairVec.begin() + k, back_inserter(AlignmentCandidate.SeedVec));
 			if (AlignmentCandidate.Score - 50 > thr) thr = AlignmentCandidate.Score - 50;
 			AlignmentCandidate.PosDiff = AlignmentCandidate.SeedVec[0].PosDiff;
 			if (AlignmentCandidate.PosDiff < 0) AlignmentCandidate.PosDiff = 0;

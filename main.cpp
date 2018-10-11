@@ -3,7 +3,7 @@
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.4.5";
+const char* VersionStr = "2.4.6";
 vector<string> ReadFileNameVec1, ReadFileNameVec2;
 char *RefSequence, *IndexFileName, *OutputFileName;
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
@@ -144,34 +144,38 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				fprintf(stderr, "Warning! Unknow parameter: %s\n", argv[i]);
+				fprintf(stderr, "Error! Unknow parameter: %s\n", argv[i]);
 				ShowProgramUsage(argv[0]);
-				exit(0);
+				exit(1);
 			}
 		}
 
 		if (ReadFileNameVec1.size() == 0)
 		{
-			fprintf(stderr, "Warning! Please specify a valid read input!\n");
+			fprintf(stderr, "Error! Please specify a valid read input!\n");
 			ShowProgramUsage(argv[0]);
-			exit(0);
+			exit(1);
 		}
 		if (ReadFileNameVec2.size() > 0 && ReadFileNameVec1.size() != ReadFileNameVec2.size())
 		{
-			fprintf(stderr, "Warning! Paired-end reads input numbers do not match!\n");
+			fprintf(stderr, "Error! Paired-end reads input numbers do not match!\n");
 			fprintf(stderr, "Read1:\n"); for (vector<string>::iterator iter = ReadFileNameVec1.begin(); iter != ReadFileNameVec1.end(); iter++) fprintf(stderr, "\t%s\n", (char*)iter->c_str());
 			fprintf(stderr, "Read2:\n"); for (vector<string>::iterator iter = ReadFileNameVec2.begin(); iter != ReadFileNameVec2.end(); iter++) fprintf(stderr, "\t%s\n", (char*)iter->c_str());
-			exit(0);
+			exit(1);
 		}
 		if (CheckInputFiles() == false || CheckOutputFileName() == false) exit(0);
 		if (IndexFileName != NULL && CheckBWAIndexFiles(IndexFileName)) RefIdx = bwa_idx_load(IndexFileName);
 		else
 		{
-			fprintf(stderr, "Warning! Please specify a valid reference index!\n");
+			fprintf(stderr, "Error! Please specify a valid reference index!\n");
 			ShowProgramUsage(argv[0]);
-			exit(0);
+			exit(1);
 		}
-		if (RefIdx == 0) fprintf(stderr, "\n\nError! Index files are corrupt!\n");
+		if (RefIdx == 0)
+		{
+			fprintf(stderr, "\n\nError! Index files are corrupt!\n");
+			exit(1);
+		}
 		else
 		{
 			Refbwt = RefIdx->bwt;

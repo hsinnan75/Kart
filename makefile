@@ -8,6 +8,3 @@ main:
 index:
 		make -C BWT_Index && mv BWT_Index/bwt_index .
 
-eva:            SamEvaluation.cpp
-                $(Compiler) $(FLAGS) SamEvaluation.cpp -o eva
-                		

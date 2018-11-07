@@ -21,7 +21,7 @@ void ShowProgramUsage(const char* program)
 	fprintf(stderr, "         -g INT        max gaps (indels) [5]\n");
 	fprintf(stderr, "         -p            paired-end reads are interlaced in the same file\n");
 	fprintf(stderr, "         -pacbio       pacbio data\n");
-	fprintf(stderr, "         -v			version\n");
+	fprintf(stderr, "         -v    	    version\n");
 	fprintf(stderr, "\n");
 }
 

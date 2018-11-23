@@ -11,7 +11,7 @@ time_t StartProcessTime;
 bool bSepLibrary = false;
 FILE *ReadFileHandler1, *ReadFileHandler2;
 gzFile gzReadFileHandler1, gzReadFileHandler2;
-static pthread_mutex_t LibraryLock, OutputLock;
+static pthread_mutex_t DataLock, LibraryLock, OutputLock;
 int64_t iTotalReadNum = 0, iUniqueMapping = 0, iUnMapping = 0, iPaired = 0;
 
 void SetSingleAlignmentFlag(ReadItem_t& read)
@@ -413,7 +413,9 @@ void CheckPairedFinalAlignments(ReadItem_t& read1, ReadItem_t& read2)
 	int i, j, s;
 
 	//printf("BestIdx1=%d, BestIdx2=%d\n", read1.iBestAlnCanIdx + 1, read2.iBestAlnCanIdx + 1);
-	bMated = read1.AlnReportArr[read1.iBestAlnCanIdx].PairedAlnCanIdx == read2.iBestAlnCanIdx ? true : false;
+	if (read1.iBestAlnCanIdx != -1 && read2.iBestAlnCanIdx != -1) bMated = read1.AlnReportArr[read1.iBestAlnCanIdx].PairedAlnCanIdx == read2.iBestAlnCanIdx ? true : false;
+	else bMated = false;
+
 	if (!bMultiHit && bMated) return;
 	if (!bMated && read1.score > 0 && read2.score > 0) // identify mated pairs
 	{
@@ -497,13 +499,14 @@ void *ReadMapping(void *arg)
 		}
 		else if (bPairEnd && ReadNum % 2 == 0)
 		{
+			pthread_mutex_lock(&DataLock);
 			if (iPaired >= 1000)
 			{
 				EstDistance = (int)(iDistance / (iPaired >> 2));
 				EstDistance = EstDistance + (EstDistance >> 1);
 			}
 			else  EstDistance = MaxInsertSize;
-
+			pthread_mutex_unlock(&DataLock);
 			//if (bDebugMode) printf("iDistance = %ld, iPaired=%d, EstiDistance=%d\n", iDistance, iPaired, EstDistance);
 			for (i = 0, j = 1; i != ReadNum; i += 2, j += 2)
 			{

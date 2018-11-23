@@ -150,8 +150,7 @@ void OutputPairedAlignments(ReadItem_t& read1, ReadItem_t& read2, int& myUniqueM
 	int i, j, len, dist = 0;
 
 	len = (read1.rlen > read2.rlen ? read1.rlen : read2.rlen);
-	if (len < 1000) buffer = (char*)malloc((10000));
-	else buffer = (char*)malloc((len * 10));
+	buffer = (char*)malloc((len << 3));
 
 	if (read1.score == 0)
 	{
@@ -247,8 +246,9 @@ void OutputSingledAlignments(ReadItem_t& read, int& myUniqueMapping, int& myUnMa
 	//stringstream ss;
 	char* buffer = NULL;
 
-	if (read.rlen < 1000) buffer = (char*)malloc((10000));
-	else buffer = (char*)malloc((read.rlen * 10));
+	//if (read.rlen < 1000) buffer = (char*)malloc((10000));
+	//else buffer = (char*)malloc((read.rlen * 10));
+	buffer = (char*)malloc((read.rlen << 3));
 
 	if (read.score == 0)
 	{
@@ -467,7 +467,7 @@ void *ReadMapping(void *arg)
 	vector<string> SamOutputVec;
 	vector<SeedPair_t> SeedPairVec1, SeedPairVec2;
 	vector<AlignmentCandidate_t> AlignmentVec1, AlignmentVec2;
-	int i, j, ReadNum, EstDistance, myUniqueMapping, myUnMapping;
+	int i, j, n, ReadNum, EstDistance, myUniqueMapping, myUnMapping;
 
 	ReadArr = new ReadItem_t[ReadChunkSize];
 
@@ -566,8 +566,20 @@ void *ReadMapping(void *arg)
 
 		pthread_mutex_lock(&OutputLock);
 		iTotalReadNum += ReadNum; iUniqueMapping += myUniqueMapping; iUnMapping += myUnMapping;
-		if (OutputFileFormat == 0) for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++) fprintf(output, "%s", iter->c_str());
-		else for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++) gzwrite(gzOutput, iter->c_str(), iter->length());
+		if (OutputFileFormat == 0)
+		{
+			for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++)
+			{
+				fprintf(output, "%s", iter->c_str()); fflush(output);
+			}
+		}
+		else
+		{
+			for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++)
+			{
+				gzwrite(gzOutput, iter->c_str(), iter->length());
+			}
+		}
 		pthread_mutex_unlock(&OutputLock);
 
 		for (i = 0; i != ReadNum; i++)

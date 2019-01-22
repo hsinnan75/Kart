@@ -485,7 +485,7 @@ void *ReadMapping(void *arg)
 				GenMappingReport(true, ReadArr[i], AlignmentVec1);
 
 				SetSingleAlignmentFlag(ReadArr[i]); EvaluateMAPQ(ReadArr[i]);
-				if (bDebugMode) printf("\nEnd of mapping for read#%s (len=%d)\n%s\n", ReadArr[i].header, ReadArr[i].rlen, string().assign(100, '=').c_str());
+				//if (bDebugMode) printf("\nEnd of mapping for read#%s (len=%d)\n%s\n", ReadArr[i].header, ReadArr[i].rlen, string().assign(100, '=').c_str());
 			}
 		}
 		else if (bPairEnd && ReadNum % 2 == 0)
@@ -579,7 +579,7 @@ void *ReadMapping(void *arg)
 			delete[] ReadArr[i].seq;
 			if (FastQFormat) delete[] ReadArr[i].qual;
 			delete[] ReadArr[i].EncodeSeq;
-			delete[] ReadArr[i].AlnReportArr;
+			if(ReadArr[i].CanNum > 0) delete[] ReadArr[i].AlnReportArr;
 		}
 	}
 	delete[] buffer;

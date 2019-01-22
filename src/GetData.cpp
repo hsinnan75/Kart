@@ -119,30 +119,37 @@ int GetNextChunk(bool bSepLibrary, FILE *file, FILE *file2, ReadItem_t* ReadArr)
 
 ReadItem_t gzGetNextEntry(gzFile file)
 {
-	int len;
+	int len, buf_size;
+	char* buffer;
 	ReadItem_t read;
-	char buffer[1024];
+	
+	if (bPacBioData) buf_size = 1000000;
+	else buf_size = 1000;
+
+	buffer = new char[buf_size];
 
 	read.header = read.seq = read.qual = NULL; read.rlen = 0;
 
-	if (gzgets(file, buffer, 1024) != NULL)
+	if (gzgets(file, buffer, buf_size) != NULL)
 	{
 		len = IdentifyHeaderBoundary(buffer, strlen(buffer)) - 1;
 		if (len > 0 && (buffer[0] == '@' || buffer[0] == '>'))
 		{
 			read.header = new char[len + 1];
 			strncpy(read.header, (buffer + 1), len); read.header[len] = '\0';
-			gzgets(file, buffer, 1024); read.rlen = strlen(buffer) - 1; read.seq = new char[read.rlen + 1]; read.seq[read.rlen] = '\0';
+			gzgets(file, buffer, buf_size); read.rlen = strlen(buffer) - 1; read.seq = new char[read.rlen + 1]; read.seq[read.rlen] = '\0';
 			strncpy(read.seq, buffer, read.rlen);
 
 			if (FastQFormat)
 			{
-				gzgets(file, buffer, 1024); gzgets(file, buffer, 1024);
+				gzgets(file, buffer, buf_size); gzgets(file, buffer, buf_size);
 				read.qual = new char[read.rlen + 1]; read.qual[read.rlen] = '\0';
 				strncpy(read.qual, buffer, read.rlen);
 			}
 		}
 	}
+	delete[] buffer;
+
 	return read;
 }
 
@@ -179,7 +186,7 @@ int gzGetNextChunk(bool bSepLibrary, gzFile file, gzFile file2, ReadItem_t* Read
 		for (i = 0; i != ReadArr[iCount].rlen; i++) ReadArr[iCount].EncodeSeq[i] = nst_nt4_table[(int)ReadArr[iCount].seq[i]];
 
 		iCount++;
-		if (iCount == ReadChunkSize) break;
+		if (iCount == ReadChunkSize || (bPacBioData && iCount == 10)) break;
 	}
 	return iCount;
 }

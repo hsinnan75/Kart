@@ -158,13 +158,13 @@ ReadItem_t gzGetNextEntry(gzFile file)
 
 	if (gzgets(file, buffer, buf_size) != NULL)
 	{
-		len = IdentifyHeaderBoundary(buffer, strlen(buffer)) - 1;
+		len = strlen(buffer); p1 = IdentifyHeaderBegPos(buffer, len); p2 = IdentifyHeaderEndPos(buffer, len);
+		len = p2 - p1;
 		if (len > 0 && (buffer[0] == '@' || buffer[0] == '>'))
 		{
-			p1 = IdentifyHeaderBegPos(buffer, len); p2 = IdentifyHeaderEndPos(buffer, len); len = p2 - p1;
+			//p1 = IdentifyHeaderBegPos(buffer, len); p2 = IdentifyHeaderEndPos(buffer, len); len = p2 - p1;
+			//read.header = new char[len + 1]; strncpy(read.header, (buffer + p1), len); read.header[len] = '\0';
 			read.header = new char[len + 1]; strncpy(read.header, (buffer + p1), len); read.header[len] = '\0';
-			//read.header = new char[len + 1];
-			//strncpy(read.header, (buffer + 1), len); read.header[len] = '\0';
 			gzgets(file, buffer, buf_size); read.rlen = strlen(buffer) - 1; read.seq = new char[read.rlen + 1]; read.seq[read.rlen] = '\0';
 			strncpy(read.seq, buffer, read.rlen);
 

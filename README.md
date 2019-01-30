@@ -24,6 +24,8 @@ to download the package of Kart.
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwt_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
+version 2.4.9: Fix a bug in reading wrong formatted read header
+
 version 2.4.8: Fix a bug when reading long read data in a gzip file.
 
 version 2.4.7: Fix a bug on paired-end mapping.

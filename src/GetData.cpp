@@ -26,8 +26,31 @@ int IdentifyHeaderBoundary(char* str, int len)
 	return len - 1;
 }
 
+int IdentifyHeaderBegPos(char* str, int len)
+{
+	int i;
+
+	for (i = 1; i < len; i++)
+	{
+		if (str[i] != '>' && str[i] != '@') return i;
+	}
+	return len - 1;
+}
+
+int IdentifyHeaderEndPos(char* str, int len)
+{
+	int i;
+
+	for (i = 1; i < len; i++)
+	{
+		if (str[i] == ' ' || str[i] == '/' || str[i] == '\t') return i;
+	}
+	return len - 1;
+}
+
 ReadItem_t GetNextEntry(FILE *file)
 {
+	int p1, p2;
 	ssize_t len;
 	size_t size = 0;
 	ReadItem_t read;
@@ -37,8 +60,10 @@ ReadItem_t GetNextEntry(FILE *file)
 
 	if ((len = getline(&buffer, &size, file)) != -1)
 	{
-		len = IdentifyHeaderBoundary(buffer, len) - 1; read.header = new char[len + 1];
-		strncpy(read.header, (buffer + 1), len); read.header[len] = '\0';
+		p1 = IdentifyHeaderBegPos(buffer, len); p2 = IdentifyHeaderEndPos(buffer, len); len = p2 - p1;
+		read.header = new char[len + 1]; strncpy(read.header, (buffer + p1), len); read.header[len] = '\0';
+		//len = IdentifyHeaderBoundary(buffer, len) - 1; read.header = new char[len + 1];
+		//strncpy(read.header, (buffer + 1), len); read.header[len] = '\0';
 
 		if (FastQFormat)
 		{
@@ -119,9 +144,10 @@ int GetNextChunk(bool bSepLibrary, FILE *file, FILE *file2, ReadItem_t* ReadArr)
 
 ReadItem_t gzGetNextEntry(gzFile file)
 {
-	int len, buf_size;
+	int p1, p2;
 	char* buffer;
 	ReadItem_t read;
+	int len, buf_size;
 	
 	if (bPacBioData) buf_size = 1000000;
 	else buf_size = 1000;
@@ -135,8 +161,10 @@ ReadItem_t gzGetNextEntry(gzFile file)
 		len = IdentifyHeaderBoundary(buffer, strlen(buffer)) - 1;
 		if (len > 0 && (buffer[0] == '@' || buffer[0] == '>'))
 		{
-			read.header = new char[len + 1];
-			strncpy(read.header, (buffer + 1), len); read.header[len] = '\0';
+			p1 = IdentifyHeaderBegPos(buffer, len); p2 = IdentifyHeaderEndPos(buffer, len); len = p2 - p1;
+			read.header = new char[len + 1]; strncpy(read.header, (buffer + p1), len); read.header[len] = '\0';
+			//read.header = new char[len + 1];
+			//strncpy(read.header, (buffer + 1), len); read.header[len] = '\0';
 			gzgets(file, buffer, buf_size); read.rlen = strlen(buffer) - 1; read.seq = new char[read.rlen + 1]; read.seq[read.rlen] = '\0';
 			strncpy(read.seq, buffer, read.rlen);
 

@@ -499,7 +499,7 @@ void *ReadMapping(void *arg)
 		pthread_mutex_lock(&LibraryLock);
 		if(gzCompressed) ReadNum = gzGetNextChunk(bSepLibrary, gzReadFileHandler1, gzReadFileHandler2, ReadArr);
 		else ReadNum = GetNextChunk(bSepLibrary, ReadFileHandler1, ReadFileHandler2, ReadArr);
-		fprintf(stdout, "\r%lld %s reads have been processed in %ld seconds...", (long long)iTotalReadNum, (bPairEnd? "paired-end":"singled-end"), (long)(time(NULL) - StartProcessTime));
+		fprintf(stdout, "\r%lld %s reads have been processed in %ld seconds...", (long long)iTotalReadNum, (bPairEnd ? "paired-end" : "singled-end"), (long)(time(NULL) - StartProcessTime)); fflush(stdout);
 		pthread_mutex_unlock(&LibraryLock);
 		
 		if (ReadNum == 0) break;
@@ -593,7 +593,7 @@ void *ReadMapping(void *arg)
 		{
 			for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++)
 			{
-				fprintf(sam_out, "%s\n", iter->c_str()); fflush(sam_out);
+				fprintf(sam_out, "%s\n", iter->c_str()); //fflush(sam_out);
 			}
 		}
 		else

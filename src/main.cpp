@@ -11,18 +11,18 @@ bool bDebugMode, bPairEnd, bPacBioData, bMultiHit, gzCompressed, FastQFormat;
 
 void ShowProgramUsage(const char* program)
 {
-	fprintf(stderr, "kart v%s (Hsin-Nan Lin & Wen-Lian Hsu)\n\n", VersionStr);
-	fprintf(stderr, "Usage: %s -i Index_Prefix -f <ReadFile_A1 ReadFile_B1 ...> [-f2 <ReadFile_A2 ReadFile_B2 ...>] -o Output\n\n", program);
-	fprintf(stderr, "Options: -t INT        number of threads [4]\n");
-	fprintf(stderr, "         -f            files with #1 mates reads (format:fa, fq, fq.gz)\n");
-	fprintf(stderr, "         -f2           files with #2 mates reads (format:fa, fq, fq.gz)\n");
-	fprintf(stderr, "         -o            output filename [output.sam] fomrat: SAM|BAM\n");
-	fprintf(stderr, "         -m            output multiple alignments\n");
-	fprintf(stderr, "         -g INT        max gaps (indels) [5]\n");
-	fprintf(stderr, "         -p            paired-end reads are interlaced in the same file\n");
-	fprintf(stderr, "         -pacbio       pacbio data\n");
-	fprintf(stderr, "         -v    	    version\n");
-	fprintf(stderr, "\n");
+	fprintf(stdout, "kart v%s (Hsin-Nan Lin & Wen-Lian Hsu)\n\n", VersionStr);
+	fprintf(stdout, "Usage: %s -i Index_Prefix -f <ReadFile_A1 ReadFile_B1 ...> [-f2 <ReadFile_A2 ReadFile_B2 ...>] -o Output\n\n", program);
+	fprintf(stdout, "Options: -t INT        number of threads [4]\n");
+	fprintf(stdout, "         -f            files with #1 mates reads (format:fa, fq, fq.gz)\n");
+	fprintf(stdout, "         -f2           files with #2 mates reads (format:fa, fq, fq.gz)\n");
+	fprintf(stdout, "         -o            output filename [output.sam] fomrat: SAM|BAM\n");
+	fprintf(stdout, "         -m            output multiple alignments\n");
+	fprintf(stdout, "         -g INT        max gaps (indels) [5]\n");
+	fprintf(stdout, "         -p            paired-end reads are interlaced in the same file\n");
+	fprintf(stdout, "         -pacbio       pacbio data\n");
+	fprintf(stdout, "         -v            version\n");
+	fprintf(stdout, "\n");
 }
 
 bool CheckOutputFileName()
@@ -41,7 +41,7 @@ bool CheckOutputFileName()
 			if (s.st_mode & S_IFDIR)
 			{
 				bRet = false;
-				fprintf(stderr, "Warning: %s is a directory!\n", OutputFileName);
+				fprintf(stdout, "Warning: %s is a directory!\n", OutputFileName);
 			}
 			else if (s.st_mode & S_IFREG)
 			{
@@ -49,7 +49,7 @@ bool CheckOutputFileName()
 			else
 			{
 				bRet = false;
-				fprintf(stderr, "Warning: %s is not a regular file!\n", OutputFileName);
+				fprintf(stdout, "Warning: %s is not a regular file!\n", OutputFileName);
 			}
 		}
 	}
@@ -66,7 +66,7 @@ bool CheckInputFiles()
 		if (stat(iter->c_str(), &s) == -1)
 		{
 			bRet = false;
-			fprintf(stderr, "Cannot access file:[%s]\n", (char*)iter->c_str());
+			fprintf(stdout, "Cannot access file:[%s]\n", (char*)iter->c_str());
 		}
 	}
 	for (vector<string>::iterator iter = ReadFileNameVec2.begin(); iter != ReadFileNameVec2.end(); iter++)
@@ -74,7 +74,7 @@ bool CheckInputFiles()
 		if (stat(iter->c_str(), &s) == -1)
 		{
 			bRet = false;
-			fprintf(stderr, "Cannot access file:[%s]\n", (char*)iter->c_str());
+			fprintf(stdout, "Cannot access file:[%s]\n", (char*)iter->c_str());
 		}
 	}
 	return bRet;
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
 			{
 				if ((iThreadNum = atoi(argv[++i])) > 40)
 				{
-					fprintf(stderr, "Warning! Thread number is limited to 40!\n");
+					fprintf(stdout, "Warning! Thread number is limited to 40!\n");
 					iThreadNum = 40;
 				}
 			}
@@ -140,12 +140,12 @@ int main(int argc, char* argv[])
 			else if (parameter == "-d" || parameter == "-debug") bDebugMode = true;
 			else if (parameter == "-v" || parameter == "--version")
 			{
-				fprintf(stderr, "kart v%s\n\n", VersionStr);
+				fprintf(stdout, "kart v%s\n\n", VersionStr);
 				exit(0);
 			}
 			else
 			{
-				fprintf(stderr, "Error! Unknow parameter: %s\n", argv[i]);
+				fprintf(stdout, "Error! Unknow parameter: %s\n", argv[i]);
 				ShowProgramUsage(argv[0]);
 				exit(1);
 			}
@@ -153,28 +153,28 @@ int main(int argc, char* argv[])
 
 		if (ReadFileNameVec1.size() == 0)
 		{
-			fprintf(stderr, "Error! Please specify a valid read input!\n");
+			fprintf(stdout, "Error! Please specify a valid read input!\n");
 			ShowProgramUsage(argv[0]);
 			exit(1);
 		}
 		if (ReadFileNameVec2.size() > 0 && ReadFileNameVec1.size() != ReadFileNameVec2.size())
 		{
-			fprintf(stderr, "Error! Paired-end reads input numbers do not match!\n");
-			fprintf(stderr, "Read1:\n"); for (vector<string>::iterator iter = ReadFileNameVec1.begin(); iter != ReadFileNameVec1.end(); iter++) fprintf(stderr, "\t%s\n", (char*)iter->c_str());
-			fprintf(stderr, "Read2:\n"); for (vector<string>::iterator iter = ReadFileNameVec2.begin(); iter != ReadFileNameVec2.end(); iter++) fprintf(stderr, "\t%s\n", (char*)iter->c_str());
+			fprintf(stdout, "Error! Paired-end reads input numbers do not match!\n");
+			fprintf(stdout, "Read1:\n"); for (vector<string>::iterator iter = ReadFileNameVec1.begin(); iter != ReadFileNameVec1.end(); iter++) fprintf(stdout, "\t%s\n", (char*)iter->c_str());
+			fprintf(stdout, "Read2:\n"); for (vector<string>::iterator iter = ReadFileNameVec2.begin(); iter != ReadFileNameVec2.end(); iter++) fprintf(stdout, "\t%s\n", (char*)iter->c_str());
 			exit(1);
 		}
 		if (CheckInputFiles() == false || CheckOutputFileName() == false) exit(0);
 		if (IndexFileName != NULL && CheckBWAIndexFiles(IndexFileName)) RefIdx = bwa_idx_load(IndexFileName);
 		else
 		{
-			fprintf(stderr, "Error! Please specify a valid reference index!\n");
+			fprintf(stdout, "Error! Please specify a valid reference index!\n");
 			ShowProgramUsage(argv[0]);
 			exit(1);
 		}
 		if (RefIdx == 0)
 		{
-			fprintf(stderr, "\n\nError! Index files are corrupt!\n");
+			fprintf(stdout, "\n\nError! Index files are corrupt!\n");
 			exit(1);
 		}
 		else

@@ -499,7 +499,7 @@ void *ReadMapping(void *arg)
 		pthread_mutex_lock(&LibraryLock);
 		if(gzCompressed) ReadNum = gzGetNextChunk(bSepLibrary, gzReadFileHandler1, gzReadFileHandler2, ReadArr);
 		else ReadNum = GetNextChunk(bSepLibrary, ReadFileHandler1, ReadFileHandler2, ReadArr);
-		fprintf(stderr, "\r%lld %s reads have been processed in %ld seconds...", (long long)iTotalReadNum, (bPairEnd? "paired-end":"singled-end"), (long)(time(NULL) - StartProcessTime));
+		fprintf(stdout, "\r%lld %s reads have been processed in %ld seconds...", (long long)iTotalReadNum, (bPairEnd? "paired-end":"singled-end"), (long)(time(NULL) - StartProcessTime));
 		pthread_mutex_unlock(&LibraryLock);
 		
 		if (ReadNum == 0) break;
@@ -620,7 +620,7 @@ void *ReadMapping(void *arg)
 	}
 	delete[] buffer;
 	delete[] ReadArr;
-	//fprintf(stderr, "\niSimpleLen=%.2f, iNormalLen=%.2f\n", 1.0*iSimpleLength / (iSimpleLength + iNormalLength), 1.0*iNormalLength / (iSimpleLength + iNormalLength));
+	//fprintf(stdout, "\niSimpleLen=%.2f, iNormalLen=%.2f\n", 1.0*iSimpleLength / (iSimpleLength + iNormalLength), 1.0*iNormalLength / (iSimpleLength + iNormalLength));
 
 	return (void*)(1);
 }
@@ -671,7 +671,7 @@ void Mapping()
 		else gzCompressed = false;
 
 		FastQFormat = CheckReadFormat(ReadFileNameVec1[LibraryID].c_str());
-		//fprintf(stderr, "gz=%s, format=%s\n", gzCompressed ? "Yes" : "No", FastQFormat ? "Fastq" : "Fasta");
+		//fprintf(stdout, "gz=%s, format=%s\n", gzCompressed ? "Yes" : "No", FastQFormat ? "Fastq" : "Fasta");
 
 		if (gzCompressed) gzReadFileHandler1 = gzopen(ReadFileNameVec1[LibraryID].c_str(), "rb");
 		else ReadFileHandler1 = fopen(ReadFileNameVec1[LibraryID].c_str(), "r");
@@ -686,7 +686,7 @@ void Mapping()
 			}
 			else
 			{
-				fprintf(stderr, "Error! %s and %s are with different format...\n", (char*)ReadFileNameVec1[LibraryID].c_str(), (char*)ReadFileNameVec2[LibraryID].c_str());
+				fprintf(stdout, "Error! %s and %s are with different format...\n", (char*)ReadFileNameVec1[LibraryID].c_str(), (char*)ReadFileNameVec2[LibraryID].c_str());
 				continue;
 			}
 		}

@@ -603,7 +603,7 @@ bool CheckCoordinateValidity(vector<SeedPair_t>& SeedVec)
 	if ((gPos1 < GenomeSize && gPos2 >= GenomeSize) || (gPos1 >= GenomeSize && gPos2 < GenomeSize) || ChrLocMap.lower_bound(gPos1)->second != ChrLocMap.lower_bound(gPos2)->second)
 	{
 		bValid = false;
-		//if (bDebugMode) fprintf(stderr, "%lld and %lld are not in the same chromosome!\n", gPos1, gPos2);
+		//if (bDebugMode) fprintf(stdout, "%lld and %lld are not in the same chromosome!\n", gPos1, gPos2);
 	}
 	return bValid;
 }

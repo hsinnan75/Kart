@@ -606,6 +606,7 @@ void *ReadMapping(void *arg)
 				str.s = (char*)iter->c_str(); str.l = iter->length();
 				if (sam_parse1(&str, header, b) >= 0) sam_write1(bam_out, header, b);
 			}
+			bam_destroy1(b);
 		}
 		pthread_mutex_unlock(&OutputLock);
 
@@ -719,6 +720,6 @@ void Mapping()
 	{
 		if (bPairEnd) fprintf(stdout, "\t# of total mapped sequences = %lld (sensitivity = %.2f%%)\n\t# of paired sequences = %lld (%.2f%%), average insert size = %d\n", (long long)(iTotalReadNum - iUnMapping), (int)(10000 * (1.0*(iTotalReadNum - iUnMapping) / iTotalReadNum) + 0.5) / 100.0, (long long)iPaired, (int)(10000 * (1.0*iPaired / iTotalReadNum) + 0.5) / 100.0, (iPaired > 1 ? (int)(iDistance / (iPaired >> 1)) : 0));
 		else fprintf(stdout, "\t# of total mapped sequences = %lld (sensitivity = %.2f%%)\n", (long long)(iTotalReadNum - iUnMapping), (int)(10000 * (1.0*(iTotalReadNum - iUnMapping) / iTotalReadNum) + 0.5) / 100.0);
-		fprintf(stdout, "Output: %s\n", OutputFileName);
+		fprintf(stdout, "Alignment output: %s\n", OutputFileName);
 	}
 }

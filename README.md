@@ -159,7 +159,7 @@ We also provide a script (run_test.sh) to test the software. It will index a ref
 
 -p the input read file consists of interleaved paired-end sequences
 
--o STR alignment output, output format includes SAM and BAM 
+-o STR alignment output, output format includes SAM and BAM, out.sam for SAM output, out.bam BAM output
 
 -m output multiple alignments
 

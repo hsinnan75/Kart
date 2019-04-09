@@ -3,7 +3,7 @@
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.4.9";
+const char* VersionStr = "2.5.0";
 vector<string> ReadFileNameVec1, ReadFileNameVec2;
 char *RefSequence, *IndexFileName, *OutputFileName;
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
@@ -12,11 +12,11 @@ bool bDebugMode, bPairEnd, bPacBioData, bMultiHit, gzCompressed, FastQFormat;
 void ShowProgramUsage(const char* program)
 {
 	fprintf(stderr, "kart v%s (Hsin-Nan Lin & Wen-Lian Hsu)\n\n", VersionStr);
-	fprintf(stderr, "Usage: %s -i Index_Prefix -f <ReadFile_A1 ReadFile_B1 ...> [-f2 <ReadFile_A2 ReadFile_B2 ...>] > out.sam\n\n", program);
+	fprintf(stderr, "Usage: %s -i Index_Prefix -f <ReadFile_A1 ReadFile_B1 ...> [-f2 <ReadFile_A2 ReadFile_B2 ...>] -o Output\n\n", program);
 	fprintf(stderr, "Options: -t INT        number of threads [4]\n");
 	fprintf(stderr, "         -f            files with #1 mates reads (format:fa, fq, fq.gz)\n");
 	fprintf(stderr, "         -f2           files with #2 mates reads (format:fa, fq, fq.gz)\n");
-	fprintf(stderr, "         -o            output filename [stdout]\n");
+	fprintf(stderr, "         -o            output filename [output.sam] fomrat: SAM|BAM\n");
 	fprintf(stderr, "         -m            output multiple alignments\n");
 	fprintf(stderr, "         -g INT        max gaps (indels) [5]\n");
 	fprintf(stderr, "         -p            paired-end reads are interlaced in the same file\n");
@@ -29,13 +29,13 @@ bool CheckOutputFileName()
 {
 	bool bRet = true;
 
-	if (OutputFileName != NULL)
+	if (strcmp(OutputFileName, "output.sam")!=0)
 	{
 		struct stat s;
 		string filename, FileExt;
 
 		filename = OutputFileName; FileExt = filename.substr(filename.find_last_of('.') + 1);
-		if (FileExt == "gz") OutputFileFormat = 1;
+		if (FileExt == "bam") OutputFileFormat = 1;
 		if (stat(OutputFileName, &s) == 0)
 		{
 			if (s.st_mode & S_IFDIR)
@@ -94,8 +94,9 @@ int main(int argc, char* argv[])
 	bPacBioData = false;
 	bMultiHit = false;
 	FastQFormat = true;
-	OutputFileFormat = 0; // 0:sam 1:sam.gz
-	RefSequence = IndexFileName = OutputFileName = NULL;
+	OutputFileName = (char*)"output.sam";
+	OutputFileFormat = 0; // 0:sam 1:bam
+	RefSequence = IndexFileName = NULL;
 
 	if (argc == 1 || strcmp(argv[1], "-h") == 0) ShowProgramUsage(argv[0]);
 	else if (strcmp(argv[1], "update") == 0)

@@ -24,6 +24,8 @@ to download the package of Kart.
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwt_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
+version 2.5.0: Add BAM formatted output.
+
 version 2.4.9: Fix a bug in reading wrong formatted read header
 
 version 2.4.8: Fix a bug when reading long read data in a gzip file.
@@ -118,14 +120,9 @@ To map short reads, Kart requires the the index files of the reference genome an
  $ ./kart -i ecoli -f ReadFileA_1.fq ReadFileB_1.fq ReadFileC_1.fq -f2 ReadFileA_2.fq ReadFileB_2.fq ReadFileC_2.fq -o out.sam
   ```
 
- case 3: gzip compressed output
+ case 3: bam output
   ```
- $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.sam.gz
-  ```
-
- case 4: bam output
-  ```
- $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa | samtools view -bo out.bam
+ $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.bam
   ```
 
 The above commands are to run Kart to align the paired-end reads in ReadFile1.fa and ReadFile2.fa with index files of ecoli.
@@ -163,7 +160,7 @@ We also provide a script (run_test.sh) to test the software. It will index a ref
 
 -p the input read file consists of interleaved paired-end sequences
 
--o STR alignment output
+-o STR alignment output, output format includes SAM and BAM 
 
 -m output multiple alignments
 

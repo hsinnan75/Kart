@@ -10,11 +10,8 @@ HEADER		= structure.h
 OBJECT		= $(SOURCE:%.cpp=%.o)
 
 main:		$(OBJECT)
-			$(Compiler) $(FLAGS) $(OBJECT) -o kart $(LIB)
+			$(Compiler) $(FLAGS) $(OBJECT) -o kart $(LIB) htslib/libhts.a -lbz2 -llzma
 			
-static:		$(OBJECT)
-			$(Compiler) $(FLAGS) -static $(OBJECT) -o kart_static $(LIB)
-
 %.o:		%.cpp $(HEADER)
 			$(Compiler) $(FLAGS) -c $<
 

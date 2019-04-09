@@ -1,18 +1,50 @@
 #include <cmath>
 #include "structure.h"
+#include "htslib/sam.h"
+#include "sam_opts.h"
+#include "htslib/kseq.h"
+#include "htslib/kstring.h"
 
 #define MAPQ_COEF 30
 #define Max_MAPQ  60
 
-gzFile gzOutput;
-FILE *output = stdout;
+FILE *sam_out = 0;
+samFile *bam_out = 0;
 int64_t iDistance = 0;
 time_t StartProcessTime;
 bool bSepLibrary = false;
+bam_hdr_t *header = NULL;
 FILE *ReadFileHandler1, *ReadFileHandler2;
 gzFile gzReadFileHandler1, gzReadFileHandler2;
 static pthread_mutex_t DataLock, LibraryLock, OutputLock;
 int64_t iTotalReadNum = 0, iUniqueMapping = 0, iUnMapping = 0, iPaired = 0;
+
+static bam_hdr_t *sam_hdr_sanitise(bam_hdr_t *h) 
+{
+	if (!h) return NULL;
+	if (h->l_text == 0) return h;
+
+	uint32_t i;
+	char *cp = h->text;
+	for (i = 0; i < h->l_text; i++) {
+		// NB: l_text excludes terminating nul.  This finds early ones.
+		if (cp[i] == 0) break;
+	}
+	if (i < h->l_text) { // Early nul found.  Complain if not just padding.
+		uint32_t j = i;
+		while (j < h->l_text && cp[j] == '\0') j++;
+	}
+	return h;
+}
+
+bam_hdr_t *SamHdr2BamHdr(kstring_t *str)
+{
+	bam_hdr_t *h = NULL;
+	h = sam_hdr_parse(str->l, str->s);
+	h->l_text = str->l; h->text = str->s;
+
+	return sam_hdr_sanitise(h);
+}
 
 void SetSingleAlignmentFlag(ReadItem_t& read)
 {
@@ -561,14 +593,18 @@ void *ReadMapping(void *arg)
 		{
 			for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++)
 			{
-				fprintf(output, "%s\n", iter->c_str()); fflush(output);
+				fprintf(sam_out, "%s\n", iter->c_str()); fflush(sam_out);
 			}
 		}
 		else
 		{
+			bam1_t *b = bam_init1();
+			kstring_t str = { 0, 0, NULL };
 			for (vector<string>::iterator iter = SamOutputVec.begin(); iter != SamOutputVec.end(); iter++)
 			{
-				gzwrite(gzOutput, iter->c_str(), iter->length());
+				//gzwrite(gzOutput, iter->c_str(), iter->length());
+				str.s = (char*)iter->c_str(); str.l = iter->length();
+				if (sam_parse1(&str, header, b) >= 0) sam_write1(bam_out, header, b);
 			}
 		}
 		pthread_mutex_unlock(&OutputLock);
@@ -597,27 +633,32 @@ void Mapping()
 
 	for (MinSeedLength = 13; MinSeedLength < 16; MinSeedLength++) if (TwoGenomeSize < pow(4, MinSeedLength)) break;
 
-	if (OutputFileName != NULL)
-	{
-		if (OutputFileFormat == 0) output = fopen(OutputFileName, "w");
-		else gzOutput = gzopen(OutputFileName, "wb");
-	}
 	if (bDebugMode) iThreadNum = 1;
 	else
 	{
 		int len;
 		char buffer[1024];
+		kstring_t str = { 0, 0, NULL };
+
+		if (OutputFileFormat == 0) sam_out = fopen(OutputFileName, "w");
+		else bam_out = sam_open_format(OutputFileName, "wb", NULL);
+
 		len = sprintf(buffer, "@PG\tID:kart\tPN:Kart\tVN:%s\n", VersionStr);
 
-		if (OutputFileFormat == 0) fprintf(output, "%s", buffer);
-		else gzwrite(gzOutput, buffer, len);
+		if (OutputFileFormat == 0) fprintf(sam_out, "%s", buffer);
+		else kputsn(buffer, len, &str);
 
 		for (i = 0; i < iChromsomeNum; i++)
 		{
 			len = sprintf(buffer, "@SQ\tSN:%s\tLN:%lld\n", ChromosomeVec[i].name, ChromosomeVec[i].len);
 
-			if (OutputFileFormat == 0) fprintf(output, "%s", buffer);
-			else gzwrite(gzOutput, buffer, len);
+			if (OutputFileFormat == 0) fprintf(sam_out, "%s", buffer);
+			else kputsn(buffer, len, &str);
+		}
+		if (OutputFileFormat == 1)
+		{
+			header = SamHdr2BamHdr(&str);
+			sam_hdr_write(bam_out, header);
 		}
 	}
 
@@ -668,18 +709,16 @@ void Mapping()
 			if (ReadFileHandler2 != NULL) fclose(ReadFileHandler2);
 		}
 	}
-	fprintf(stderr, "\rAll the %lld %s reads have been processed in %lld seconds.\n", (long long)iTotalReadNum, (bPairEnd? "paired-end":"single-end"), (long long)(time(NULL) - StartProcessTime));
+	fprintf(stdout, "\rAll the %lld %s reads have been processed in %lld seconds.\n", (long long)iTotalReadNum, (bPairEnd? "paired-end":"single-end"), (long long)(time(NULL) - StartProcessTime));
 	delete[] ThreadArr;
 
-	if (OutputFileName != NULL)
-	{
-		if (OutputFileFormat == 0) fclose(output);
-		else if (OutputFileFormat == 1) gzclose(gzOutput);
-		//else output = fopen(OutputFileName, "wb");
-	}
+	if (OutputFileFormat == 0) fclose(sam_out);
+	else sam_close(bam_out);
+
 	if(iTotalReadNum > 0)
 	{
-		if (bPairEnd) fprintf(stderr, "\t# of total mapped sequences = %lld (sensitivity = %.2f%%)\n\t# of paired sequences = %lld (%.2f%%), average insert size = %d\n", (long long)(iTotalReadNum - iUnMapping), (int)(10000 * (1.0*(iTotalReadNum - iUnMapping) / iTotalReadNum) + 0.5) / 100.0, (long long)iPaired, (int)(10000 * (1.0*iPaired / iTotalReadNum) + 0.5) / 100.0, (iPaired > 1 ? (int)(iDistance / (iPaired >> 1)) : 0));
-		else fprintf(stderr, "\t# of total mapped sequences = %lld (sensitivity = %.2f%%)\n", (long long)(iTotalReadNum - iUnMapping), (int)(10000 * (1.0*(iTotalReadNum - iUnMapping) / iTotalReadNum) + 0.5) / 100.0);
+		if (bPairEnd) fprintf(stdout, "\t# of total mapped sequences = %lld (sensitivity = %.2f%%)\n\t# of paired sequences = %lld (%.2f%%), average insert size = %d\n", (long long)(iTotalReadNum - iUnMapping), (int)(10000 * (1.0*(iTotalReadNum - iUnMapping) / iTotalReadNum) + 0.5) / 100.0, (long long)iPaired, (int)(10000 * (1.0*iPaired / iTotalReadNum) + 0.5) / 100.0, (iPaired > 1 ? (int)(iDistance / (iPaired >> 1)) : 0));
+		else fprintf(stdout, "\t# of total mapped sequences = %lld (sensitivity = %.2f%%)\n", (long long)(iTotalReadNum - iUnMapping), (int)(10000 * (1.0*(iTotalReadNum - iUnMapping) / iTotalReadNum) + 0.5) / 100.0);
+		fprintf(stdout, "Output: %s\n", OutputFileName);
 	}
 }

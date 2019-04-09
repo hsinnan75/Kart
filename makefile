@@ -1,6 +1,9 @@
 .KEEP_STAT:
 
-all: main index
+all: htslib main index
+
+htslib:
+		make -C src/htslib
 
 main:		
 		make -C src && mv src/kart .

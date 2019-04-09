@@ -144,8 +144,7 @@ We also provide a script (run_test.sh) to test the software. It will index a ref
 
 - Output file
 
-    Output is in standard SAM format. For reads aligned with reverse strand of reference genome, they are converted into obverse strand. More detailed information about SAM format, please refer to the SAMtools documents.
-    Kart can also generate compressed output with gzip algorithm. 
+    Output is in standard SAM/BAM format. For reads aligned with reverse strand of reference genome, they are converted into obverse strand. More detailed information about SAM/BAM format, please refer to the SAMtools documents.
 
 # Parameter setting
 

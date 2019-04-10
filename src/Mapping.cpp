@@ -2,8 +2,8 @@
 #include "structure.h"
 #include "htslib/htslib/sam.h"
 #include "sam_opts.h"
-#include "htslib/kseq.h"
-#include "htslib/kstring.h"
+#include "htslib/htslib/kseq.h"
+#include "htslib/htslib/kstring.h"
 
 #define MAPQ_COEF 30
 #define Max_MAPQ  60

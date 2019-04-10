@@ -1,6 +1,6 @@
 #include <cmath>
 #include "structure.h"
-#include "htslib/sam.h"
+#include "htslib/htslib/sam.h"
 #include "sam_opts.h"
 #include "htslib/kseq.h"
 #include "htslib/kstring.h"

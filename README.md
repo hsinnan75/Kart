@@ -122,7 +122,7 @@ To map short reads, Kart requires the the index files of the reference genome an
 
  case 3: bam output
   ```
- $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.bam
+ $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -bo out.bam
   ```
 
 The above commands are to run Kart to align the paired-end reads in ReadFile1.fa and ReadFile2.fa with index files of ecoli.
@@ -159,7 +159,9 @@ We also provide a script (run_test.sh) to test the software. It will index a ref
 
 -p the input read file consists of interleaved paired-end sequences
 
--o STR alignment output, output format includes SAM and BAM, out.sam for SAM output, out.bam BAM output
+-o STR alignment output in SAM format
+
+-bo STR alignment output in BAM format
 
 -m output multiple alignments
 

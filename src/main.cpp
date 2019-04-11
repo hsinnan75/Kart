@@ -35,7 +35,7 @@ bool CheckOutputFileName()
 		string filename, FileExt;
 
 		filename = OutputFileName; FileExt = filename.substr(filename.find_last_of('.') + 1);
-		if (FileExt == "bam") OutputFileFormat = 1;
+		//if (FileExt == "bam") OutputFileFormat = 1;
 		if (stat(OutputFileName, &s) == 0)
 		{
 			if (s.st_mode & S_IFDIR)
@@ -134,6 +134,11 @@ int main(int argc, char* argv[])
 				if ((MaxGaps = atoi(argv[++i])) < 0) MaxGaps = 0;
 			}
 			else if (parameter == "-o") OutputFileName = argv[++i];
+			else if (parameter == "-bo")
+			{
+				OutputFileFormat = 1;
+				OutputFileName = argv[++i];
+			}
 			else if (parameter == "-pacbio") bPacBioData = true;
 			else if (parameter == "-m") bMultiHit = true;
 			else if (parameter == "-pair" || parameter == "-p") bPairEnd = true;

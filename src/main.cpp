@@ -133,7 +133,11 @@ int main(int argc, char* argv[])
 			{
 				if ((MaxGaps = atoi(argv[++i])) < 0) MaxGaps = 0;
 			}
-			else if (parameter == "-o") OutputFileName = argv[++i];
+			else if (parameter == "-o")
+			{
+				OutputFileFormat = 0;
+				OutputFileName = argv[++i];
+			}
 			else if (parameter == "-bo")
 			{
 				OutputFileFormat = 1;

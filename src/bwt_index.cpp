@@ -238,7 +238,7 @@ void RestoreReferenceInfo()
 	GenomeSize = RefIdx->bns->l_pac; TwoGenomeSize = (GenomeSize << 1);
 	iChromsomeNum = RefIdx->bns->n_seqs; ChromosomeVec.resize(iChromsomeNum);
 
-	fprintf(stdout, "Load the reference sequences...");
+	fprintf(stdout, "Load the reference sequences...\n");
 	fseek(RefIdx->bns->fp_pac, 0, SEEK_SET);
 	size_t ret = fread(RefIdx->pac, 1, GenomeSize / 4 + 1, RefIdx->bns->fp_pac);
 
@@ -256,7 +256,7 @@ void RestoreReferenceInfo()
 	RefSequence = new char[TwoGenomeSize + 1]; RefSequence[TwoGenomeSize] = '\0';
 	RestoreReferenceSequences();
 
-	fprintf(stdout, "\n");
+	//fprintf(stdout, "\n");
 	//for (map<int64_t, int>::iterator iter = ChrLocMap.begin(); iter != ChrLocMap.end(); iter++) printf("chr%d: %lld\n", iter->second, iter->first);
 	//for (map<int64_t, int>::iterator iter = ChrLocMap.begin(); iter != ChrLocMap.end(); iter++) printf("Chr: %s [%ld -- %ld]\n", ChromosomeVec[iter->second].name, iter->first - ChromosomeVec[iter->second].len + 1, iter->first);
 }

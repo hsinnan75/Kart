@@ -166,7 +166,7 @@ extern const char* VersionStr;
 extern map<int64_t, int> ChrLocMap;
 extern vector<string> ReadFileNameVec1, ReadFileNameVec2;
 extern char *RefSequence, *GenomeFileName, *IndexFileName, *OutputFileName;
-extern bool bDebugMode, bPairEnd, bPacBioData, gzCompressed, FastQFormat, bMultiHit;
+extern bool bDebugMode, bPairEnd, bPacBioData, gzCompressed, FastQFormat, bMultiHit, bSilent;
 extern int MaxInsertSize, iThreadNum, iChromsomeNum, WholeChromosomeNum, ChromosomeNumMinusOne, MaxGaps, MinSeedLength, OutputFileFormat;
 
 // bwt_index.cpp

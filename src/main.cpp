@@ -7,7 +7,7 @@ const char* VersionStr = "2.5.0";
 vector<string> ReadFileNameVec1, ReadFileNameVec2;
 char *RefSequence, *IndexFileName, *OutputFileName;
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
-bool bDebugMode, bPairEnd, bPacBioData, bMultiHit, gzCompressed, FastQFormat;
+bool bDebugMode, bPairEnd, bPacBioData, bMultiHit, gzCompressed, FastQFormat, bSilent;
 
 void ShowProgramUsage(const char* program)
 {
@@ -93,6 +93,7 @@ int main(int argc, char* argv[])
 	MinSeedLength = 0;
 	bPacBioData = false;
 	bMultiHit = false;
+	bSilent = false;
 	FastQFormat = true;
 	OutputFileName = (char*)"output.sam";
 	OutputFileFormat = 0; // 0:sam 1:bam
@@ -143,6 +144,7 @@ int main(int argc, char* argv[])
 				OutputFileFormat = 1;
 				OutputFileName = argv[++i];
 			}
+			else if (parameter == "-silent") bSilent = true;
 			else if (parameter == "-pacbio") bPacBioData = true;
 			else if (parameter == "-m") bMultiHit = true;
 			else if (parameter == "-pair" || parameter == "-p") bPairEnd = true;

@@ -19,11 +19,17 @@ Please use the command
   ```
 to download the package of Kart.
 
+# Dependencies
+
+To compile Kart, it requires libboost-all-dev, libbz2-dev, and liblzma-dev installed in your system.
+
 # Compiling
 
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwt_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
 # Changes
+version 2.5.1: Dicard the thread limit.
+
 version 2.5.0: Add BAM formatted output.
 
 version 2.4.9: Fix a bug in reading wrong formatted read header

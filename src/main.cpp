@@ -3,7 +3,7 @@
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.5.0";
+const char* VersionStr = "2.5.1";
 vector<string> ReadFileNameVec1, ReadFileNameVec2;
 char *RefSequence, *IndexFileName, *OutputFileName;
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
@@ -16,7 +16,8 @@ void ShowProgramUsage(const char* program)
 	fprintf(stdout, "Options: -t INT        number of threads [4]\n");
 	fprintf(stdout, "         -f            files with #1 mates reads (format:fa, fq, fq.gz)\n");
 	fprintf(stdout, "         -f2           files with #2 mates reads (format:fa, fq, fq.gz)\n");
-	fprintf(stdout, "         -o            output filename [output.sam] fomrat: SAM|BAM\n");
+	fprintf(stdout, "         -o            alignment filename in SAM format [output.sam]\n");
+	fprintf(stdout, "         -bo           alignment filename in BAM format\n");
 	fprintf(stdout, "         -m            output multiple alignments\n");
 	fprintf(stdout, "         -g INT        max gaps (indels) [5]\n");
 	fprintf(stdout, "         -p            paired-end reads are interlaced in the same file\n");
@@ -122,14 +123,7 @@ int main(int argc, char* argv[])
 				while (++i < argc && argv[i][0] != '-') ReadFileNameVec2.push_back(argv[i]);
 				i--;
 			}
-			else if (parameter == "-t")
-			{
-				if ((iThreadNum = atoi(argv[++i])) > 40)
-				{
-					fprintf(stdout, "Warning! Thread number is limited to 40!\n");
-					iThreadNum = 40;
-				}
-			}
+			else if (parameter == "-t") iThreadNum = atoi(argv[++i]);
 			else if (parameter == "-g")
 			{
 				if ((MaxGaps = atoi(argv[++i])) < 0) MaxGaps = 0;

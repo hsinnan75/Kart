@@ -123,7 +123,11 @@ int main(int argc, char* argv[])
 				while (++i < argc && argv[i][0] != '-') ReadFileNameVec2.push_back(argv[i]);
 				i--;
 			}
-			else if (parameter == "-t") iThreadNum = atoi(argv[++i]);
+			else if ((iThreadNum = atoi(argv[++i])) <= 0)
+			{
+				fprintf(stdout, "Warning! Thread number should be a positive number!\n");
+				iThreadNum = 4;
+			}
 			else if (parameter == "-g")
 			{
 				if ((MaxGaps = atoi(argv[++i])) < 0) MaxGaps = 0;

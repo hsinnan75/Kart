@@ -3,7 +3,7 @@
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.5.1";
+const char* VersionStr = "2.5.2";
 vector<string> ReadFileNameVec1, ReadFileNameVec2;
 char *RefSequence, *IndexFileName, *OutputFileName;
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
@@ -123,10 +123,13 @@ int main(int argc, char* argv[])
 				while (++i < argc && argv[i][0] != '-') ReadFileNameVec2.push_back(argv[i]);
 				i--;
 			}
-			else if ((iThreadNum = atoi(argv[++i])) <= 0)
+			else if (parameter == "-t" && i + 1 < argc)
 			{
-				fprintf(stdout, "Warning! Thread number should be a positive number!\n");
-				iThreadNum = 4;
+				if ((iThreadNum = atoi(argv[++i])) <= 0)
+				{
+					fprintf(stdout, "Warning! Thread number should be a positive number!\n");
+					iThreadNum = 4;
+				}
 			}
 			else if (parameter == "-g")
 			{

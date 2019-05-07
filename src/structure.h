@@ -162,7 +162,7 @@ extern vector<Chromosome_t> ChromosomeVec;
 extern vector<string> ReadVec, ReadHeaderVec;
 extern vector<int64_t> AccumulationLengthVec, PositionShiftPosVec;
 
-extern const char* VersionStr;
+extern char VersionStr[20];
 extern map<int64_t, int> ChrLocMap;
 extern vector<string> ReadFileNameVec1, ReadFileNameVec2;
 extern char *RefSequence, *GenomeFileName, *IndexFileName, *OutputFileName;

@@ -1,13 +1,18 @@
 .KEEP_STAT:
 
-all: htslib main index
+all: kart bwt_index
+
+kart: htslib
+		$(MAKE) -C src && cp -f src/$@ .
 
 htslib:
-		make -C src/htslib
+		$(MAKE) -C src/htslib libhts.a
 
-main:		
-		make -C src && mv src/kart .
+bwt_index:
+		$(MAKE) -C src/BWT_Index && cp -f src/BWT_Index/$@ .
 
-index:
-		make -C BWT_Index && mv BWT_Index/bwt_index .
-
+clean:
+		rm -f kart bwt_index
+		$(MAKE) clean -C src
+		$(MAKE) clean -C src/htslib
+		$(MAKE) clean -C src/BWT_Index

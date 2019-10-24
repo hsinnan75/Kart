@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				fprintf(stdout, "Error! Unknow parameter: %s\n", argv[i]);
+				fprintf(stdout, "Error! Unknown parameter: %s\n", argv[i]);
 				ShowProgramUsage(argv[0]);
 				exit(1);
 			}

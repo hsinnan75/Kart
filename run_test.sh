@@ -2,9 +2,9 @@
 #test indexing
 echo
 echo "Test1 -- Generate index files with a E.Coli reference file"
-echo "Command=./bwa_index test/ecoli.fa test/EcoliIdx"
+echo "Command=bin/bwa_index test/ecoli.fa test/EcoliIdx"
 echo
-./bwa_index test/ecoli.fa test/EcoliIdx
+bin/bwa_index test/ecoli.fa test/EcoliIdx
 
 FILESIZE=$(du -sb test/EcoliIdx.bwt | awk '{ print $1 }')
 ACT_SIZE=4639752
@@ -22,7 +22,7 @@ echo
 echo "Test2 -- Align 2000 E.Coli reads with 4 threads"
 echo "Command=./kart -i test/EcoliIdx -t 4 -f test/r1.fq -f2 test/r2.fq -o test/alignment.sam"
 echo
-./kart -t 4 -i test/EcoliIdx -f test/r1.fq -f2 test/r2.fq -o test/alignment.sam
+bin/kart -t 4 -i test/EcoliIdx -f test/r1.fq -f2 test/r2.fq -o test/alignment.sam
 
 echo
 echo "[End of test]"

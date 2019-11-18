@@ -33,7 +33,7 @@ We update Kart from time to time, please check if new version is available by us
 
 with Kart version 2.3.7 up
   ```
-  $ ./kart update 
+  $ bin/kart update 
   ```
 or
   ```
@@ -47,7 +47,7 @@ or
 We provide the executable file, please type 
 
   ```
-  $ ./kart [options]
+  $ bin/kart [options]
   ```
 to run the program. Or you can type 'make' to build the executable file.
 
@@ -56,30 +56,30 @@ to run the program. Or you can type 'make' to build the executable file.
 To index a reference genome, Kart requires the target genome file (in fasta format) and the prefix of the index files (including the directory path).
 
   ```
-  $ ./bwt_index ref_file[ex.ecoli.fa] index_prefix[ex. Ecoli]
+  $ bin/bwt_index ref_file[ex.ecoli.fa] index_prefix[ex. Ecoli]
   ```
 The above command is to index the genome file Ecoli.fa and store the index files begining with ecoli.
 
 Please note that if you find bwt_index does not work in your computer system, you may use bwa (http://bio-bwa.sourceforge.net/) to build the index files.
   ```
-  $ ./bwa index -p index_prefix xxxx.fa
+  $ bin/bwa index -p index_prefix xxxx.fa
   ```
 
 To map short reads, Kart requires the the index files of the reference genome and at least one read file (two read files for the separated paired-end reads). Users should use -i to specify the prefix of the index files (including the directory path).
 
  case 1: standard sam output
   ```
- $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.sam
+ $ bin/kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -o out.sam
   ```
 
  case 2: multiple input 
   ```
- $ ./kart -i ecoli -f ReadFileA_1.fq ReadFileB_1.fq ReadFileC_1.fq -f2 ReadFileA_2.fq ReadFileB_2.fq ReadFileC_2.fq -o out.sam
+ $ bin/kart -i ecoli -f ReadFileA_1.fq ReadFileB_1.fq ReadFileC_1.fq -f2 ReadFileA_2.fq ReadFileB_2.fq ReadFileC_2.fq -o out.sam
   ```
 
  case 3: bam output
   ```
- $ ./kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -bo out.bam
+ $ bin/kart -i ecoli -f ReadFile1.fa -f2 ReadFile2.fa -bo out.bam
   ```
 
 The above commands are to run Kart to align the paired-end reads in ReadFile1.fa and ReadFile2.fa with index files of ecoli.

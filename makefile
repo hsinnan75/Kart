@@ -2,14 +2,15 @@
 
 all: kart bwt_index
 
-kart: htslib
-		$(MAKE) -C src && cp -f src/$@ .
-
 htslib:
+		mkdir -p bin/
 		$(MAKE) -C src/htslib libhts.a
 
+kart: htslib
+		$(MAKE) -C src && mv -f src/$@ bin/
+
 bwt_index:
-		$(MAKE) -C src/BWT_Index && cp -f src/BWT_Index/$@ .
+		$(MAKE) -C src/BWT_Index && mv -f src/BWT_Index/$@ bin/
 
 clean:
 		rm -f kart bwt_index

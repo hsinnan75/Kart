@@ -115,7 +115,7 @@ bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, ve
 			//	right_boundary = ChrLocMap.lower_bound(left_boundary)->first;
 
 			if ((slen = (int)(right_boundary - left_boundary)) < r2.rlen) continue;
-			if (bDebugMode) printf("\n\nAnchor1-Candidate#%d (Score=%d) pos=%lld, Search region = [%lld - %lld], len = %d\n\n", i + 1, AlignmentVec1[i].Score, AlignmentVec1[i].PosDiff, left_boundary, right_boundary, slen), fflush(stdout);
+			if (bDebugMode) printf("\n\nAnchor1-Candidate#%d (Score=%d) pos=%lld, Search region = [%lld - %lld], len = %d\n\n", i + 1, AlignmentVec1[i].Score, (long long)AlignmentVec1[i].PosDiff, (long long)left_boundary, (long long)right_boundary, slen), fflush(stdout);
 
 			RefSeg  = RefSequence + left_boundary; vec2 = CreateKmerVecFromReadSeq(slen, RefSeg);
 			KmerPairVec = IdentifyCommonKmers(slen, vec1, vec2);
@@ -150,7 +150,7 @@ bool RescueUnpairedAlignment(int EstDistance, ReadItem_t& r1, ReadItem_t& r2, ve
 			//	left_boundary = ChrLocMap.lower_bound(right_boundary)->first - ChromosomeVec[ChrLocMap.lower_bound(right_boundary)->second].len + 1;
 
 			if ((slen = (int)(right_boundary - left_boundary)) < r1.rlen) continue;
-			if (bDebugMode) printf("\n\nAnchor2-Candidate#%d (Score=%d) pos=%lld, Search region = [%lld - %lld], len = %d\n\n", i + 1, AlignmentVec2[i].Score, AlignmentVec2[i].PosDiff, left_boundary, right_boundary, slen);
+			if (bDebugMode) printf("\n\nAnchor2-Candidate#%d (Score=%d) pos=%lld, Search region = [%lld - %lld], len = %d\n\n", i + 1, AlignmentVec2[i].Score, (long long)AlignmentVec2[i].PosDiff, (long long)left_boundary, (long long)right_boundary, slen);
 
 			RefSeg = RefSequence + left_boundary; vec2 = CreateKmerVecFromReadSeq(slen, RefSeg);
 			KmerPairVec = IdentifyCommonKmers(slen, vec1, vec2);

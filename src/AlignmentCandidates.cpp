@@ -5,7 +5,7 @@ void ShowFragmentPair(char* ReadSeq, SeedPair_t& sp)
 	string frag1, frag2;
 	frag1.resize(sp.rLen); strncpy((char*)frag1.c_str(), ReadSeq + sp.rPos, sp.rLen);
 	frag2.resize(sp.gLen); strncpy((char*)frag2.c_str(), RefSequence + sp.gPos, sp.gLen);
-	printf("FragmentPair:\n%s #read[%d-%d]=%d\n%s #chr[%lld-%lld]=%d\nscore = %d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), sp.gPos, sp.gPos + sp.gLen - 1, sp.gLen, sp.rLen), fflush(stdout);
+	printf("FragmentPair:\n%s #read[%d-%d]=%d\n%s #chr[%lld-%lld]=%d\nscore = %d\n\n", frag1.c_str(), sp.rPos, sp.rPos + sp.rLen - 1, sp.rLen, frag2.c_str(), (long long)sp.gPos, (long long)(sp.gPos + sp.gLen - 1), sp.gLen, sp.rLen), fflush(stdout);
 }
 
 bool CompByPosDiff(const SeedPair_t& p1, const SeedPair_t& p2)

@@ -13,7 +13,13 @@ Kart adopts a divide-and-conquer strategy, which separates a read into regions t
 
 # Download
 
-Please use the command 
+## Conda
+Install [Bioconda](https://bioconda.github.io/user/install.html) then type:
+```
+$ conda install kart
+```
+
+## Github
   ```
   $ git clone https://github.com/hsinnan75/Kart.git
   ```

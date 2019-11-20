@@ -16,7 +16,7 @@ bool bSepLibrary = false;
 bam_hdr_t *header = NULL;
 FILE *ReadFileHandler1, *ReadFileHandler2;
 gzFile gzReadFileHandler1, gzReadFileHandler2;
-static pthread_mutex_t DataLock, LibraryLock, OutputLock;
+pthread_mutex_t DataLock, LibraryLock, OutputLock;
 int64_t iTotalReadNum = 0, iUniqueMapping = 0, iUnMapping = 0, iPaired = 0;
 
 static bam_hdr_t *sam_hdr_sanitise(bam_hdr_t *h) 
@@ -479,10 +479,17 @@ void CheckPairedFinalAlignments(ReadItem_t& read1, ReadItem_t& read2)
 	}
 }
 
+void EnCodeReadSeq(int rlen, char* seq, uint8_t* EncodeSeq)
+{
+	for (int i = 0; i < rlen; i++) EncodeSeq[i] = nst_nt4_table[(int)seq[i]];
+}
+
+
 void *ReadMapping(void *arg)
 {
 	char* buffer;
 	bool bReadPairing;
+	uint8_t* EncodeSeq;
 	ReadItem_t* ReadArr = NULL;
 	vector<string> SamOutputVec;
 	vector<SeedPair_t> SeedPairVec1, SeedPairVec2;
@@ -509,7 +516,8 @@ void *ReadMapping(void *arg)
 			{
 				if (bDebugMode) printf("\n\n\nMapping pacbio read#%d %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen);
 				
-				SeedPairVec1 = IdentifySeedPairs_SensitiveMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
+				EncodeSeq = new uint8_t[ReadArr[i].rlen]; EnCodeReadSeq(ReadArr[i].rlen, ReadArr[i].seq, EncodeSeq);
+				SeedPairVec1 = IdentifySeedPairs_SensitiveMode(ReadArr[i].rlen, EncodeSeq); delete[] EncodeSeq;
 				AlignmentVec1 = GenerateAlignmentCandidateForPacBioSeq(ReadArr[i].rlen, SeedPairVec1);
 				//if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
 				RemoveRedundantCandidates(AlignmentVec1);
@@ -535,10 +543,12 @@ void *ReadMapping(void *arg)
 			{
 				//if (bDebugMode) printf("Mapping paired reads#%d %s (len=%d) and %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen, ReadArr[j].header, ReadArr[j].rlen);
 
-				SeedPairVec1 = IdentifySeedPairs_FastMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
+				EncodeSeq = new uint8_t[ReadArr[i].rlen]; EnCodeReadSeq(ReadArr[i].rlen, ReadArr[i].seq, EncodeSeq);
+				SeedPairVec1 = IdentifySeedPairs_FastMode(ReadArr[i].rlen, EncodeSeq); delete[] EncodeSeq;
 				AlignmentVec1 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[i].rlen, SeedPairVec1);
 
-				SeedPairVec2 = IdentifySeedPairs_FastMode(ReadArr[j].rlen, ReadArr[j].EncodeSeq);
+				EncodeSeq = new uint8_t[ReadArr[j].rlen]; EnCodeReadSeq(ReadArr[i].rlen, ReadArr[j].seq, EncodeSeq);
+				SeedPairVec2 = IdentifySeedPairs_FastMode(ReadArr[j].rlen, EncodeSeq); delete[] EncodeSeq;
 				AlignmentVec2 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[j].rlen, SeedPairVec2);
 
 				//if (bDebugMode)
@@ -573,7 +583,8 @@ void *ReadMapping(void *arg)
 			{
 				if (bDebugMode) printf("Mapping single read#%d %s (len=%d):\n", i + 1, ReadArr[i].header, ReadArr[i].rlen);
 
-				SeedPairVec1 = IdentifySeedPairs_FastMode(ReadArr[i].rlen, ReadArr[i].EncodeSeq);
+				EncodeSeq = new uint8_t[ReadArr[i].rlen]; EnCodeReadSeq(ReadArr[i].rlen, ReadArr[i].seq, EncodeSeq);
+				SeedPairVec1 = IdentifySeedPairs_FastMode(ReadArr[i].rlen, EncodeSeq); delete[] EncodeSeq;
 				AlignmentVec1 = GenerateAlignmentCandidateForIlluminaSeq(ReadArr[i].rlen, SeedPairVec1);
 				RemoveRedundantCandidates(AlignmentVec1); if (bDebugMode) ShowAlignmentCandidateInfo(1, ReadArr[i].header, AlignmentVec1);
 				GenMappingReport(true, ReadArr[i], AlignmentVec1);
@@ -615,7 +626,6 @@ void *ReadMapping(void *arg)
 			delete[] ReadArr[i].header;
 			delete[] ReadArr[i].seq;
 			if (FastQFormat) delete[] ReadArr[i].qual;
-			delete[] ReadArr[i].EncodeSeq;
 			if(ReadArr[i].CanNum > 0) delete[] ReadArr[i].AlnReportArr;
 		}
 	}
@@ -634,6 +644,7 @@ void Mapping()
 
 	for (MinSeedLength = 13; MinSeedLength < 16; MinSeedLength++) if (TwoGenomeSize < pow(4, MinSeedLength)) break;
 
+	pthread_mutex_init(&DataLock, NULL); pthread_mutex_init(&LibraryLock, NULL); pthread_mutex_init(&OutputLock, NULL);
 	if (bDebugMode) iThreadNum = 1;
 	else
 	{

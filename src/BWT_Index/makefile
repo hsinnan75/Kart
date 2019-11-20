@@ -1,6 +1,6 @@
-CC=gcc
+CC=		gcc
 FLAGS=		-I${PREFIX}/include -L${PREFIX}/lib -g -Wall -O3
-AR=ar
+AR=		ar
 LOBJS=		utils.o bwt.o bntseq.o QSufSort.o bwt_gen.o bwtindex.o
 PROG=		bwt_index
 LIBS=		-lm -lz

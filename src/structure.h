@@ -143,7 +143,7 @@ typedef struct
 	char* header;
 	char* qual;
 	char* seq;
-	uint8_t* EncodeSeq;
+	//uint8_t* EncodeSeq;
 	// aln report
 	int mapq;
 	int score;

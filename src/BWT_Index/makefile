@@ -8,7 +8,7 @@ LIBS=		-lm -lz
 .c.o:
 		$(CC) -c $(FLAGS) $(INCLUDES) $< -o $@
 
-all:$(PROG)
+all:$(PROG) 
 
 bwt_index:libbwa.a main.o
 		$(CC) $(FLAGS) main.o -o $@ -L. -lbwa $(LIBS)

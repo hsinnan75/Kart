@@ -64,6 +64,11 @@ To index a reference genome, Kart requires the target genome file (in fasta form
   ```
   $ bin/bwt_index ref_file[ex.ecoli.fa] index_prefix[ex. Ecoli]
   ```
+or
+
+  ```
+  $ bin/kart_index ref_file[ex.ecoli.fa] index_prefix[ex. Ecoli]
+  ```
 The above command is to index the genome file Ecoli.fa and store the index files begining with ecoli.
 
 Please note that if you find bwt_index does not work in your computer system, you may use bwa (http://bio-bwa.sourceforge.net/) to build the index files.
@@ -132,6 +137,8 @@ We also provide a script (run_test.sh) to test the software. It will index a ref
 
   ```
 # Changes
+- 2.5.4: Integrated bwt_index into Kart.
+- 2.5.3: Fix a bug when running with multi-threads on Mac PCs
 - 2.5.2: Fix a bug in parameter processing.
 - 2.5.1: Dicard the thread limit.
 - 2.5.0: Add BAM formatted output.

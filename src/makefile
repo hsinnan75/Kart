@@ -13,7 +13,7 @@ OBJECT		= $(SOURCE:%.cpp=%.o)
 			$(CXX) $(FLAGS) -c $<
 
 main:		$(OBJECT)
-			$(CXX) $(FLAGS) $(OBJECT) -o kart $(LIB) htslib/libhts.a -lbz2 -llzma
+			$(CXX) $(FLAGS) $(OBJECT) -o kart $(LIB) BWT_Index/libbwa.a htslib/libhts.a -lbz2 -llzma
 			
 clean:
 		rm -f *.o *~

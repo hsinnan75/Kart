@@ -52,7 +52,7 @@ void nw_alignment(int m, string& s1, int n, string& s2)
 		{
 			r[i][j] = max(r[i][j - 1] + EXTEND_GAP, s[i][j - 1] + NEW_GAP);
 			t[i][j] = max(t[i - 1][j] + EXTEND_GAP, s[i - 1][j] + NEW_GAP);
-			s[i][j] = max(s[i - 1][j - 1] + (nst_nt4_table[s1[i - 1]] == nst_nt4_table[s2[j - 1]] ? 1.5 : -1.5), r[i][j], t[i][j]);
+			s[i][j] = max(s[i - 1][j - 1] + (nst_nt4_table[(uint8_t)s1[i - 1]] == nst_nt4_table[(uint8_t)s2[j - 1]] ? 1.5 : -1.5), r[i][j], t[i][j]);
 		}
 	}
 	// back tracking

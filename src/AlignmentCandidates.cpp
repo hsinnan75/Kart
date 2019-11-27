@@ -583,6 +583,7 @@ bool CheckCoordinateValidity(vector<SeedPair_t>& SeedVec)
 {
 	bool bValid = true;
 	int64_t gPos1=0, gPos2=TwoGenomeSize;
+	map<int64_t, int>::iterator iter1, iter2;
 
 	for (vector<SeedPair_t>::iterator iter = SeedVec.begin(); iter != SeedVec.end(); iter++)
 	{
@@ -600,7 +601,7 @@ bool CheckCoordinateValidity(vector<SeedPair_t>& SeedVec)
 			break;
 		}
 	}	
-	if ((gPos1 < GenomeSize && gPos2 >= GenomeSize) || (gPos1 >= GenomeSize && gPos2 < GenomeSize) || ChrLocMap.lower_bound(gPos1)->second != ChrLocMap.lower_bound(gPos2)->second)
+	if ((gPos1 < GenomeSize && gPos2 >= GenomeSize) || (gPos1 >= GenomeSize && gPos2 < GenomeSize) || ((iter1 = ChrLocMap.lower_bound(gPos1)) == ChrLocMap.end() || (iter2 = ChrLocMap.lower_bound(gPos2)) == ChrLocMap.end() || iter1->second != iter2->second))
 	{
 		bValid = false;
 		//if (bDebugMode) fprintf(stdout, "%lld and %lld are not in the same chromosome!\n", gPos1, gPos2);

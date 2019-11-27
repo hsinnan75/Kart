@@ -3,7 +3,7 @@
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.5.4";
+const char* VersionStr = "2.5.5";
 vector<string> ReadFileNameVec1, ReadFileNameVec2;
 char *RefSequence, *IndexFileName, *OutputFileName;
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
@@ -33,10 +33,6 @@ bool CheckOutputFileName()
 	if (strcmp(OutputFileName, "output.sam")!=0)
 	{
 		struct stat s;
-		string filename, FileExt;
-
-		filename = OutputFileName; FileExt = filename.substr(filename.find_last_of('.') + 1);
-		//if (FileExt == "bam") OutputFileFormat = 1;
 		if (stat(OutputFileName, &s) == 0)
 		{
 			if (s.st_mode & S_IFDIR)
@@ -44,15 +40,18 @@ bool CheckOutputFileName()
 				bRet = false;
 				fprintf(stdout, "Warning: %s is a directory!\n", OutputFileName);
 			}
-			else if (s.st_mode & S_IFREG)
-			{
-			}
+		}
+		int i, len = strlen(OutputFileName);
+		for (i = 0; i < len; i++)
+		{
+			if (isalnum(OutputFileName[i]) || OutputFileName[i] == '/' || OutputFileName[i] == '.');
 			else
 			{
 				bRet = false;
-				fprintf(stdout, "Warning: %s is not a regular file!\n", OutputFileName);
+				fprintf(stdout, "Warning: [%s] is not a valid filename!\n", OutputFileName);
+				break;
 			}
-		}
+		}		
 	}
 	return bRet;
 }

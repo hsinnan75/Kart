@@ -437,7 +437,8 @@ bool CheckFragValidity(SeedPair_t SeedPair)
 
 	iter1 = ChrLocMap.lower_bound(SeedPair.gPos);
 	iter2 = ChrLocMap.lower_bound(SeedPair.gPos + SeedPair.gLen - 1);
-
+	if (iter1 == ChrLocMap.end()) return false;
+	if (iter2 == ChrLocMap.end()) return false;
 	return (iter1->first == iter2->first);
 }
 
@@ -448,5 +449,7 @@ bool CheckAlignmentValidity(vector<SeedPair_t>& SeedPairVec)
 	iter1 = ChrLocMap.lower_bound(SeedPairVec.begin()->gPos);
 	iter2 = ChrLocMap.lower_bound(SeedPairVec.rbegin()->gPos + SeedPairVec.rbegin()->gLen - 1);
 
+	if (iter1 == ChrLocMap.end()) return false;
+	if (iter2 == ChrLocMap.end()) return false;
 	return (iter1->first == iter2->first);
 }

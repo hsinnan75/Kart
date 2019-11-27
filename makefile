@@ -1,6 +1,6 @@
 .KEEP_STAT:
 
-all: kart bwt_index
+all: kart
 
 htslib:
 		mkdir -p bin/

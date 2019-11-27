@@ -3,8 +3,8 @@
 all: main
 
 CXX		= g++
-FLAGS		= -I${PREFIX}/include -L${PREFIX}/lib -Wall -D NDEBUG -O3 -m64
-LIB		= -lz -lm -lpthread -lstdc++
+FLAGS		= -Wall -D NDEBUG -O3 -m64
+LIB		= -lz -lm -lpthread -lbz2 -llzma -lstdc++
 SOURCE		= main.cpp GetData.cpp Mapping.cpp AlignmentCandidates.cpp AlignmentRescue.cpp KmerAnalysis.cpp nw_alignment.cpp tools.cpp bwt_index.cpp bwt_search.cpp
 HEADER		= structure.h
 OBJECT		= $(SOURCE:%.cpp=%.o)
@@ -13,7 +13,7 @@ OBJECT		= $(SOURCE:%.cpp=%.o)
 			$(CXX) $(FLAGS) -c $<
 
 main:		$(OBJECT)
-			$(CXX) $(FLAGS) $(OBJECT) -o kart $(LIB) BWT_Index/libbwa.a htslib/libhts.a -lbz2 -llzma
+			$(CXX) $(FLAGS) $(OBJECT) -o kart BWT_Index/libbwa.a htslib/libhts.a $(LIB)
 			
 clean:
 		rm -f *.o *~

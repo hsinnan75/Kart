@@ -137,6 +137,7 @@ We also provide a script (run_test.sh) to test the software. It will index a ref
 
   ```
 # Changes
+- 2.5.5: Fix several compiler warnings.
 - 2.5.4: Integrated bwt_index into Kart.
 - 2.5.3: Fix a bug when running with multi-threads on Mac PCs
 - 2.5.2: Fix a bug in parameter processing.

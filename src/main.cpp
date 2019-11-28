@@ -1,9 +1,13 @@
 #include <sys/stat.h>
 #include "structure.h"
+extern "C"
+{
+	int bwa_idx_build(const char *fa, const char *prefix);
+}
 
 bwt_t *Refbwt;
 bwaidx_t *RefIdx;
-const char* VersionStr = "2.5.5";
+const char* VersionStr = "2.5.6";
 vector<string> ReadFileNameVec1, ReadFileNameVec2;
 char *RefSequence, *IndexFileName, *OutputFileName;
 int iThreadNum, MaxInsertSize, MaxGaps, MinSeedLength, OutputFileFormat;
@@ -78,11 +82,6 @@ bool CheckInputFiles()
 		}
 	}
 	return bRet;
-}
-
-extern "C"
-{
-	int bwa_idx_build(const char *fa, const char *prefix);
 }
 
 int main(int argc, char* argv[])

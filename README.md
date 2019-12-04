@@ -33,21 +33,6 @@ To compile Kart, it requires libboost-all-dev, libbz2-dev, and liblzma-dev insta
 
 To compile kart and the index tool, please change to kart's folder and just type 'make' to compile kart and bwt_index. If the compilation or the program fails, please contact me (arith@iis.sinica.edu.tw), Thanks.
 
-# Get updates
-
-We update Kart from time to time, please check if new version is available by using the following commands.
-
-with Kart version 2.3.7 up
-  ```
-  $ bin/kart update 
-  ```
-or
-  ```
-  $ git fetch
-  $ git merge origin/master master
-  $ make
-  ```
-
 # Instructions
 
 We provide the executable file, please type 
@@ -65,16 +50,10 @@ To index a reference genome, Kart requires the target genome file (in fasta form
   $ bin/bwt_index ref_file[ex.ecoli.fa] index_prefix[ex. Ecoli]
   ```
 or
-
   ```
-  $ bin/kart_index ref_file[ex.ecoli.fa] index_prefix[ex. Ecoli]
+  $ bin/kart index ref_file[ex.ecoli.fa] index_prefix[ex. Ecoli]
   ```
-The above command is to index the genome file Ecoli.fa and store the index files begining with ecoli.
-
-Please note that if you find bwt_index does not work in your computer system, you may use bwa (http://bio-bwa.sourceforge.net/) to build the index files.
-  ```
-  $ bin/bwa index -p index_prefix xxxx.fa
-  ```
+The above commands are to index the genome file Ecoli.fa and store the index files begining with ecoli.
 
 To map short reads, Kart requires the the index files of the reference genome and at least one read file (two read files for the separated paired-end reads). Users should use -i to specify the prefix of the index files (including the directory path).
 

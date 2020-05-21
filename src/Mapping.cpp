@@ -655,6 +655,12 @@ void Mapping()
 		if (OutputFileFormat == 0) sam_out = fopen(OutputFileName, "w");
 		else bam_out = sam_open_format(OutputFileName, "wb", NULL);
 
+		if (sam_out == NULL && bam_out == NULL)
+		{
+			fprintf(stderr, "Error! Cannot open file [%s]\n", OutputFileName);
+			exit(1);
+		}
+
 		len = sprintf(buffer, "@PG\tID:kart\tPN:Kart\tVN:%s\n", VersionStr);
 
 		if (OutputFileFormat == 0) fprintf(sam_out, "%s", buffer);

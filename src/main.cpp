@@ -48,7 +48,7 @@ bool CheckOutputFileName()
 		int i, len = strlen(OutputFileName);
 		for (i = 0; i < len; i++)
 		{
-			if (isalnum(OutputFileName[i]) || OutputFileName[i] == '/' || OutputFileName[i] == '.' || OutputFileName[i] == '-');
+			if (isalnum(OutputFileName[i]) || OutputFileName[i] == '/' || OutputFileName[i] == '.' || OutputFileName[i] == '-'|| OutputFileName[i] == '_');
 			else
 			{
 				bRet = false;
